@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /Aganceonline/admin.html
+Allow: /Aganceonline/
+
+Sitemap: https://el4aby7.github.io/Aganceonline/sitemap.xml

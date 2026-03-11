@@ -1,0 +1,57 @@
+/*
+    AganceOnline - Custom Styles
+    This file contains global styles, utility classes, and specific component overrides
+    that extend the Tailwind CSS framework configuration.
+*/
+
+/* Import Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+
+/* Global Font Settings */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Text Effects */
+.text-glow {
+    text-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+/* Scrollbar Utilities */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Custom Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #150d17;
+}
+::-webkit-scrollbar-thumb {
+    background: #2d2430;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #ee2122;
+}
+
+/* RTL Support Tweaks */
+/* Ensure icons that indicate direction (like arrows) are handled correctly if not automatically flipped */
+[dir="rtl"] .material-symbols-outlined {
+    /*
+       Note: Many material symbols are direction-neutral.
+       Specific flipping logic can be added here if needed for icons like 'arrow_forward'.
+    */
+}
+
+[dir="rtl"] {
+    font-family: 'Inter', sans-serif; /* Fallback or specific Arabic font can be defined here */
+}
