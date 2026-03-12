@@ -14,6 +14,7 @@ global.document = {
     querySelector: jest.fn(),
     querySelectorAll: jest.fn().mockReturnValue([]),
     addEventListener: jest.fn(),
+    createElement: jest.fn().mockReturnValue({ parentElement: { querySelectorAll: jest.fn().mockReturnValue([]) }, style: {}, classList: { add: jest.fn(), remove: jest.fn() } }),
     documentElement: {
         setAttribute: jest.fn(),
         classList: { add: jest.fn(), remove: jest.fn() }
@@ -43,7 +44,11 @@ describe('loadDetails', () => {
             textContent: '',
             style: {},
             setAttribute: jest.fn(),
-            classList: { add: jest.fn(), remove: jest.fn() }
+            classList: { add: jest.fn(), remove: jest.fn() },
+            remove: jest.fn(),
+            appendChild: jest.fn(),
+            pause: jest.fn(),
+            play: jest.fn().mockResolvedValue()
         };
         global.document.getElementById.mockReturnValue(mockElement);
         global.document.querySelector.mockReturnValue(mockElement);
@@ -73,7 +78,8 @@ describe('loadDetails', () => {
         const title = { textContent: '' };
         const price = { setAttribute: jest.fn() };
         const desc = { textContent: '' };
-        const img = { src: '' };
+        const img = { src: '', classList: { add: jest.fn(), remove: jest.fn() } };
+        const vid = { src: '', classList: { add: jest.fn(), remove: jest.fn() }, pause: jest.fn(), play: jest.fn().mockResolvedValue() };
 
         document.getElementById.mockImplementation((id) => {
             if (id === 'details-container') return container;
@@ -82,10 +88,11 @@ describe('loadDetails', () => {
             if (id === 'vehicle-price') return price;
             if (id === 'vehicle-desc') return desc;
             if (id === 'main-image') return img;
+            if (id === 'main-video') return vid;
             if (id === 'spec-mileage') return { textContent: '', style: {} };
             if (id === 'spec-trans') return { textContent: '', style: {} };
             if (id === 'spec-fuel') return { textContent: '', style: {} };
-            return { innerHTML: '', addEventListener: jest.fn(), style: {}, textContent: '', setAttribute: jest.fn(), classList: { add: jest.fn(), remove: jest.fn() }, remove: jest.fn(), appendChild: jest.fn() };
+            return { innerHTML: '', addEventListener: jest.fn(), style: {}, textContent: '', setAttribute: jest.fn(), classList: { add: jest.fn(), remove: jest.fn() }, remove: jest.fn(), appendChild: jest.fn(), pause: jest.fn(), play: jest.fn().mockResolvedValue() };
         });
     });
 

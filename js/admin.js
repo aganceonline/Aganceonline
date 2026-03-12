@@ -6,6 +6,7 @@ let currentUser = null;
 let currentProducts = [];
 let currentInquiries = [];
 let currentBrands = [];
+let currentColors = [];
 
 // --- UI Utilities ---
 window.showToast = function(message, type = 'success') {
@@ -325,6 +326,135 @@ window.deleteProduct = function(id) {
 let editingId = null;
 let currentGallery = [];
 
+window.addColor = function() {
+    const id = Date.now();
+    currentColors.push({
+        id: id,
+        name: '',
+        name_ar: '',
+        hex: '#000000',
+        gallery: [],
+        is_default: currentColors.length === 0
+    });
+    renderColors();
+};
+
+window.deleteColor = function(id) {
+    currentColors = currentColors.filter(c => c.id !== id);
+    renderColors();
+};
+
+window.updateColorField = function(id, field, value) {
+    const color = currentColors.find(c => c.id === id);
+    if (color) {
+        color[field] = value;
+    }
+};
+
+window.setDefaultColor = function(id) {
+    currentColors.forEach(c => c.is_default = (c.id === id));
+    renderColors();
+};
+
+window.deleteColorGalleryImage = function(colorId, imgIndex) {
+    const color = currentColors.find(c => c.id === colorId);
+    if (color) {
+        color.gallery.splice(imgIndex, 1);
+        renderColors();
+    }
+};
+
+async function handleColorGalleryUpload(colorId, files) {
+    const color = currentColors.find(c => c.id === colorId);
+    if (!color || files.length === 0) return;
+
+    for (const file of files) {
+        const fileExt = file.name.split('.').pop();
+        const isVideoFile = file.type.startsWith('video/');
+        const prefix = isVideoFile ? 'video' : 'gallery';
+        const fileName = `color-${prefix}-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+        const filePath = `public/${fileName}`;
+
+        try {
+            const { error: uploadError } = await supabase.storage
+                .from('vehicle-images')
+                .upload(filePath, file);
+
+            if (uploadError) throw uploadError;
+
+            const { data: publicData } = supabase.storage
+                .from('vehicle-images')
+                .getPublicUrl(filePath);
+
+            color.gallery.push(publicData.publicUrl);
+        } catch (err) {
+            console.error('Color gallery upload error:', err);
+            showToast('Error uploading color gallery image', 'error');
+        }
+    }
+    renderColors();
+}
+
+function renderColors() {
+    const container = document.getElementById('colors-container');
+    if (!container) return;
+
+    if (currentColors.length === 0) {
+        container.innerHTML = '<p class="text-sm text-gray-500 italic">No colors added yet.</p>';
+        return;
+    }
+
+    container.innerHTML = currentColors.map((color) => {
+        const colorId = color.id;
+        return `
+            <div class="bg-gray-50 dark:bg-white/5 p-4 rounded-xl border border-gray-200 dark:border-white/10 space-y-4">
+                <div class="flex flex-wrap gap-4 items-end">
+                    <div class="flex-1 min-w-[150px]">
+                        <label class="block text-xs font-medium mb-1">Color Name (EN)</label>
+                        <input type="text" value="${escapeHtml(color.name)}" oninput="updateColorField(${colorId}, 'name', this.value)" class="w-full rounded-lg bg-white dark:bg-black/20 border border-gray-300 dark:border-white/10 px-3 py-1.5 text-sm outline-none">
+                    </div>
+                    <div class="flex-1 min-w-[150px]">
+                        <label class="block text-xs font-medium mb-1">Color Name (AR)</label>
+                        <input type="text" value="${escapeHtml(color.name_ar)}" oninput="updateColorField(${colorId}, 'name_ar', this.value)" class="w-full rounded-lg bg-white dark:bg-black/20 border border-gray-300 dark:border-white/10 px-3 py-1.5 text-sm outline-none" dir="rtl">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium mb-1">Hex Code</label>
+                        <div class="flex items-center gap-2">
+                            <input type="color" value="${color.hex}" oninput="updateColorField(${colorId}, 'hex', this.value); this.nextElementSibling.value = this.value;" class="w-8 h-8 rounded border-0 p-0 bg-transparent cursor-pointer">
+                            <input type="text" value="${color.hex}" oninput="updateColorField(${colorId}, 'hex', this.value); this.previousElementSibling.value = this.value;" class="w-20 rounded-lg bg-white dark:bg-black/20 border border-gray-300 dark:border-white/10 px-2 py-1.5 text-xs outline-none uppercase">
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <input type="radio" name="default-color" ${color.is_default ? 'checked' : ''} onchange="setDefaultColor(${colorId})" class="w-4 h-4 text-primary focus:ring-primary">
+                        <label class="text-xs font-medium">Default</label>
+                    </div>
+                    <button type="button" onclick="deleteColor(${colorId})" class="mb-1 p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
+                        <span class="material-symbols-outlined text-[20px]">delete</span>
+                    </button>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium mb-2">Color Specific Gallery</label>
+                    <div class="grid grid-cols-4 md:grid-cols-6 gap-2 mb-2">
+                        ${color.gallery.map((url, idx) => {
+                            const isVid = url.match(/\.(mp4|webm|ogg)$/i);
+                            return `
+                                <div class="relative group aspect-square rounded-lg overflow-hidden border border-gray-200 dark:border-white/10">
+                                    ${isVid ? `<video src="${url}" class="w-full h-full object-cover" muted></video>` : `<img src="${url}" class="w-full h-full object-cover">`}
+                                    <button type="button" onclick="deleteColorGalleryImage(${colorId}, ${idx})" class="absolute top-0.5 right-0.5 bg-red-600 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span class="material-symbols-outlined text-[12px]">close</span>
+                                    </button>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    <input type="file" multiple accept="image/*,video/mp4,video/webm,video/ogg" onchange="handleColorGalleryUpload(${colorId}, this.files)" class="w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-gray-200 dark:file:bg-white/10 file:text-gray-700 dark:file:text-gray-300 hover:file:bg-gray-300 transition-all">
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
 function openModal(product = null) {
     productModal.classList.remove('hidden');
     const title = document.getElementById('modal-title');
@@ -366,12 +496,20 @@ function openModal(product = null) {
         currentGallery = product.gallery || [];
         renderGallery();
 
+        // Handle Colors
+        currentColors = (product.colors || []).map((c, idx) => ({ ...c, id: Date.now() + idx }));
+        renderColors();
+
     } else {
         editingId = null;
         title.textContent = 'Add New Vehicle';
         form.reset();
         currentGallery = [];
         renderGallery();
+
+        currentColors = [];
+        renderColors();
+
         document.getElementById('p-brand-id').value = ''; // Ensure brand is empty for new
         document.getElementById('p-diagnostics-current').classList.add('hidden');
     }
@@ -725,6 +863,7 @@ async function handleSaveProduct(e) {
         }
 
         payload.gallery = currentGallery;
+        payload.colors = currentColors.map(({ id, ...rest }) => rest);
 
         // 4. Insert or Update
         let error;

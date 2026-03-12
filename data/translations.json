@@ -69,7 +69,9 @@
     "favorites_title": "Your Favorites",
     "no_favorites": "You haven't added any favorites yet.",
     "opt_sales": "Sales Inquiry",
-    "opt_support": "Contact Support"
+    "opt_support": "Contact Support",
+    "select_color": "Select Color",
+    "color_not_available": "This color isn't available but can be ordered in request"
   },
   "ar": {
     "header_title": "اجانس اونلاين",
@@ -141,6 +143,8 @@
     "favorites_title": "المفضلة لديك",
     "no_favorites": "لم تقم بإضافة أي سيارات للمفضلة بعد.",
     "opt_sales": "استفسار عن المبيعات",
-    "opt_support": "التواصل مع الدعم"
+    "opt_support": "التواصل مع الدعم",
+    "select_color": "اختر اللون",
+    "color_not_available": "هذا اللون غير متوفر ولكن يمكن طلبه عند الطلب"
   }
 }
