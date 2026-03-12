@@ -160,8 +160,18 @@
                     <video id="main-video" controls class="hidden w-full h-full object-cover"></video>
                 </div>
 
+                <!-- Color Selection (Moved from right column) -->
+                <div id="color-selection-container" class="hidden mt-2">
+                    <div class="flex items-center gap-4">
+                        <div class="flex flex-wrap gap-2" id="color-options">
+                            <!-- Color options injected by JS -->
+                        </div>
+                        <p id="selected-color-name" class="text-sm font-bold text-slate-700 dark:text-gray-300"></p>
+                    </div>
+                </div>
+
                 <!-- Image Thumbnails -->
-                <div class="relative">
+                <div class="relative mt-2">
                     <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide" id="gallery-thumbnails">
                         <!-- Dynamic Thumbnails injected by JS -->
                     </div>
@@ -170,8 +180,15 @@
                 <!-- Vehicle Description Text -->
                 <div class="mt-8 bg-white dark:bg-card-dark rounded-xl p-6 border border-gray-200 dark:border-border-dark shadow-sm relative z-10">
                     <h3 class="text-lg font-bold text-slate-900 dark:text-black mb-4 border-b border-gray-200 dark:border-border-dark pb-2" data-i18n="vehicle_description">Vehicle Description</h3>
-                    <div class="max-w-none text-slate-800 dark:text-gray-300 leading-relaxed">
-                        <p id="vehicle-desc" class="text-slate-800 dark:text-black">Description loading...</p>
+                    <div class="relative group cursor-pointer" onclick="openDescriptionPopup()">
+                        <div id="vehicle-desc-wrapper" class="max-h-32 overflow-hidden transition-all duration-300 relative">
+                            <p id="vehicle-desc" class="text-slate-800 dark:text-black whitespace-pre-wrap">Description loading...</p>
+                            <div id="vehicle-desc-fade" class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-white dark:from-card-dark to-transparent pointer-events-none"></div>
+                        </div>
+                        <button class="mt-4 text-primary font-bold text-sm flex items-center gap-1 hover:underline">
+                            <span data-i18n="read_more">Read More</span>
+                            <span class="material-symbols-outlined text-[18px]">expand_more</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -191,15 +208,6 @@
                             <p class="text-gray-500 dark:text-[#97b7c4] text-sm font-medium mb-1" data-i18n="selling_price">Selling Price</p>
                             <h2 class="text-3xl md:text-4xl font-bold text-primary" id="vehicle-price" data-price-egp="0">0 L.E</h2>
                         </div>
-                    </div>
-
-                    <!-- Color Selection -->
-                    <div id="color-selection-container" class="hidden">
-                        <p class="text-gray-500 dark:text-[#97b7c4] text-sm font-medium mb-3" data-i18n="select_color">Select Color</p>
-                        <div class="flex flex-wrap gap-3" id="color-options">
-                            <!-- Color options injected by JS -->
-                        </div>
-                        <p id="selected-color-name" class="mt-2 text-sm font-bold text-slate-700 dark:text-gray-300"></p>
                     </div>
 
                     <!-- CTA Buttons -->
@@ -242,6 +250,24 @@
             </div>
         </div>
     </main>
+
+    <!-- Description Modal -->
+    <div id="description-modal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeDescriptionModal()"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-surface-card w-full max-w-2xl rounded-xl shadow-2xl border border-gray-200 dark:border-white/10 overflow-hidden relative flex flex-col max-h-[90vh]">
+                <button onclick="closeDescriptionModal()" class="absolute top-4 right-4 text-gray-500 hover:text-primary transition-colors z-10">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+                <div class="p-6 border-b border-gray-200 dark:border-white/10">
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white" data-i18n="vehicle_description">Vehicle Description</h3>
+                </div>
+                <div class="p-6 overflow-y-auto">
+                    <p id="modal-vehicle-desc" class="text-slate-800 dark:text-gray-300 whitespace-pre-wrap leading-relaxed"></p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Inquiry Modal -->
     <div id="inquiry-modal" class="fixed inset-0 z-[100] hidden">

@@ -434,7 +434,7 @@ function renderColors() {
                 </div>
 
                 <div>
-                    <label class="block text-xs font-medium mb-2">Color Specific Gallery</label>
+                    <label class="block text-xs font-medium mb-2">Color Specific Gallery (Optional - if empty, main gallery will be used)</label>
                     <div class="grid grid-cols-4 md:grid-cols-6 gap-2 mb-2">
                         ${color.gallery.map((url, idx) => {
                             const isVid = url.match(/\.(mp4|webm|ogg)$/i);
