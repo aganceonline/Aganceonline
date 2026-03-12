@@ -82,6 +82,19 @@ describe('loadDetails', () => {
         const vid = { src: '', classList: { add: jest.fn(), remove: jest.fn() }, pause: jest.fn(), play: jest.fn().mockResolvedValue() };
 
         document.getElementById.mockImplementation((id) => {
+            const el = {
+                innerHTML: '',
+                addEventListener: jest.fn(),
+                style: {},
+                textContent: '',
+                setAttribute: jest.fn(),
+                classList: { add: jest.fn(), remove: jest.fn() },
+                remove: jest.fn(),
+                appendChild: jest.fn(),
+                pause: jest.fn(),
+                play: jest.fn().mockResolvedValue(),
+                nextElementSibling: { classList: { add: jest.fn(), remove: jest.fn() } }
+            };
             if (id === 'details-container') return container;
             if (id === 'vehicle-title') return title;
             if (id === 'vehicle-title-crumb') return title;
@@ -92,7 +105,9 @@ describe('loadDetails', () => {
             if (id === 'spec-mileage') return { textContent: '', style: {} };
             if (id === 'spec-trans') return { textContent: '', style: {} };
             if (id === 'spec-fuel') return { textContent: '', style: {} };
-            return { innerHTML: '', addEventListener: jest.fn(), style: {}, textContent: '', setAttribute: jest.fn(), classList: { add: jest.fn(), remove: jest.fn() }, remove: jest.fn(), appendChild: jest.fn(), pause: jest.fn(), play: jest.fn().mockResolvedValue() };
+            if (id === 'vehicle-desc-wrapper') return { ...el, nextElementSibling: { classList: { add: jest.fn(), remove: jest.fn() } } };
+            if (id === 'vehicle-desc-fade') return el;
+            return el;
         });
     });
 

@@ -733,7 +733,28 @@ async function loadDetails() {
     document.getElementById('vehicle-title').textContent = displayName;
     document.getElementById('vehicle-title-crumb').textContent = displayName;
     document.getElementById('vehicle-price').setAttribute('data-price-egp', product.price_egp || '');
-    document.getElementById('vehicle-desc').textContent = displayDesc;
+
+    const descEl = document.getElementById('vehicle-desc');
+    descEl.textContent = displayDesc;
+
+    // Handle description truncation logic
+    const descWrapper = document.getElementById('vehicle-desc-wrapper');
+    const descFade = document.getElementById('vehicle-desc-fade');
+    const readMoreBtn = descWrapper.nextElementSibling;
+
+    // Reset styles
+    descWrapper.style.maxHeight = '8rem'; // 32 * 0.25rem = 8rem
+    descFade.classList.remove('hidden');
+    readMoreBtn.classList.remove('hidden');
+
+    // Wait for a tick to allow the browser to calculate height
+    setTimeout(() => {
+        if (descEl.scrollHeight <= descWrapper.offsetHeight) {
+            descFade.classList.add('hidden');
+            readMoreBtn.classList.add('hidden');
+            descWrapper.style.maxHeight = 'none';
+        }
+    }, 100);
 
     // Badges
     const newArrivalBadge = document.getElementById('badge-new-arrival');
@@ -801,7 +822,7 @@ async function loadDetails() {
             return `
                 <button
                     onclick="selectVehicleColor(${index}, ${product.id})"
-                    class="w-8 h-8 rounded-full border-2 transition-all ${isDefault ? 'border-primary scale-110 shadow-lg' : 'border-gray-300 hover:border-gray-400'}"
+                    class="w-6 h-6 rounded-full border-2 transition-all ${isDefault ? 'border-primary scale-110 shadow-lg' : 'border-gray-300 hover:border-gray-400'}"
                     style="background-color: ${color.hex};"
                     title="${escapeHtml(isAr ? color.name_ar : color.name)}"
                 ></button>
@@ -811,7 +832,8 @@ async function loadDetails() {
         const defaultColor = product.colors.find(c => c.is_default) || product.colors[0];
         if (defaultColor) {
             colorNameDisplay.textContent = isAr ? defaultColor.name_ar : defaultColor.name;
-            updateVehicleGallery(defaultColor.gallery, product.image_url);
+            const galleryToUse = (defaultColor.gallery && defaultColor.gallery.length > 0) ? defaultColor.gallery : product.gallery;
+            updateVehicleGallery(galleryToUse, product.image_url);
         }
     } else {
         // Fallback to default gallery if no colors defined
@@ -916,7 +938,8 @@ window.selectVehicleColor = function(colorIndex, productId) {
         }
     });
 
-    updateVehicleGallery(color.gallery, color.gallery[0]);
+    const galleryToUse = (color.gallery && color.gallery.length > 0) ? color.gallery : product.gallery;
+    updateVehicleGallery(galleryToUse, (galleryToUse && galleryToUse.length > 0) ? galleryToUse[0] : product.image_url);
 }
 
 /**
@@ -1042,6 +1065,26 @@ window.openInquiryModal = function() {
 window.closeInquiryModal = function() {
     const modal = document.getElementById('inquiry-modal');
     if (modal) modal.classList.add('hidden');
+};
+
+window.openDescriptionPopup = function() {
+    const modal = document.getElementById('description-modal');
+    const modalDesc = document.getElementById('modal-vehicle-desc');
+    const originalDesc = document.getElementById('vehicle-desc');
+
+    if (modal && modalDesc && originalDesc) {
+        modalDesc.textContent = originalDesc.textContent;
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden'; // Prevent scroll
+    }
+};
+
+window.closeDescriptionModal = function() {
+    const modal = document.getElementById('description-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = ''; // Restore scroll
+    }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
