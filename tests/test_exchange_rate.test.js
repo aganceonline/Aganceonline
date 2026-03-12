@@ -38,8 +38,8 @@ describe('Exchange Rate Logic', () => {
         script = require('../js/script.js');
     });
 
-    test('Initial rate is 0.02 (fallback)', () => {
-        // 5000 * 0.02 = 100 USD
+    test('Initial rate is 50.0 (fallback)', () => {
+        // 5000 / 50.0 = 100 USD
         // Set currency directly to bypass cached import
         global.window.setCurrency?.('USD');
         const price = script.formatPrice(5000);
@@ -51,7 +51,7 @@ describe('Exchange Rate Logic', () => {
 
         // Mock Supabase response
         const mockSingle = jest.fn().mockResolvedValue({
-            data: { value: '0.03' },
+            data: { value: '50' },
             error: null
         });
 
@@ -66,8 +66,8 @@ describe('Exchange Rate Logic', () => {
         await script.fetchExchangeRate();
 
         const price = script.formatPrice(5000);
-        // 5000 * 0.03 = 150
-        expect(price).toBe('$150');
+        // 5000 / 50 = 100
+        expect(price).toBe('$100');
     });
 
     test('fetchExchangeRate handles errors and uses fallback', async () => {
@@ -89,7 +89,7 @@ describe('Exchange Rate Logic', () => {
 
         await script.fetchExchangeRate();
 
-        // Should still be 0.02
+        // Should still be 50.0
         const price = script.formatPrice(5000);
         expect(price).toBe('$100');
     });
