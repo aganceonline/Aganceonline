@@ -333,6 +333,7 @@ window.addColor = function() {
         name: '',
         name_ar: '',
         hex: '#000000',
+        image_url: '',
         gallery: [],
         is_default: currentColors.length === 0
     });
@@ -363,6 +364,33 @@ window.deleteColorGalleryImage = function(colorId, imgIndex) {
         renderColors();
     }
 };
+
+async function handleColorImageUpload(colorId, file) {
+    const color = currentColors.find(c => c.id === colorId);
+    if (!color || !file) return;
+
+    const fileExt = file.name.split('.').pop();
+    const fileName = `color-main-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+    const filePath = `public/${fileName}`;
+
+    try {
+        const { error: uploadError } = await supabase.storage
+            .from('vehicle-images')
+            .upload(filePath, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: publicData } = supabase.storage
+            .from('vehicle-images')
+            .getPublicUrl(filePath);
+
+        color.image_url = publicData.publicUrl;
+        renderColors();
+    } catch (err) {
+        console.error('Color main image upload error:', err);
+        showToast('Error uploading color main image', 'error');
+    }
+}
 
 async function handleColorGalleryUpload(colorId, files) {
     const color = currentColors.find(c => c.id === colorId);
@@ -408,7 +436,7 @@ function renderColors() {
         const colorId = color.id;
         return `
             <div class="bg-gray-50 dark:bg-white/5 p-4 rounded-xl border border-gray-200 dark:border-white/10 space-y-4">
-                <div class="flex flex-wrap gap-4 items-end">
+                <div class="flex flex-wrap gap-4 items-start">
                     <div class="flex-1 min-w-[150px]">
                         <label class="block text-xs font-medium mb-1">Color Name (EN)</label>
                         <input type="text" value="${escapeHtml(color.name)}" oninput="updateColorField(${colorId}, 'name', this.value)" class="w-full rounded-lg bg-white dark:bg-black/20 border border-gray-300 dark:border-white/10 px-3 py-1.5 text-sm outline-none">
@@ -428,9 +456,21 @@ function renderColors() {
                         <input type="radio" name="default-color" ${color.is_default ? 'checked' : ''} onchange="setDefaultColor(${colorId})" class="w-4 h-4 text-primary focus:ring-primary">
                         <label class="text-xs font-medium">Default</label>
                     </div>
-                    <button type="button" onclick="deleteColor(${colorId})" class="mb-1 p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
+                    <button type="button" onclick="deleteColor(${colorId})" class="mt-6 p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
                         <span class="material-symbols-outlined text-[20px]">delete</span>
                     </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium mb-1">Color Main Image (Thumbnail)</label>
+                        <div class="flex items-center gap-3">
+                            <div class="h-12 w-16 bg-white dark:bg-black/20 rounded border border-gray-300 dark:border-white/10 overflow-hidden flex-shrink-0">
+                                <img src="${color.image_url || 'https://placehold.co/600x400?text=None'}" class="h-full w-full object-cover">
+                            </div>
+                            <input type="file" accept="image/*" onchange="handleColorImageUpload(${colorId}, this.files[0])" class="flex-grow text-xs text-gray-500 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary file:text-white hover:file:bg-red-600 transition-all">
+                        </div>
+                    </div>
                 </div>
 
                 <div>
