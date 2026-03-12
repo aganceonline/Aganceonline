@@ -193,6 +193,15 @@
                         </div>
                     </div>
 
+                    <!-- Color Selection -->
+                    <div id="color-selection-container" class="hidden">
+                        <p class="text-gray-500 dark:text-[#97b7c4] text-sm font-medium mb-3" data-i18n="select_color">Select Color</p>
+                        <div class="flex flex-wrap gap-3" id="color-options">
+                            <!-- Color options injected by JS -->
+                        </div>
+                        <p id="selected-color-name" class="mt-2 text-sm font-bold text-slate-700 dark:text-gray-300"></p>
+                    </div>
+
                     <!-- CTA Buttons -->
                     <div class="grid grid-cols-2 gap-4">
                         <a href="#" target="_blank" id="btn-diagnostics" class="hidden bg-slate-800 hover:bg-slate-700 text-white h-14 rounded-lg font-bold text-lg uppercase tracking-wide shadow-lg transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 col-span-1">

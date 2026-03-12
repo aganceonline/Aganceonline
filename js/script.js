@@ -15,6 +15,7 @@ let currentTheme = localStorage.getItem('theme') || 'dark';
 let currentCurrency = localStorage.getItem('currency') || 'EGP';
 let translations = {};
 let products = [];
+let currentProduct = null;
 let brands = [];
 let activeBrandFilters = [];
 let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
@@ -665,6 +666,7 @@ async function loadDetails() {
     }
 
     const product = products.find(p => p.id === id);
+    currentProduct = product;
 
     if (!product) {
         console.error(`Product ID ${id} not found.`);
@@ -787,34 +789,34 @@ async function loadDetails() {
         }
     }
 
-    // Gallery Thumbnails
-    const galleryContainer = document.getElementById('gallery-thumbnails');
-    if (galleryContainer) {
-        let gallery = product.gallery || [];
-        // Ensure main image is in the gallery, prepended if missing
-        if (product.image_url && !gallery.includes(product.image_url)) {
-            gallery = [product.image_url, ...gallery];
+    // Color Selection
+    const colorContainer = document.getElementById('color-selection-container');
+    const colorOptions = document.getElementById('color-options');
+    const colorNameDisplay = document.getElementById('selected-color-name');
+
+    if (colorContainer && colorOptions && product.colors && product.colors.length > 0) {
+        colorContainer.classList.remove('hidden');
+        colorOptions.innerHTML = product.colors.map((color, index) => {
+            const isDefault = color.is_default;
+            return `
+                <button
+                    onclick="selectVehicleColor(${index}, ${product.id})"
+                    class="w-8 h-8 rounded-full border-2 transition-all ${isDefault ? 'border-primary scale-110 shadow-lg' : 'border-gray-300 hover:border-gray-400'}"
+                    style="background-color: ${color.hex};"
+                    title="${escapeHtml(isAr ? color.name_ar : color.name)}"
+                ></button>
+            `;
+        }).join('');
+
+        const defaultColor = product.colors.find(c => c.is_default) || product.colors[0];
+        if (defaultColor) {
+            colorNameDisplay.textContent = isAr ? defaultColor.name_ar : defaultColor.name;
+            updateVehicleGallery(defaultColor.gallery, product.image_url);
         }
-
-        if (gallery.length > 0) {
-            galleryContainer.innerHTML = gallery.map((url) => {
-                const isActive = url === product.image_url;
-                const isVideo = url.match(/\.(mp4|webm|ogg)$/i);
-
-                const mediaTag = isVideo
-                    ? `<video src="${escapeHtml(url)}" class="w-full h-full object-cover pointer-events-none" muted></video>
-                       <div class="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none">
-                           <span class="material-symbols-outlined text-white text-[24px]">play_circle</span>
-                       </div>`
-                    : `<img src="${escapeHtml(url)}" class="w-full h-full object-cover" alt="Thumbnail">`;
-
-                // Note: using dataset to pass URL safely to avoid XSS in onclick handler
-                return `
-                <button class="relative flex-none w-24 aspect-[4/3] rounded-lg overflow-hidden hover:opacity-100 transition-opacity ${isActive ? 'ring-2 ring-primary' : 'opacity-60'}" data-url="${escapeHtml(url)}" onclick="changeMainImage(this.dataset.url, this)">
-                    ${mediaTag}
-                </button>
-            `}).join('');
-        }
+    } else {
+        // Fallback to default gallery if no colors defined
+        if (colorContainer) colorContainer.classList.add('hidden');
+        renderDefaultGallery(product);
     }
 
     // Initialize main image correctly if the first item happens to be a video
@@ -830,9 +832,97 @@ async function loadDetails() {
 }
 
 /**
+ * Renders the default gallery for a product.
+ */
+function renderDefaultGallery(product) {
+    const galleryContainer = document.getElementById('gallery-thumbnails');
+    if (!galleryContainer) return;
+
+    let gallery = product.gallery || [];
+    if (product.image_url && !gallery.includes(product.image_url)) {
+        gallery = [product.image_url, ...gallery];
+    }
+    updateVehicleGallery(gallery, product.image_url);
+}
+
+/**
+ * Updates the gallery thumbnails based on the provided array of URLs.
+ */
+function updateVehicleGallery(gallery, mainImageUrl) {
+    const galleryContainer = document.getElementById('gallery-thumbnails');
+    if (!galleryContainer) return;
+
+    if (!gallery || gallery.length === 0) {
+        galleryContainer.innerHTML = `
+            <div class="w-full py-4 text-center">
+                <p class="text-sm text-red-500 font-bold" data-i18n="color_not_available">
+                    ${translations[currentLang]?.color_not_available || "This color isn't available but can be ordered in request"}
+                </p>
+            </div>
+        `;
+        // Clear main image or set to placeholder
+        const mainImg = document.getElementById('main-image');
+        if (mainImg) mainImg.src = 'https://placehold.co/600x400?text=No+Gallery+Available';
+        return;
+    }
+
+    galleryContainer.innerHTML = gallery.map((url) => {
+        const isActive = url === mainImageUrl;
+        const isVideo = url.match(/\.(mp4|webm|ogg)$/i);
+
+        const mediaTag = isVideo
+            ? `<video src="${escapeHtml(url)}" class="w-full h-full object-cover pointer-events-none" muted></video>
+               <div class="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none">
+                   <span class="material-symbols-outlined text-white text-[24px]">play_circle</span>
+               </div>`
+            : `<img src="${escapeHtml(url)}" class="w-full h-full object-cover" alt="Thumbnail">`;
+
+        return `
+            <button class="relative flex-none w-24 aspect-[4/3] rounded-lg overflow-hidden hover:opacity-100 transition-opacity ${isActive ? 'ring-2 ring-primary' : 'opacity-60'}" data-url="${escapeHtml(url)}" onclick="changeMainImage(this.dataset.url, this)">
+                ${mediaTag}
+            </button>
+        `}).join('');
+
+    // Set the first image from the gallery as main image if current main image isn't in gallery
+    if (gallery.length > 0 && !gallery.includes(mainImageUrl)) {
+        changeMainImage(gallery[0], null, true);
+    } else {
+         changeMainImage(mainImageUrl, null, true);
+    }
+}
+
+/**
+ * Handles color selection for a vehicle.
+ */
+window.selectVehicleColor = function(colorIndex, productId) {
+    const product = currentProduct;
+    if (!product || !product.colors) return;
+
+    const color = product.colors[colorIndex];
+    if (!color) return;
+
+    const isAr = currentLang === 'ar';
+    document.getElementById('selected-color-name').textContent = isAr ? color.name_ar : color.name;
+
+    // Update buttons UI
+    const buttons = document.querySelectorAll('#color-options button');
+    buttons.forEach((btn, idx) => {
+        if (idx === colorIndex) {
+            btn.classList.add('border-primary', 'scale-110', 'shadow-lg');
+            btn.classList.remove('border-gray-300');
+        } else {
+            btn.classList.remove('border-primary', 'scale-110', 'shadow-lg');
+            btn.classList.add('border-gray-300');
+        }
+    });
+
+    updateVehicleGallery(color.gallery, color.gallery[0]);
+}
+
+/**
  * Updates the main image on the Details page when a thumbnail is clicked.
  */
-window.changeMainImage = function(url, btn, skipStateUpdate = false) {
+function changeMainImage(url, btn, skipStateUpdate = false) {
     const mainImg = document.getElementById('main-image');
     const mainVid = document.getElementById('main-video');
 
@@ -867,6 +957,7 @@ window.changeMainImage = function(url, btn, skipStateUpdate = false) {
         btn.classList.add('ring-2', 'ring-primary', 'opacity-100');
     }
 }
+window.changeMainImage = changeMainImage;
 
 function loadContact() {
     // Just ensure translations are applied
@@ -1102,6 +1193,9 @@ if (typeof module !== 'undefined' && module.exports) {
         loadProducts,
         loadDetails,
         createProductCard,
-        escapeHtml
+        escapeHtml,
+        changeMainImage,
+        updateVehicleGallery,
+        renderDefaultGallery
     };
 }
