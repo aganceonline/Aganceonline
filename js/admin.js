@@ -7,6 +7,8 @@ let currentProducts = [];
 let currentInquiries = [];
 let currentBrands = [];
 let currentColors = [];
+let currentOrderMode = 'inventory'; // 'inventory' or 'home'
+let isOrderChanged = false;
 
 // --- UI Utilities ---
 window.showToast = function(message, type = 'success') {
@@ -156,8 +158,138 @@ async function initAdmin() {
     document.getElementById('brand-modal-cancel').addEventListener('click', closeBrandModal);
     document.getElementById('brand-form').addEventListener('submit', handleSaveBrand);
 
+    // Order Mode Toggles
+    document.getElementById('order-mode-inventory').addEventListener('click', () => switchOrderMode('inventory'));
+    document.getElementById('order-mode-home').addEventListener('click', () => switchOrderMode('home'));
+    document.getElementById('save-order-btn').addEventListener('click', handleSaveOrder);
+
     // Settings
     document.getElementById('settings-form').addEventListener('submit', handleSaveSettings);
+}
+
+// --- Order Management ---
+
+function switchOrderMode(mode) {
+    if (isOrderChanged) {
+        if (!confirm('You have unsaved order changes. Switch anyway?')) return;
+    }
+
+    currentOrderMode = mode;
+
+    // UI Update
+    const invBtn = document.getElementById('order-mode-inventory');
+    const homeBtn = document.getElementById('order-mode-home');
+
+    if (mode === 'inventory') {
+        invBtn.classList.add('bg-primary', 'text-white', 'shadow-sm');
+        invBtn.classList.remove('text-gray-500');
+        homeBtn.classList.remove('bg-primary', 'text-white', 'shadow-sm');
+        homeBtn.classList.add('text-gray-500');
+    } else {
+        homeBtn.classList.add('bg-primary', 'text-white', 'shadow-sm');
+        homeBtn.classList.remove('text-gray-500');
+        invBtn.classList.remove('bg-primary', 'text-white', 'shadow-sm');
+        invBtn.classList.add('text-gray-500');
+    }
+
+    loadProducts();
+}
+
+let draggedProductIndex = null;
+
+window.handleProductDragStart = function(e) {
+    draggedProductIndex = parseInt(e.currentTarget.dataset.index);
+    e.dataTransfer.effectAllowed = 'move';
+    setTimeout(() => e.currentTarget.classList.add('opacity-50'), 0);
+};
+
+window.handleProductDragOver = function(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+};
+
+window.handleProductDragEnter = function(e) {
+    e.preventDefault();
+    const target = e.currentTarget;
+    if (parseInt(target.dataset.index) !== draggedProductIndex) {
+        target.classList.add('bg-primary/10');
+    }
+};
+
+window.handleProductDragLeave = function(e) {
+    const target = e.currentTarget;
+    target.classList.remove('bg-primary/10');
+};
+
+window.handleProductDrop = function(e) {
+    e.preventDefault();
+    const targetIndex = parseInt(e.currentTarget.dataset.index);
+    if (draggedProductIndex !== null && draggedProductIndex !== targetIndex) {
+        const item = currentProducts.splice(draggedProductIndex, 1)[0];
+        currentProducts.splice(targetIndex, 0, item);
+        isOrderChanged = true;
+        renderProducts(currentProducts);
+        updateSaveOrderBtnVisibility();
+    }
+    e.currentTarget.classList.remove('bg-primary/10');
+};
+
+window.handleProductDragEnd = function(e) {
+    e.currentTarget.classList.remove('opacity-50');
+    draggedProductIndex = null;
+    document.querySelectorAll('#products-table-body tr').forEach(el => {
+        el.classList.remove('bg-primary/10');
+    });
+};
+
+function updateSaveOrderBtnVisibility() {
+    const btn = document.getElementById('save-order-btn');
+    if (isOrderChanged) {
+        btn.classList.remove('hidden');
+    } else {
+        btn.classList.add('hidden');
+    }
+}
+
+async function handleSaveOrder() {
+    const btn = document.getElementById('save-order-btn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = 'Saving...';
+    btn.disabled = true;
+
+    try {
+        const orderCol = currentOrderMode === 'home' ? 'order_home' : 'order_inventory';
+
+        // Prepare batch updates
+        const updates = currentProducts.map((p, index) => ({
+            id: p.id,
+            [orderCol]: index
+        }));
+
+        // Supabase doesn't support bulk PATCH with different values per row in a single call.
+        // To avoid overwriting entire rows with upsert (which requires all columns),
+        // we perform individual updates. We use Promise.all for better performance.
+        await Promise.all(updates.map(update =>
+            supabase
+                .from('products')
+                .update({ [orderCol]: update[orderCol] })
+                .eq('id', update.id)
+                .then(({ error }) => {
+                    if (error) throw error;
+                })
+        ));
+
+        showToast('Order saved successfully!', 'success');
+        isOrderChanged = false;
+        updateSaveOrderBtnVisibility();
+        loadProducts(); // Reload to be sure
+    } catch (err) {
+        console.error(err);
+        showToast('Failed to save order: ' + err.message, 'error');
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
 }
 
 // --- Auth Logic ---
@@ -244,21 +376,25 @@ function switchTab(tab) {
 
 async function loadProducts() {
     const tbody = document.getElementById('products-table-body');
-    tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center">Loading...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center">Loading...</td></tr>';
+
+    const orderCol = currentOrderMode === 'home' ? 'order_home' : 'order_inventory';
 
     const { data, error } = await supabase
         .from('products')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order(orderCol, { ascending: true });
 
     if (error) {
         console.error(error);
-        tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-red-500">Failed to load products</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center text-red-500">Failed to load products</td></tr>';
         return;
     }
 
     currentProducts = data;
     renderProducts(data);
+    isOrderChanged = false;
+    updateSaveOrderBtnVisibility();
 
     // Also load brands in the background for the product modal
     loadBrandsForModal();
@@ -278,12 +414,23 @@ async function loadBrandsForModal() {
 function renderProducts(products) {
     const tbody = document.getElementById('products-table-body');
     if (products.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center">No vehicles found.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center">No vehicles found.</td></tr>';
         return;
     }
 
-    tbody.innerHTML = products.map(p => `
-        <tr class="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+    tbody.innerHTML = products.map((p, index) => `
+        <tr class="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-move"
+            draggable="true"
+            data-index="${index}"
+            ondragstart="handleProductDragStart(event)"
+            ondragover="handleProductDragOver(event)"
+            ondrop="handleProductDrop(event)"
+            ondragenter="handleProductDragEnter(event)"
+            ondragleave="handleProductDragLeave(event)"
+            ondragend="handleProductDragEnd(event)">
+            <td class="px-6 py-4">
+                <span class="material-symbols-outlined text-gray-400 text-[20px]">drag_indicator</span>
+            </td>
             <td class="px-6 py-4">
                 <div class="h-10 w-16 rounded overflow-hidden bg-gray-200">
                     <img src="${escapeHtml(p.image_url)}" class="h-full w-full object-cover" alt="car">
@@ -862,6 +1009,13 @@ async function handleSaveProduct(e) {
                 fuel: fuelAr
             }
         };
+
+        // For new products, we want them to appear at the end (or start)
+        // Let's set the order to a very high number or use current count
+        if (!editingId) {
+            payload.order_inventory = currentProducts.length;
+            payload.order_home = currentProducts.length;
+        }
 
         if (imageUrl) {
             payload.image_url = imageUrl;

@@ -141,17 +141,44 @@
                 <h2 class="text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white mb-2" data-i18n="nav_inventory">Inventory</h2>
                 <p class="text-gray-500 dark:text-gray-400 max-w-lg" data-i18n="hero_subtitle">Discover our curated collection of premium vehicles.</p>
             </div>
+            <!-- Mobile Filter Toggle -->
+            <button id="mobile-filter-btn" class="lg:hidden flex items-center justify-center gap-2 bg-primary text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-primary/20">
+                <span class="material-symbols-outlined">filter_list</span>
+                <span data-i18n="filters">Filters</span>
+            </button>
         </div>
 
-        <!-- Filter Bar -->
-        <div class="bg-white dark:bg-surface-dark border border-gray-200 dark:border-border-dark rounded-xl p-4 mb-8 sticky top-20 z-30 shadow-lg">
-            <div class="flex flex-col lg:flex-row gap-4 justify-between">
-                <div class="flex flex-wrap gap-3 flex-1">
-                     <!-- Search Input -->
-                     <input type="text" id="search-input" data-i18n-placeholder="search_placeholder" placeholder="Search inventory..." class="w-full md:flex-1 bg-gray-50 dark:bg-[#251d28] border border-gray-200 dark:border-border-dark rounded-lg px-4 py-2.5 text-slate-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-primary">
+        <!-- Main Layout: Sidebar + Grid -->
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Inventory Grid (Left on desktop) -->
+            <div class="flex-grow order-2 lg:order-1">
+                <div id="inventory-container" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <!-- Dynamic Content -->
+                </div>
+            </div>
 
-                     <!-- Category Filter -->
-                     <select id="filter-category" class="w-full md:w-48 bg-gray-50 dark:bg-[#251d28] border border-gray-200 dark:border-border-dark rounded-lg px-4 py-2.5 text-slate-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-primary">
+            <!-- Sidebar (Filters) (Right on desktop) -->
+            <aside id="filter-sidebar" class="hidden lg:block w-full lg:w-72 flex-shrink-0 space-y-8 order-1 lg:order-2">
+                <!-- Search -->
+                <div class="space-y-3">
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-gray-400" data-i18n="search">Search</h3>
+                    <input type="text" id="search-input" data-i18n-placeholder="search_placeholder" placeholder="Search inventory..." class="w-full bg-white dark:bg-surface-card border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-all">
+                </div>
+
+                <!-- Condition Filter -->
+                <div class="space-y-3">
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-gray-400" data-i18n="condition">Condition</h3>
+                    <div class="flex bg-gray-100 dark:bg-white/5 p-1 rounded-xl">
+                        <button onclick="setConditionFilter('all')" data-condition="all" class="condition-btn flex-1 py-2 text-xs font-bold rounded-lg bg-primary text-white shadow-sm transition-all" data-i18n="all">All</button>
+                        <button onclick="setConditionFilter('new')" data-condition="new" class="condition-btn flex-1 py-2 text-xs font-bold rounded-lg text-gray-500 dark:text-gray-400 hover:text-primary transition-all" data-i18n="new">New</button>
+                        <button onclick="setConditionFilter('used')" data-condition="used" class="condition-btn flex-1 py-2 text-xs font-bold rounded-lg text-gray-500 dark:text-gray-400 hover:text-primary transition-all" data-i18n="used">Used</button>
+                    </div>
+                </div>
+
+                <!-- Category Filter -->
+                <div class="space-y-3">
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-gray-400" data-i18n="category">Category</h3>
+                    <select id="filter-category" class="w-full bg-white dark:bg-surface-card border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:border-primary transition-all">
                         <option value="" data-i18n="filter_category_all">All Categories</option>
                         <option value="Sedan" data-i18n="sedan">Sedan</option>
                         <option value="SUV" data-i18n="suv">SUV</option>
@@ -160,24 +187,58 @@
                         <option value="Sports" data-i18n="sports">Sports</option>
                         <option value="Supercar" data-i18n="supercar">Supercar</option>
                         <option value="New Arrival" data-i18n="new_arrival">New Arrival</option>
-                     </select>
+                    </select>
                 </div>
-            </div>
 
-            <!-- Brand Filters -->
-            <div class="mt-4 pt-4 border-t border-gray-200 dark:border-white/10 overflow-x-auto pb-2 hidden" id="brand-filters-wrapper">
-                <div class="flex gap-4 min-w-max" id="brand-filters-container">
-                    <!-- Brand logos injected by JS -->
+                <!-- Price Range Filter -->
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-gray-400" data-i18n="price_range">Price Range</h3>
+                        <span id="price-range-display" class="text-xs font-bold text-primary"></span>
+                    </div>
+                    <div class="px-2">
+                        <input type="range" id="price-slider" class="w-full h-2 bg-gray-200 dark:bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary">
+                        <div class="flex justify-between mt-2 text-[10px] font-bold text-gray-500 uppercase">
+                            <span id="price-min">0</span>
+                            <span id="price-max">10M</span>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Inventory Grid -->
-        <!-- Populated by loadInventory() in js/script.js -->
-        <div id="inventory-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            <!-- Dynamic Content -->
+                <!-- Color Filter -->
+                <div class="space-y-3">
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-gray-400" data-i18n="colors">Colors</h3>
+                    <div id="color-filters-container" class="flex flex-wrap gap-2">
+                        <!-- Colors injected by JS -->
+                    </div>
+                </div>
+
+                <!-- Brand Filter -->
+                <div class="space-y-3">
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-gray-400" data-i18n="brands">Brands</h3>
+                    <div id="brand-filters-container" class="grid grid-cols-3 gap-3">
+                        <!-- Brands injected by JS -->
+                    </div>
+                </div>
+            </aside>
         </div>
     </main>
+
+    <!-- Mobile Filter Overlay -->
+    <div id="mobile-filter-overlay" class="fixed inset-0 z-[60] hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="toggleMobileFilters()"></div>
+        <div class="absolute right-0 top-0 bottom-0 w-80 bg-background-light dark:bg-background-dark shadow-2xl p-6 overflow-y-auto translate-x-full transition-transform duration-300" id="mobile-filter-drawer">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-xl font-bold" data-i18n="filters">Filters</h2>
+                <button onclick="toggleMobileFilters()" class="text-gray-500 hover:text-primary transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div id="mobile-filter-content" class="space-y-8">
+                <!-- Sidebar content will be moved here on mobile -->
+            </div>
+        </div>
+    </div>
 
     <!-- Main Script -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
