@@ -71,7 +71,16 @@
     "opt_sales": "Sales Inquiry",
     "opt_support": "Contact Support",
     "select_color": "Select Color",
-    "color_not_available": "This color isn't available but can be ordered in request"
+    "color_not_available": "This color isn't available but can be ordered in request",
+    "condition": "Condition",
+    "all": "All",
+    "new": "New",
+    "used": "Used",
+    "price_range": "Price Range",
+    "colors": "Colors",
+    "brands": "Brands",
+    "filters": "Filters",
+    "search": "Search"
   },
   "ar": {
     "header_title": "اجانس اونلاين",
@@ -145,6 +154,15 @@
     "opt_sales": "استفسار عن المبيعات",
     "opt_support": "التواصل مع الدعم",
     "select_color": "اختر اللون",
-    "color_not_available": "هذا اللون غير متوفر ولكن يمكن طلبه عند الطلب"
+    "color_not_available": "هذا اللون غير متوفر ولكن يمكن طلبه عند الطلب",
+    "condition": "الحالة",
+    "all": "الكل",
+    "new": "جديد",
+    "used": "مستعمل",
+    "price_range": "نطاق السعر",
+    "colors": "الألوان",
+    "brands": "الماركات",
+    "filters": "الفلاتر",
+    "search": "بحث"
   }
 }

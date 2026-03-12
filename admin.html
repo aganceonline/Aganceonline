@@ -92,11 +92,20 @@
 
             <!-- Products View -->
             <div id="view-products" class="space-y-6">
-                <div class="flex justify-between items-center">
+                <div class="flex justify-between items-center flex-wrap gap-4">
                     <h2 class="text-2xl font-bold">Vehicle Inventory</h2>
-                    <button id="add-product-btn" class="bg-primary hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2">
-                        <span class="material-symbols-outlined text-[18px]">add</span> Add Vehicle
-                    </button>
+                    <div class="flex items-center gap-3">
+                        <div class="bg-gray-100 dark:bg-white/5 p-1 rounded-lg flex items-center">
+                            <button id="order-mode-inventory" class="px-3 py-1.5 text-xs font-bold rounded-md bg-primary text-white shadow-sm transition-all">Inventory Order</button>
+                            <button id="order-mode-home" class="px-3 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-all">Home Order</button>
+                        </div>
+                        <button id="save-order-btn" class="hidden bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all">
+                            <span class="material-symbols-outlined text-[18px]">save</span> Save Order
+                        </button>
+                        <button id="add-product-btn" class="bg-primary hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">add</span> Add Vehicle
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Product List -->
@@ -104,6 +113,7 @@
                     <table class="w-full text-left text-sm">
                         <thead class="bg-gray-50 dark:bg-white/5 text-gray-500 dark:text-gray-400 uppercase font-bold text-xs">
                             <tr>
+                                <th class="px-6 py-3 w-10"></th>
                                 <th class="px-6 py-3">Image</th>
                                 <th class="px-6 py-3">Name</th>
                                 <th class="px-6 py-3">Price (EGP)</th>
