@@ -833,7 +833,8 @@ async function loadDetails() {
         if (defaultColor) {
             colorNameDisplay.textContent = isAr ? defaultColor.name_ar : defaultColor.name;
             const galleryToUse = (defaultColor.gallery && defaultColor.gallery.length > 0) ? defaultColor.gallery : product.gallery;
-            updateVehicleGallery(galleryToUse, product.image_url);
+            const mainImgToUse = defaultColor.image_url || product.image_url;
+            updateVehicleGallery(galleryToUse, mainImgToUse);
         }
     } else {
         // Fallback to default gallery if no colors defined
@@ -938,8 +939,15 @@ window.selectVehicleColor = function(colorIndex, productId) {
         }
     });
 
-    const galleryToUse = (color.gallery && color.gallery.length > 0) ? color.gallery : product.gallery;
-    updateVehicleGallery(galleryToUse, (galleryToUse && galleryToUse.length > 0) ? galleryToUse[0] : product.image_url);
+    let galleryToUse = (color.gallery && color.gallery.length > 0) ? [...color.gallery] : [...product.gallery];
+    const mainImgToUse = color.image_url || product.image_url;
+
+    // Ensure the main image is in the gallery if we're falling back or if it's explicitly set
+    if (mainImgToUse && !galleryToUse.includes(mainImgToUse)) {
+        galleryToUse = [mainImgToUse, ...galleryToUse];
+    }
+
+    updateVehicleGallery(galleryToUse, mainImgToUse);
 }
 
 /**
