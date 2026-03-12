@@ -9,7 +9,7 @@
  */
 
 // --- Constants & Global Variables ---
-let egpToUsdRate = 0.02; // Default fallback exchange rate
+let usdToEgpRate = 50.0; // Default fallback exchange rate (1 USD = 50 EGP)
 let currentLang = localStorage.getItem('lang') || 'en';
 let currentTheme = localStorage.getItem('theme') || 'dark';
 let currentCurrency = localStorage.getItem('currency') || 'EGP';
@@ -316,14 +316,14 @@ function formatPrice(egp) {
         const symbol = (translations[currentLang] && translations[currentLang].price_egp) || 'L.E';
         return `${egp.toLocaleString()} ${symbol}`;
     } else {
-        const usd = egp * egpToUsdRate;
+        const usd = egp / usdToEgpRate;
         const symbol = (translations[currentLang] && translations[currentLang].price_usd) || 'USD';
-        return currentLang === 'en' && symbol === 'USD' ? `$${usd.toLocaleString()}` : `${usd.toLocaleString()} ${symbol}`;
+        return currentLang === 'en' && symbol === 'USD' ? `$${Math.round(usd).toLocaleString()}` : `${Math.round(usd).toLocaleString()} ${symbol}`;
     }
 }
 
 /**
- * Fetches the current EGP to USD exchange rate from Supabase.
+ * Fetches the current exchange rate from Supabase.
  * Falls back to default if fetching fails.
  */
 async function fetchExchangeRate() {
@@ -336,7 +336,7 @@ async function fetchExchangeRate() {
 
         if (error) throw error;
         if (data && data.value) {
-            egpToUsdRate = parseFloat(data.value);
+            usdToEgpRate = parseFloat(data.value);
         }
     } catch (error) {
         console.error('Failed to fetch exchange rate, using fallback:', error);

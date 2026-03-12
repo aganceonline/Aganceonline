@@ -1135,7 +1135,7 @@ async function loadSettings() {
     if (error) {
         console.error(error);
         showToast('Failed to load settings', 'error');
-        if(egpInput) egpInput.value = '0.02'; // Default
+        if(egpInput) egpInput.value = '50.0'; // Default
     } else {
         const settings = {};
         data.forEach(item => settings[item.key] = item.value);
