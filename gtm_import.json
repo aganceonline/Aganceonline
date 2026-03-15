@@ -1,0 +1,223 @@
+{
+  "exportFormatVersion": 2,
+  "exportTime": "2024-05-20 14:00:00",
+  "containerVersion": {
+    "name": "AganceOnline Tracking Setup",
+    "container": {
+      "name": "AganceOnline",
+      "publicId": "GTM-TRHFFRVS",
+      "usageContext": ["WEB"]
+    },
+    "variable": [
+      {
+        "name": "dlv - ecommerce.items",
+        "type": "v",
+        "parameter": [
+          { "type": "INTEGER", "key": "dataLayerVersion", "value": "2" },
+          { "type": "BOOLEAN", "key": "setDefaultValue", "value": "false" },
+          { "type": "TEMPLATE", "key": "name", "value": "ecommerce.items" }
+        ]
+      },
+      {
+        "name": "dlv - ecommerce.value",
+        "type": "v",
+        "parameter": [
+          { "type": "INTEGER", "key": "dataLayerVersion", "value": "2" },
+          { "type": "BOOLEAN", "key": "setDefaultValue", "value": "false" },
+          { "type": "TEMPLATE", "key": "name", "value": "ecommerce.value" }
+        ]
+      },
+      {
+        "name": "dlv - ecommerce.currency",
+        "type": "v",
+        "parameter": [
+          { "type": "INTEGER", "key": "dataLayerVersion", "value": "2" },
+          { "type": "BOOLEAN", "key": "setDefaultValue", "value": "false" },
+          { "type": "TEMPLATE", "key": "name", "value": "ecommerce.currency" }
+        ]
+      },
+      {
+        "name": "dlv - lead_type",
+        "type": "v",
+        "parameter": [
+          { "type": "INTEGER", "key": "dataLayerVersion", "value": "2" },
+          { "type": "BOOLEAN", "key": "setDefaultValue", "value": "false" },
+          { "type": "TEMPLATE", "key": "name", "value": "lead_type" }
+        ]
+      },
+      {
+        "name": "dlv - vehicle_name",
+        "type": "v",
+        "parameter": [
+          { "type": "INTEGER", "key": "dataLayerVersion", "value": "2" },
+          { "type": "BOOLEAN", "key": "setDefaultValue", "value": "false" },
+          { "type": "TEMPLATE", "key": "name", "value": "vehicle_name" }
+        ]
+      },
+      {
+        "name": "dlv - contact_type",
+        "type": "v",
+        "parameter": [
+          { "type": "INTEGER", "key": "dataLayerVersion", "value": "2" },
+          { "type": "BOOLEAN", "key": "setDefaultValue", "value": "false" },
+          { "type": "TEMPLATE", "key": "name", "value": "contact_type" }
+        ]
+      },
+      {
+        "name": "dlv - filter_category",
+        "type": "v",
+        "parameter": [
+          { "type": "INTEGER", "key": "dataLayerVersion", "value": "2" },
+          { "type": "BOOLEAN", "key": "setDefaultValue", "value": "false" },
+          { "type": "TEMPLATE", "key": "name", "value": "filter_category" }
+        ]
+      },
+      {
+        "name": "dlv - results_count",
+        "type": "v",
+        "parameter": [
+          { "type": "INTEGER", "key": "dataLayerVersion", "value": "2" },
+          { "type": "BOOLEAN", "key": "setDefaultValue", "value": "false" },
+          { "type": "TEMPLATE", "key": "name", "value": "results_count" }
+        ]
+      }
+    ],
+    "trigger": [
+      {
+        "triggerId": "1",
+        "name": "Custom Event - view_item",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [{
+          "type": "EQUALS",
+          "parameter": [
+            { "type": "TEMPLATE", "key": "arg0", "value": "{{_event}}" },
+            { "type": "TEMPLATE", "key": "arg1", "value": "view_item" }
+          ]
+        }]
+      },
+      {
+        "triggerId": "2",
+        "name": "Custom Event - generate_lead",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [{
+          "type": "EQUALS",
+          "parameter": [
+            { "type": "TEMPLATE", "key": "arg0", "value": "{{_event}}" },
+            { "type": "TEMPLATE", "key": "arg1", "value": "generate_lead" }
+          ]
+        }]
+      },
+      {
+        "triggerId": "3",
+        "name": "Custom Event - add_to_wishlist",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [{
+          "type": "EQUALS",
+          "parameter": [
+            { "type": "TEMPLATE", "key": "arg0", "value": "{{_event}}" },
+            { "type": "TEMPLATE", "key": "arg1", "value": "add_to_wishlist" }
+          ]
+        }]
+      },
+      {
+        "triggerId": "4",
+        "name": "Custom Event - contact_click",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [{
+          "type": "EQUALS",
+          "parameter": [
+            { "type": "TEMPLATE", "key": "arg0", "value": "{{_event}}" },
+            { "type": "TEMPLATE", "key": "arg1", "value": "contact_click" }
+          ]
+        }]
+      },
+      {
+        "triggerId": "5",
+        "name": "Custom Event - filter_inventory",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [{
+          "type": "EQUALS",
+          "parameter": [
+            { "type": "TEMPLATE", "key": "arg0", "value": "{{_event}}" },
+            { "type": "TEMPLATE", "key": "arg1", "value": "filter_inventory" }
+          ]
+        }]
+      }
+    ],
+    "tag": [
+      {
+        "name": "GA4 Event - view_item",
+        "type": "ga4e",
+        "parameter": [
+          { "type": "TEMPLATE", "key": "eventName", "value": "view_item" },
+          { "type": "BOOLEAN", "key": "sendEcommerceData", "value": "true" },
+          { "type": "TEMPLATE", "key": "measurementId", "value": "G-XXXXXXXXXX" }
+        ],
+        "firingTriggerId": ["1"]
+      },
+      {
+        "name": "GA4 Event - generate_lead",
+        "type": "ga4e",
+        "parameter": [
+          { "type": "TEMPLATE", "key": "eventName", "value": "generate_lead" },
+          { "type": "LIST", "key": "eventParameters", "value": [
+            { "type": "MAP", "map": [
+              { "type": "TEMPLATE", "key": "name", "value": "lead_type" },
+              { "type": "TEMPLATE", "key": "value", "value": "{{dlv - lead_type}}" }
+            ]},
+            { "type": "MAP", "map": [
+              { "type": "TEMPLATE", "key": "name", "value": "vehicle_name" },
+              { "type": "TEMPLATE", "key": "value", "value": "{{dlv - vehicle_name}}" }
+            ]}
+          ]},
+          { "type": "TEMPLATE", "key": "measurementId", "value": "G-XXXXXXXXXX" }
+        ],
+        "firingTriggerId": ["2"]
+      },
+      {
+        "name": "GA4 Event - add_to_wishlist",
+        "type": "ga4e",
+        "parameter": [
+          { "type": "TEMPLATE", "key": "eventName", "value": "add_to_wishlist" },
+          { "type": "BOOLEAN", "key": "sendEcommerceData", "value": "true" },
+          { "type": "TEMPLATE", "key": "measurementId", "value": "G-XXXXXXXXXX" }
+        ],
+        "firingTriggerId": ["3"]
+      },
+      {
+        "name": "GA4 Event - contact_click",
+        "type": "ga4e",
+        "parameter": [
+          { "type": "TEMPLATE", "key": "eventName", "value": "contact_click" },
+          { "type": "LIST", "key": "eventParameters", "value": [
+            { "type": "MAP", "map": [
+              { "type": "TEMPLATE", "key": "name", "value": "contact_type" },
+              { "type": "TEMPLATE", "key": "value", "value": "{{dlv - contact_type}}" }
+            ]}
+          ]},
+          { "type": "TEMPLATE", "key": "measurementId", "value": "G-XXXXXXXXXX" }
+        ],
+        "firingTriggerId": ["4"]
+      },
+      {
+        "name": "GA4 Event - filter_inventory",
+        "type": "ga4e",
+        "parameter": [
+          { "type": "TEMPLATE", "key": "eventName", "value": "filter_inventory" },
+          { "type": "LIST", "key": "eventParameters", "value": [
+            { "type": "MAP", "map": [
+              { "type": "TEMPLATE", "key": "name", "value": "filter_category" },
+              { "type": "TEMPLATE", "key": "value", "value": "{{dlv - filter_category}}" }
+            ]},
+            { "type": "MAP", "map": [
+              { "type": "TEMPLATE", "key": "name", "value": "results_count" },
+              { "type": "TEMPLATE", "key": "value", "value": "{{dlv - results_count}}" }
+            ]}
+          ]},
+          { "type": "TEMPLATE", "key": "measurementId", "value": "G-XXXXXXXXXX" }
+        ],
+        "firingTriggerId": ["5"]
+      }
+    ]
+  }
+}
