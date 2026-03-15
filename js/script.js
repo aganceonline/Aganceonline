@@ -1024,10 +1024,12 @@ async function loadDetails() {
     const displayMileage = (isAr && product.details_ar?.mileage) ? product.details_ar.mileage : product.details.mileage;
     const displayTrans = (isAr && product.details_ar?.transmission) ? product.details_ar.transmission : product.details.transmission;
     const displayFuel = (isAr && product.details_ar?.fuel) ? product.details_ar.fuel : product.details.fuel;
+    const displayVersion = (isAr && product.details_ar?.version) ? product.details_ar.version : product.details.version;
 
-    document.getElementById('spec-mileage').textContent = displayMileage;
-    document.getElementById('spec-trans').textContent = displayTrans;
-    document.getElementById('spec-fuel').textContent = displayFuel;
+    document.getElementById('spec-mileage').textContent = displayMileage || '-';
+    document.getElementById('spec-trans').textContent = displayTrans || '-';
+    document.getElementById('spec-fuel').textContent = displayFuel || '-';
+    document.getElementById('spec-version').textContent = displayVersion || '-';
 
     // Diagnostics PDF Button
     const btnDiagnostics = document.getElementById('btn-diagnostics');
@@ -1421,6 +1423,7 @@ function createProductCard(product) {
     const displayMileage = (isAr && product.details_ar?.mileage) ? product.details_ar.mileage : product.details.mileage;
     const displayTrans = (isAr && product.details_ar?.transmission) ? product.details_ar.transmission : product.details.transmission;
     const displayFuel = (isAr && product.details_ar?.fuel) ? product.details_ar.fuel : product.details.fuel;
+    const displayVersion = (isAr && product.details_ar?.version) ? product.details_ar.version : product.details.version;
 
     // Use custom translation rendering for category if present in DB
     const categoryBadge = (isAr && product.category_ar)
@@ -1451,12 +1454,16 @@ function createProductCard(product) {
             <div class="flex justify-between items-start mb-2">
                 <a href="details.html?id=${product.id}" class="text-lg font-bold text-slate-900 dark:text-white leading-tight group-hover:text-primary transition-colors">${escapeHtml(displayName)}</a>
             </div>
-            <div class="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 mb-4 font-medium">
+            <div class="flex flex-wrap items-center gap-3 text-xs text-gray-500 dark:text-gray-400 mb-4 font-medium">
                 <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">speed</span> ${escapeHtml(displayMileage)}</span>
                 <span class="w-1 h-1 rounded-full bg-gray-300 dark:bg-white/20"></span>
                 <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">settings</span> ${escapeHtml(displayTrans)}</span>
                 <span class="w-1 h-1 rounded-full bg-gray-300 dark:bg-white/20"></span>
                 <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">local_gas_station</span> ${escapeHtml(displayFuel)}</span>
+                ${displayVersion ? `
+                <span class="w-1 h-1 rounded-full bg-gray-300 dark:bg-white/20"></span>
+                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">new_releases</span> ${escapeHtml(displayVersion)}</span>
+                ` : ''}
             </div>
             <div class="mt-auto flex items-center justify-between pt-4 border-t border-gray-200 dark:border-white/10">
                 <p class="text-xl font-black text-primary tracking-tight" data-price-egp="${product.price_egp || ''}">${product.price_egp ? product.price_egp.toLocaleString() + ' L.E' : ''}</p>
