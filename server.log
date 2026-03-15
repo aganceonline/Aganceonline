@@ -1,10 +1,19 @@
-127.0.0.1 - - [12/Mar/2026 14:06:49] "GET /inventory.html HTTP/1.1" 200 -
-127.0.0.1 - - [12/Mar/2026 14:06:49] "GET /css/style.css HTTP/1.1" 200 -
-127.0.0.1 - - [12/Mar/2026 14:06:49] "GET /assets/images/logo.jpeg HTTP/1.1" 200 -
-127.0.0.1 - - [12/Mar/2026 14:06:49] "GET /js/supabase-config.js HTTP/1.1" 200 -
-127.0.0.1 - - [12/Mar/2026 14:06:49] "GET /js/script.js HTTP/1.1" 200 -
-127.0.0.1 - - [12/Mar/2026 14:06:51] "GET /data/translations.json HTTP/1.1" 200 -
-127.0.0.1 - - [12/Mar/2026 14:06:54] "GET /admin.html HTTP/1.1" 200 -
-127.0.0.1 - - [12/Mar/2026 14:06:54] "GET /assets/images/logo.jpeg HTTP/1.1" 200 -
-127.0.0.1 - - [12/Mar/2026 14:06:54] "GET /js/supabase-config.js HTTP/1.1" 200 -
-127.0.0.1 - - [12/Mar/2026 14:06:54] "GET /js/admin.js HTTP/1.1" 200 -
+127.0.0.1 - - [15/Mar/2026 11:58:52] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [15/Mar/2026 11:58:52] code 404, message File not found
+127.0.0.1 - - [15/Mar/2026 11:58:52] "GET /assets/images/hero-bg.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [15/Mar/2026 11:58:52] "GET /css/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [15/Mar/2026 11:58:52] "GET /assets/images/logo.jpeg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Mar/2026 11:58:53] "GET /js/supabase-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [15/Mar/2026 11:58:53] "GET /js/script.js HTTP/1.1" 200 -
+127.0.0.1 - - [15/Mar/2026 11:58:55] "GET /inventory.html HTTP/1.1" 200 -
+127.0.0.1 - - [15/Mar/2026 11:58:55] "GET /contact.html HTTP/1.1" 200 -
+127.0.0.1 - - [15/Mar/2026 12:00:11] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [15/Mar/2026 12:00:11] code 404, message File not found
+127.0.0.1 - - [15/Mar/2026 12:00:11] "GET /assets/images/hero-bg.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [15/Mar/2026 12:00:11] "GET /css/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [15/Mar/2026 12:00:11] "GET /assets/images/logo.jpeg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Mar/2026 12:00:11] "GET /js/supabase-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [15/Mar/2026 12:00:11] "GET /js/script.js HTTP/1.1" 200 -
+127.0.0.1 - - [15/Mar/2026 12:00:12] "GET /inventory.html HTTP/1.1" 200 -
+127.0.0.1 - - [15/Mar/2026 12:00:13] "GET /contact.html HTTP/1.1" 200 -
+127.0.0.1 - - [15/Mar/2026 12:00:13] "GET /js/script.js HTTP/1.1" 304 -
