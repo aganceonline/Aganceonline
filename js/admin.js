@@ -665,6 +665,7 @@ function openModal(product = null) {
             document.getElementById('p-mileage').value = product.details.mileage || '';
             document.getElementById('p-trans').value = product.details.transmission || '';
             document.getElementById('p-fuel').value = product.details.fuel || '';
+            document.getElementById('p-version').value = product.details.version || '';
             document.getElementById('p-upon-request').checked = product.details.upon_request || false;
 
             const diagCurrent = document.getElementById('p-diagnostics-current');
@@ -870,6 +871,7 @@ async function handleSaveProduct(e) {
             mileage: document.getElementById('p-mileage').value,
             transmission: document.getElementById('p-trans').value,
             fuel: document.getElementById('p-fuel').value,
+            version: document.getElementById('p-version').value,
             upon_request: uponRequest
         };
 
@@ -923,7 +925,7 @@ async function handleSaveProduct(e) {
         // Auto-translate to Arabic
         btn.textContent = 'Translating...';
 
-        let nameAr = '', descAr = '', categoryAr = '', mileageAr = '', transAr = '', fuelAr = '';
+        let nameAr = '', descAr = '', categoryAr = '', mileageAr = '', transAr = '', fuelAr = '', versionAr = '';
 
         try {
             // Batch translation for efficiency
@@ -934,7 +936,8 @@ async function handleSaveProduct(e) {
                 category || '',
                 details.mileage || '',
                 details.transmission || '',
-                details.fuel || ''
+                details.fuel || '',
+                details.version || ''
             ];
 
             console.log('Sending text to translate:', textsToTranslate);
@@ -973,7 +976,7 @@ async function handleSaveProduct(e) {
                     console.error('Translation returned error payload:', data.error);
                     showToast(`Translation Warning: ${data.error}`, 'warning');
                 } else if (data && data.translatedText && Array.isArray(data.translatedText)) {
-                     [nameAr, descAr, categoryAr, mileageAr, transAr, fuelAr] = data.translatedText;
+                     [nameAr, descAr, categoryAr, mileageAr, transAr, fuelAr, versionAr] = data.translatedText;
                 } else {
                     console.warn('Unexpected translation response format:', data);
                 }
@@ -1006,7 +1009,8 @@ async function handleSaveProduct(e) {
             details_ar: {
                 mileage: mileageAr,
                 transmission: transAr,
-                fuel: fuelAr
+                fuel: fuelAr,
+                version: versionAr
             }
         };
 
