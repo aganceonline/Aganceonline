@@ -156,7 +156,7 @@
       {
         "tagId": "1",
         "name": "GA4 Event - view_item",
-        "type": "ga4e",
+        "type": "gaawe",
         "parameter": [
           { "type": "TEMPLATE", "key": "eventName", "value": "view_item" },
           { "type": "BOOLEAN", "key": "sendEcommerceData", "value": "true" },
@@ -167,7 +167,7 @@
       {
         "tagId": "2",
         "name": "GA4 Event - generate_lead",
-        "type": "ga4e",
+        "type": "gaawe",
         "parameter": [
           { "type": "TEMPLATE", "key": "eventName", "value": "generate_lead" },
           { "type": "LIST", "key": "eventParameters", "list": [
@@ -187,7 +187,7 @@
       {
         "tagId": "3",
         "name": "GA4 Event - add_to_wishlist",
-        "type": "ga4e",
+        "type": "gaawe",
         "parameter": [
           { "type": "TEMPLATE", "key": "eventName", "value": "add_to_wishlist" },
           { "type": "BOOLEAN", "key": "sendEcommerceData", "value": "true" },
@@ -198,7 +198,7 @@
       {
         "tagId": "4",
         "name": "GA4 Event - contact_click",
-        "type": "ga4e",
+        "type": "gaawe",
         "parameter": [
           { "type": "TEMPLATE", "key": "eventName", "value": "contact_click" },
           { "type": "LIST", "key": "eventParameters", "list": [
@@ -214,7 +214,7 @@
       {
         "tagId": "5",
         "name": "GA4 Event - filter_inventory",
-        "type": "ga4e",
+        "type": "gaawe",
         "parameter": [
           { "type": "TEMPLATE", "key": "eventName", "value": "filter_inventory" },
           { "type": "LIST", "key": "eventParameters", "list": [
