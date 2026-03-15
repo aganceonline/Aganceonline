@@ -10,6 +10,7 @@
     },
     "variable": [
       {
+        "variableId": "1",
         "name": "dlv - ecommerce.items",
         "type": "v",
         "parameter": [
@@ -19,6 +20,7 @@
         ]
       },
       {
+        "variableId": "2",
         "name": "dlv - ecommerce.value",
         "type": "v",
         "parameter": [
@@ -28,6 +30,7 @@
         ]
       },
       {
+        "variableId": "3",
         "name": "dlv - ecommerce.currency",
         "type": "v",
         "parameter": [
@@ -37,6 +40,7 @@
         ]
       },
       {
+        "variableId": "4",
         "name": "dlv - lead_type",
         "type": "v",
         "parameter": [
@@ -46,6 +50,7 @@
         ]
       },
       {
+        "variableId": "5",
         "name": "dlv - vehicle_name",
         "type": "v",
         "parameter": [
@@ -55,6 +60,7 @@
         ]
       },
       {
+        "variableId": "6",
         "name": "dlv - contact_type",
         "type": "v",
         "parameter": [
@@ -64,6 +70,7 @@
         ]
       },
       {
+        "variableId": "7",
         "name": "dlv - filter_category",
         "type": "v",
         "parameter": [
@@ -73,6 +80,7 @@
         ]
       },
       {
+        "variableId": "8",
         "name": "dlv - results_count",
         "type": "v",
         "parameter": [
@@ -146,6 +154,7 @@
     ],
     "tag": [
       {
+        "tagId": "1",
         "name": "GA4 Event - view_item",
         "type": "ga4e",
         "parameter": [
@@ -156,11 +165,12 @@
         "firingTriggerId": ["1"]
       },
       {
+        "tagId": "2",
         "name": "GA4 Event - generate_lead",
         "type": "ga4e",
         "parameter": [
           { "type": "TEMPLATE", "key": "eventName", "value": "generate_lead" },
-          { "type": "LIST", "key": "eventParameters", "value": [
+          { "type": "LIST", "key": "eventParameters", "list": [
             { "type": "MAP", "map": [
               { "type": "TEMPLATE", "key": "name", "value": "lead_type" },
               { "type": "TEMPLATE", "key": "value", "value": "{{dlv - lead_type}}" }
@@ -175,6 +185,7 @@
         "firingTriggerId": ["2"]
       },
       {
+        "tagId": "3",
         "name": "GA4 Event - add_to_wishlist",
         "type": "ga4e",
         "parameter": [
@@ -185,11 +196,12 @@
         "firingTriggerId": ["3"]
       },
       {
+        "tagId": "4",
         "name": "GA4 Event - contact_click",
         "type": "ga4e",
         "parameter": [
           { "type": "TEMPLATE", "key": "eventName", "value": "contact_click" },
-          { "type": "LIST", "key": "eventParameters", "value": [
+          { "type": "LIST", "key": "eventParameters", "list": [
             { "type": "MAP", "map": [
               { "type": "TEMPLATE", "key": "name", "value": "contact_type" },
               { "type": "TEMPLATE", "key": "value", "value": "{{dlv - contact_type}}" }
@@ -200,11 +212,12 @@
         "firingTriggerId": ["4"]
       },
       {
+        "tagId": "5",
         "name": "GA4 Event - filter_inventory",
         "type": "ga4e",
         "parameter": [
           { "type": "TEMPLATE", "key": "eventName", "value": "filter_inventory" },
-          { "type": "LIST", "key": "eventParameters", "value": [
+          { "type": "LIST", "key": "eventParameters", "list": [
             { "type": "MAP", "map": [
               { "type": "TEMPLATE", "key": "name", "value": "filter_category" },
               { "type": "TEMPLATE", "key": "value", "value": "{{dlv - filter_category}}" }
