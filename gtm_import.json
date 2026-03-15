@@ -172,11 +172,11 @@
           { "type": "TEMPLATE", "key": "eventName", "value": "generate_lead" },
           { "type": "LIST", "key": "eventSettingsTable", "list": [
             { "type": "MAP", "map": [
-              { "type": "TEMPLATE", "key": "parameterName", "value": "lead_type" },
+              { "type": "TEMPLATE", "key": "parameter", "value": "lead_type" },
               { "type": "TEMPLATE", "key": "parameterValue", "value": "{{dlv - lead_type}}" }
             ]},
             { "type": "MAP", "map": [
-              { "type": "TEMPLATE", "key": "parameterName", "value": "vehicle_name" },
+              { "type": "TEMPLATE", "key": "parameter", "value": "vehicle_name" },
               { "type": "TEMPLATE", "key": "parameterValue", "value": "{{dlv - vehicle_name}}" }
             ]}
           ]},
@@ -203,7 +203,7 @@
           { "type": "TEMPLATE", "key": "eventName", "value": "contact_click" },
           { "type": "LIST", "key": "eventSettingsTable", "list": [
             { "type": "MAP", "map": [
-              { "type": "TEMPLATE", "key": "parameterName", "value": "contact_type" },
+              { "type": "TEMPLATE", "key": "parameter", "value": "contact_type" },
               { "type": "TEMPLATE", "key": "parameterValue", "value": "{{dlv - contact_type}}" }
             ]}
           ]},
@@ -219,11 +219,11 @@
           { "type": "TEMPLATE", "key": "eventName", "value": "filter_inventory" },
           { "type": "LIST", "key": "eventSettingsTable", "list": [
             { "type": "MAP", "map": [
-              { "type": "TEMPLATE", "key": "parameterName", "value": "filter_category" },
+              { "type": "TEMPLATE", "key": "parameter", "value": "filter_category" },
               { "type": "TEMPLATE", "key": "parameterValue", "value": "{{dlv - filter_category}}" }
             ]},
             { "type": "MAP", "map": [
-              { "type": "TEMPLATE", "key": "parameterName", "value": "results_count" },
+              { "type": "TEMPLATE", "key": "parameter", "value": "results_count" },
               { "type": "TEMPLATE", "key": "parameterValue", "value": "{{dlv - results_count}}" }
             ]}
           ]},
