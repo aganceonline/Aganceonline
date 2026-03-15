@@ -160,7 +160,7 @@
         "parameter": [
           { "type": "TEMPLATE", "key": "eventName", "value": "view_item" },
           { "type": "BOOLEAN", "key": "sendEcommerceData", "value": "true" },
-          { "type": "TEMPLATE", "key": "measurementId", "value": "G-XXXXXXXXXX" }
+          { "type": "TEMPLATE", "key": "measurementIdOverride", "value": "G-XXXXXXXXXX" }
         ],
         "firingTriggerId": ["1"]
       },
@@ -170,17 +170,17 @@
         "type": "gaawe",
         "parameter": [
           { "type": "TEMPLATE", "key": "eventName", "value": "generate_lead" },
-          { "type": "LIST", "key": "eventParameters", "list": [
+          { "type": "LIST", "key": "eventSettingsTable", "list": [
             { "type": "MAP", "map": [
-              { "type": "TEMPLATE", "key": "name", "value": "lead_type" },
-              { "type": "TEMPLATE", "key": "value", "value": "{{dlv - lead_type}}" }
+              { "type": "TEMPLATE", "key": "parameterName", "value": "lead_type" },
+              { "type": "TEMPLATE", "key": "parameterValue", "value": "{{dlv - lead_type}}" }
             ]},
             { "type": "MAP", "map": [
-              { "type": "TEMPLATE", "key": "name", "value": "vehicle_name" },
-              { "type": "TEMPLATE", "key": "value", "value": "{{dlv - vehicle_name}}" }
+              { "type": "TEMPLATE", "key": "parameterName", "value": "vehicle_name" },
+              { "type": "TEMPLATE", "key": "parameterValue", "value": "{{dlv - vehicle_name}}" }
             ]}
           ]},
-          { "type": "TEMPLATE", "key": "measurementId", "value": "G-XXXXXXXXXX" }
+          { "type": "TEMPLATE", "key": "measurementIdOverride", "value": "G-XXXXXXXXXX" }
         ],
         "firingTriggerId": ["2"]
       },
@@ -191,7 +191,7 @@
         "parameter": [
           { "type": "TEMPLATE", "key": "eventName", "value": "add_to_wishlist" },
           { "type": "BOOLEAN", "key": "sendEcommerceData", "value": "true" },
-          { "type": "TEMPLATE", "key": "measurementId", "value": "G-XXXXXXXXXX" }
+          { "type": "TEMPLATE", "key": "measurementIdOverride", "value": "G-XXXXXXXXXX" }
         ],
         "firingTriggerId": ["3"]
       },
@@ -201,13 +201,13 @@
         "type": "gaawe",
         "parameter": [
           { "type": "TEMPLATE", "key": "eventName", "value": "contact_click" },
-          { "type": "LIST", "key": "eventParameters", "list": [
+          { "type": "LIST", "key": "eventSettingsTable", "list": [
             { "type": "MAP", "map": [
-              { "type": "TEMPLATE", "key": "name", "value": "contact_type" },
-              { "type": "TEMPLATE", "key": "value", "value": "{{dlv - contact_type}}" }
+              { "type": "TEMPLATE", "key": "parameterName", "value": "contact_type" },
+              { "type": "TEMPLATE", "key": "parameterValue", "value": "{{dlv - contact_type}}" }
             ]}
           ]},
-          { "type": "TEMPLATE", "key": "measurementId", "value": "G-XXXXXXXXXX" }
+          { "type": "TEMPLATE", "key": "measurementIdOverride", "value": "G-XXXXXXXXXX" }
         ],
         "firingTriggerId": ["4"]
       },
@@ -217,17 +217,17 @@
         "type": "gaawe",
         "parameter": [
           { "type": "TEMPLATE", "key": "eventName", "value": "filter_inventory" },
-          { "type": "LIST", "key": "eventParameters", "list": [
+          { "type": "LIST", "key": "eventSettingsTable", "list": [
             { "type": "MAP", "map": [
-              { "type": "TEMPLATE", "key": "name", "value": "filter_category" },
-              { "type": "TEMPLATE", "key": "value", "value": "{{dlv - filter_category}}" }
+              { "type": "TEMPLATE", "key": "parameterName", "value": "filter_category" },
+              { "type": "TEMPLATE", "key": "parameterValue", "value": "{{dlv - filter_category}}" }
             ]},
             { "type": "MAP", "map": [
-              { "type": "TEMPLATE", "key": "name", "value": "results_count" },
-              { "type": "TEMPLATE", "key": "value", "value": "{{dlv - results_count}}" }
+              { "type": "TEMPLATE", "key": "parameterName", "value": "results_count" },
+              { "type": "TEMPLATE", "key": "parameterValue", "value": "{{dlv - results_count}}" }
             ]}
           ]},
-          { "type": "TEMPLATE", "key": "measurementId", "value": "G-XXXXXXXXXX" }
+          { "type": "TEMPLATE", "key": "measurementIdOverride", "value": "G-XXXXXXXXXX" }
         ],
         "firingTriggerId": ["5"]
       }
