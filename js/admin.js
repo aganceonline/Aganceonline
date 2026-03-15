@@ -643,9 +643,16 @@ function renderColors() {
 }
 
 function openModal(product = null) {
-    productModal.classList.remove('hidden');
     const title = document.getElementById('modal-title');
     const form = document.getElementById('product-form');
+
+    // Always reset form and state first to prevent cross-contamination between products
+    form.reset();
+    editingId = null;
+    currentGallery = [];
+    currentColors = [];
+    document.getElementById('p-brand-id').value = '';
+    document.getElementById('p-diagnostics-current').classList.add('hidden');
 
     // Initialize Brand Selector
     renderBrandSelector(product ? product.brand_id : null);
@@ -675,34 +682,23 @@ function openModal(product = null) {
             } else {
                 diagCurrent.classList.add('hidden');
             }
-        } else {
-            document.getElementById('p-upon-request').checked = false;
-            document.getElementById('p-diagnostics-current').classList.add('hidden');
         }
 
-        // Handle Gallery
-        currentGallery = product.gallery || [];
-        renderGallery();
+        // Handle Gallery - Use a copy to avoid mutating the original product object
+        currentGallery = product.gallery ? [...product.gallery] : [];
 
-        // Handle Colors
+        // Handle Colors - Use a copy and assign temp IDs for UI management
         currentColors = (product.colors || []).map((c, idx) => ({ ...c, id: Date.now() + idx }));
-        renderColors();
 
     } else {
         editingId = null;
         title.textContent = 'Add New Vehicle';
-        form.reset();
-        currentGallery = [];
-        renderGallery();
-
-        currentColors = [];
-        renderColors();
-
-        document.getElementById('p-brand-id').value = ''; // Ensure brand is empty for new
-        document.getElementById('p-diagnostics-current').classList.add('hidden');
     }
 
-    document.getElementById('p-gallery-upload').value = '';
+    // Refresh UI
+    renderGallery();
+    renderColors();
+    productModal.classList.remove('hidden');
 }
 
 function renderBrandSelector(selectedBrandId) {
@@ -747,6 +743,12 @@ window.selectBrand = function(id, btn) {
 
 function closeModal() {
     productModal.classList.add('hidden');
+    // Clear state on close to be extra safe
+    const form = document.getElementById('product-form');
+    if (form) form.reset();
+    editingId = null;
+    currentGallery = [];
+    currentColors = [];
 }
 
 function renderGallery() {
