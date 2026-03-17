@@ -88,6 +88,74 @@
           { "type": "BOOLEAN", "key": "setDefaultValue", "value": "false" },
           { "type": "TEMPLATE", "key": "name", "value": "results_count" }
         ]
+      },
+      {
+        "variableId": "10",
+        "name": "dlv - filter_term",
+        "type": "v",
+        "parameter": [
+          { "type": "INTEGER", "key": "dataLayerVersion", "value": "2" },
+          { "type": "BOOLEAN", "key": "setDefaultValue", "value": "false" },
+          { "type": "TEMPLATE", "key": "name", "value": "filter_term" }
+        ]
+      },
+      {
+        "variableId": "11",
+        "name": "dlv - filter_condition",
+        "type": "v",
+        "parameter": [
+          { "type": "INTEGER", "key": "dataLayerVersion", "value": "2" },
+          { "type": "BOOLEAN", "key": "setDefaultValue", "value": "false" },
+          { "type": "TEMPLATE", "key": "name", "value": "filter_condition" }
+        ]
+      },
+      {
+        "variableId": "12",
+        "name": "dlv - contact_value",
+        "type": "v",
+        "parameter": [
+          { "type": "INTEGER", "key": "dataLayerVersion", "value": "2" },
+          { "type": "BOOLEAN", "key": "setDefaultValue", "value": "false" },
+          { "type": "TEMPLATE", "key": "name", "value": "contact_value" }
+        ]
+      },
+      {
+        "variableId": "13",
+        "name": "dlv - filter_brands",
+        "type": "v",
+        "parameter": [
+          { "type": "INTEGER", "key": "dataLayerVersion", "value": "2" },
+          { "type": "BOOLEAN", "key": "setDefaultValue", "value": "false" },
+          { "type": "TEMPLATE", "key": "name", "value": "filter_brands" }
+        ]
+      },
+      {
+        "variableId": "14",
+        "name": "dlv - filter_colors",
+        "type": "v",
+        "parameter": [
+          { "type": "INTEGER", "key": "dataLayerVersion", "value": "2" },
+          { "type": "BOOLEAN", "key": "setDefaultValue", "value": "false" },
+          { "type": "TEMPLATE", "key": "name", "value": "filter_colors" }
+        ]
+      },
+      {
+        "variableId": "15",
+        "name": "dlv - interest",
+        "type": "v",
+        "parameter": [
+          { "type": "INTEGER", "key": "dataLayerVersion", "value": "2" },
+          { "type": "BOOLEAN", "key": "setDefaultValue", "value": "false" },
+          { "type": "TEMPLATE", "key": "name", "value": "interest" }
+        ]
+      },
+      {
+        "variableId": "9",
+        "name": "GA4 Measurement ID",
+        "type": "c",
+        "parameter": [
+          { "type": "TEMPLATE", "key": "value", "value": "G-XXXXXXXXXX" }
+        ]
       }
     ],
     "trigger": [
@@ -150,9 +218,24 @@
             { "type": "TEMPLATE", "key": "arg1", "value": "filter_inventory" }
           ]
         }]
+      },
+      {
+        "triggerId": "6",
+        "name": "All Pages",
+        "type": "PAGEVIEW"
       }
     ],
     "tag": [
+      {
+        "tagId": "6",
+        "name": "GA4 Configuration",
+        "type": "gaawc",
+        "parameter": [
+          { "type": "TEMPLATE", "key": "measurementId", "value": "{{GA4 Measurement ID}}" },
+          { "type": "BOOLEAN", "key": "sendPageView", "value": "true" }
+        ],
+        "firingTriggerId": ["6"]
+      },
       {
         "tagId": "1",
         "name": "GA4 Event - view_item",
@@ -160,7 +243,7 @@
         "parameter": [
           { "type": "TEMPLATE", "key": "eventName", "value": "view_item" },
           { "type": "BOOLEAN", "key": "sendEcommerceData", "value": "true" },
-          { "type": "TEMPLATE", "key": "measurementIdOverride", "value": "G-XXXXXXXXXX" }
+          { "type": "TEMPLATE", "key": "measurementIdOverride", "value": "{{GA4 Measurement ID}}" }
         ],
         "firingTriggerId": ["1"]
       },
@@ -178,9 +261,13 @@
             { "type": "MAP", "map": [
               { "type": "TEMPLATE", "key": "parameter", "value": "vehicle_name" },
               { "type": "TEMPLATE", "key": "parameterValue", "value": "{{dlv - vehicle_name}}" }
+            ]},
+            { "type": "MAP", "map": [
+              { "type": "TEMPLATE", "key": "parameter", "value": "interest" },
+              { "type": "TEMPLATE", "key": "parameterValue", "value": "{{dlv - interest}}" }
             ]}
           ]},
-          { "type": "TEMPLATE", "key": "measurementIdOverride", "value": "G-XXXXXXXXXX" }
+          { "type": "TEMPLATE", "key": "measurementIdOverride", "value": "{{GA4 Measurement ID}}" }
         ],
         "firingTriggerId": ["2"]
       },
@@ -191,7 +278,7 @@
         "parameter": [
           { "type": "TEMPLATE", "key": "eventName", "value": "add_to_wishlist" },
           { "type": "BOOLEAN", "key": "sendEcommerceData", "value": "true" },
-          { "type": "TEMPLATE", "key": "measurementIdOverride", "value": "G-XXXXXXXXXX" }
+          { "type": "TEMPLATE", "key": "measurementIdOverride", "value": "{{GA4 Measurement ID}}" }
         ],
         "firingTriggerId": ["3"]
       },
@@ -205,9 +292,13 @@
             { "type": "MAP", "map": [
               { "type": "TEMPLATE", "key": "parameter", "value": "contact_type" },
               { "type": "TEMPLATE", "key": "parameterValue", "value": "{{dlv - contact_type}}" }
+            ]},
+            { "type": "MAP", "map": [
+              { "type": "TEMPLATE", "key": "parameter", "value": "contact_value" },
+              { "type": "TEMPLATE", "key": "parameterValue", "value": "{{dlv - contact_value}}" }
             ]}
           ]},
-          { "type": "TEMPLATE", "key": "measurementIdOverride", "value": "G-XXXXXXXXXX" }
+          { "type": "TEMPLATE", "key": "measurementIdOverride", "value": "{{GA4 Measurement ID}}" }
         ],
         "firingTriggerId": ["4"]
       },
@@ -223,11 +314,38 @@
               { "type": "TEMPLATE", "key": "parameterValue", "value": "{{dlv - filter_category}}" }
             ]},
             { "type": "MAP", "map": [
+              { "type": "TEMPLATE", "key": "parameter", "value": "filter_term" },
+              { "type": "TEMPLATE", "key": "parameterValue", "value": "{{dlv - filter_term}}" }
+            ]},
+            { "type": "MAP", "map": [
+              { "type": "TEMPLATE", "key": "parameter", "value": "filter_condition" },
+              { "type": "TEMPLATE", "key": "parameterValue", "value": "{{dlv - filter_condition}}" }
+            ]},
+            { "type": "MAP", "map": [
+              { "type": "TEMPLATE", "key": "parameter", "value": "filter_brands" },
+              { "type": "TEMPLATE", "key": "parameterValue", "value": "{{dlv - filter_brands}}" }
+            ]},
+            { "type": "MAP", "map": [
+              { "type": "TEMPLATE", "key": "parameter", "value": "filter_colors" },
+              { "type": "TEMPLATE", "key": "parameterValue", "value": "{{dlv - filter_colors}}" }
+            ]},
+            { "type": "MAP", "map": [
               { "type": "TEMPLATE", "key": "parameter", "value": "results_count" },
               { "type": "TEMPLATE", "key": "parameterValue", "value": "{{dlv - results_count}}" }
             ]}
           ]},
-          { "type": "TEMPLATE", "key": "measurementIdOverride", "value": "G-XXXXXXXXXX" }
+          { "type": "TEMPLATE", "key": "measurementIdOverride", "value": "{{GA4 Measurement ID}}" }
+        ],
+        "firingTriggerId": ["5"]
+      },
+      {
+        "tagId": "7",
+        "name": "GA4 Event - view_item_list",
+        "type": "gaawe",
+        "parameter": [
+          { "type": "TEMPLATE", "key": "eventName", "value": "view_item_list" },
+          { "type": "BOOLEAN", "key": "sendEcommerceData", "value": "true" },
+          { "type": "TEMPLATE", "key": "measurementIdOverride", "value": "{{GA4 Measurement ID}}" }
         ],
         "firingTriggerId": ["5"]
       }

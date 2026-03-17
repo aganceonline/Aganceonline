@@ -931,21 +931,21 @@ function filterInventory() {
     updatePrices();
     updateDOMTranslations();
 
-    // GTM: Track view_item
+    // GTM: Track view_item_list
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
-        'event': 'view_item',
+        'event': 'view_item_list',
         'ecommerce': {
-            'currency': currentCurrency,
-            'value': product.price_egp / (currentCurrency === 'USD' ? usdToEgpRate : 1),
-            'items': [{
-                'item_id': product.id,
-                'item_name': product.name,
-                'item_brand': product.brand_id,
-                'item_category': product.category,
-                'price': product.price_egp / (currentCurrency === 'USD' ? usdToEgpRate : 1),
-                'quantity': 1
-            }]
+            'item_list_id': 'inventory',
+            'item_list_name': 'Inventory',
+            'items': filtered.slice(0, 10).map((p, idx) => ({
+                'item_id': p.id,
+                'item_name': p.name,
+                'item_brand': p.brand_id,
+                'item_category': p.category,
+                'index': idx + 1,
+                'price': p.price_egp / (currentCurrency === 'USD' ? usdToEgpRate : 1)
+            }))
         }
     });
 }
@@ -969,6 +969,24 @@ function loadFavoritesPage() {
     }
     updatePrices();
     updateDOMTranslations();
+
+    // GTM: Track view_item
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+        'event': 'view_item',
+        'ecommerce': {
+            'currency': currentCurrency,
+            'value': product.price_egp / (currentCurrency === 'USD' ? usdToEgpRate : 1),
+            'items': [{
+                'item_id': product.id,
+                'item_name': product.name,
+                'item_brand': product.brand_id,
+                'item_category': product.category,
+                'price': product.price_egp / (currentCurrency === 'USD' ? usdToEgpRate : 1),
+                'quantity': 1
+            }]
+        }
+    });
 }
 
 /**
