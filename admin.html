@@ -127,6 +127,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                 <th class="px-6 py-3 w-10"></th>
                                 <th class="px-6 py-3">Image</th>
                                 <th class="px-6 py-3">Name</th>
+                                <th class="px-6 py-3">Sold Out</th>
                                 <th class="px-6 py-3">Price (EGP)</th>
                                 <th class="px-6 py-3">Category</th>
                                 <th class="px-6 py-3">Status</th>
@@ -245,11 +246,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             <h3 class="text-lg font-bold mb-4 border-b border-gray-200 dark:border-white/10 pb-2">Website Images</h3>
                             <div class="space-y-4">
                                 <div>
-                                    <label class="block text-sm font-medium mb-1">Hero Image</label>
+                                    <label class="block text-sm font-medium mb-1">Hero Image 1</label>
                                     <div class="flex flex-col gap-2">
                                         <input type="file" id="setting-hero-image" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-red-600 transition-all">
-                                        <p class="text-xs text-gray-500">Upload a new image to replace the current hero background.</p>
+                                        <p class="text-xs text-gray-500">Upload a new image to replace the current hero background 1.</p>
                                         <p class="text-xs text-gray-400">Current: <span id="current-hero-image" class="italic">Loading...</span></p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Hero Image 2</label>
+                                    <div class="flex flex-col gap-2">
+                                        <input type="file" id="setting-hero-image-2" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-red-600 transition-all">
+                                        <p class="text-xs text-gray-500">Upload a second image for the hero carousel.</p>
+                                        <p class="text-xs text-gray-400">Current: <span id="current-hero-image-2" class="italic">Loading...</span></p>
                                     </div>
                                 </div>
                             </div>
@@ -357,7 +366,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                 <option value="New Arrival">New Arrival</option>
                             </select>
                         </div>
-                        <div class="flex flex-col gap-2 pt-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Origin</label>
+                            <select id="p-origin" class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all">
+                                <option value="">Select Origin</option>
+                                <option value="Imported">Imported (استيراد)</option>
+                                <option value="Egyptian Agency">Egyptian Agency (وكيل)</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col gap-2">
                             <div class="flex items-center gap-2">
                                 <input type="checkbox" id="p-featured" class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary">
                                 <label for="p-featured" class="text-sm font-medium">Feature on Homepage</label>
@@ -365,6 +382,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             <div class="flex items-center gap-2">
                                 <input type="checkbox" id="p-upon-request" class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary">
                                 <label for="p-upon-request" class="text-sm font-medium">Upon Request</label>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" id="p-sold-out" class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary">
+                                <label for="p-sold-out" class="text-sm font-medium text-red-500 font-bold">Sold Out</label>
                             </div>
                         </div>
                     </div>

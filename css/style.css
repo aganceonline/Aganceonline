@@ -55,3 +55,43 @@ body {
 [dir="rtl"] {
     font-family: 'Inter', sans-serif; /* Fallback or specific Arabic font can be defined here */
 }
+
+/* Sold Out Overlay */
+.sold-out-stamp {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-15deg);
+    border: 4px solid #ee2122;
+    color: #ee2122;
+    padding: 0.5rem 1rem;
+    font-size: 1.5rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    z-index: 30;
+    pointer-events: none;
+    background-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    white-space: nowrap;
+}
+
+/* Hero Carousel Transitions */
+.hero-carousel-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: opacity 1.5s ease-in-out;
+}
+
+.hero-carousel-img {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.hero-carousel-img.active {
+    opacity: 1;
+    pointer-events: auto;
+}

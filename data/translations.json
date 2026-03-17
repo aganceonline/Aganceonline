@@ -81,7 +81,10 @@
     "colors": "Colors",
     "brands": "Brands",
     "filters": "Filters",
-    "search": "Search"
+    "search": "Search",
+    "sold_out": "Sold Out",
+    "imported": "Imported",
+    "egyptian_agency": "Egyptian Agency"
   },
   "ar": {
     "header_title": "اجانس اونلاين",
@@ -165,6 +168,9 @@
     "colors": "الألوان",
     "brands": "الماركات",
     "filters": "الفلاتر",
-    "search": "بحث"
+    "search": "بحث",
+    "sold_out": "مباع",
+    "imported": "استيراد",
+    "egyptian_agency": "وكيل"
   }
 }

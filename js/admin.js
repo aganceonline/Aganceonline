@@ -437,6 +437,9 @@ function renderProducts(products) {
                 </div>
             </td>
             <td class="px-6 py-4 font-medium">${escapeHtml(p.name)}</td>
+            <td class="px-6 py-4">
+                <input type="checkbox" ${p.is_sold_out ? 'checked' : ''} onchange="toggleSoldOut(${p.id}, this)" class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer" title="Toggle Sold Out">
+            </td>
             <td class="px-6 py-4">${p.price_egp ? p.price_egp.toLocaleString() + ' L.E' : '-'}</td>
             <td class="px-6 py-4"><span class="bg-gray-100 dark:bg-white/10 px-2 py-1 rounded text-xs">${escapeHtml(p.category) || '-'}</span></td>
             <td class="px-6 py-4">
@@ -466,6 +469,24 @@ window.deleteProduct = function(id) {
             loadProducts();
         }
     });
+};
+
+window.toggleSoldOut = async function(id, checkbox) {
+    const is_sold_out = checkbox.checked;
+    const { error } = await supabase
+        .from('products')
+        .update({ is_sold_out })
+        .eq('id', id);
+
+    if (error) {
+        showToast('Error updating status: ' + error.message, 'error');
+        checkbox.checked = !is_sold_out;
+    } else {
+        showToast('Status updated successfully.', 'success');
+        // Update local state
+        const p = currentProducts.find(prod => prod.id === id);
+        if (p) p.is_sold_out = is_sold_out;
+    }
 };
 
 // --- Modal & Form Logic ---
@@ -664,7 +685,9 @@ function openModal(product = null) {
         document.getElementById('p-name').value = product.name;
         document.getElementById('p-price').value = product.price_egp || '';
         document.getElementById('p-category').value = product.category;
+        document.getElementById('p-origin').value = product.origin || '';
         document.getElementById('p-featured').checked = product.featured;
+        document.getElementById('p-sold-out').checked = product.is_sold_out || false;
         document.getElementById('p-desc').value = product.description;
 
         // Handle nested details
@@ -857,7 +880,9 @@ async function handleSaveProduct(e) {
         const name = document.getElementById('p-name').value;
         const price = parseFloat(document.getElementById('p-price').value);
         const category = document.getElementById('p-category').value;
+        const origin = document.getElementById('p-origin').value;
         const featured = document.getElementById('p-featured').checked;
+        const isSoldOut = document.getElementById('p-sold-out').checked;
         const description = document.getElementById('p-desc').value;
         const brandId = document.getElementById('p-brand-id').value;
         const uponRequest = document.getElementById('p-upon-request').checked;
@@ -1002,7 +1027,9 @@ async function handleSaveProduct(e) {
             price_egp: price,
             brand_id: parseInt(brandId),
             category,
+            origin,
             featured,
+            is_sold_out: isSoldOut,
             description,
             details,
             name_ar: nameAr,
@@ -1456,10 +1483,12 @@ async function loadSettings() {
     const locPinInput = document.getElementById('setting-location-pin');
     const mapEmbedInput = document.getElementById('setting-map-embed');
     const heroImgInput = document.getElementById('setting-hero-image');
+    const heroImg2Input = document.getElementById('setting-hero-image-2');
     const currentHeroSpan = document.getElementById('current-hero-image');
+    const currentHero2Span = document.getElementById('current-hero-image-2');
 
     const btn = document.getElementById('save-settings-btn');
-    const inputs = [egpInput, tiktokInput, fbInput, instaInput, whatsappInput, locPinInput, mapEmbedInput, heroImgInput].filter(i => i);
+    const inputs = [egpInput, tiktokInput, fbInput, instaInput, whatsappInput, phoneInput, locPinInput, mapEmbedInput, heroImgInput, heroImg2Input].filter(i => i);
 
     inputs.forEach(i => i.disabled = true);
     if(btn) {
@@ -1492,6 +1521,12 @@ async function loadSettings() {
              if(currentHeroSpan) currentHeroSpan.textContent = settings['HERO_IMAGE'].split('/').pop();
         } else {
              if(currentHeroSpan) currentHeroSpan.textContent = 'Default';
+        }
+
+        if (settings['HERO_IMAGE_2']) {
+             if(currentHero2Span) currentHero2Span.textContent = settings['HERO_IMAGE_2'].split('/').pop();
+        } else {
+             if(currentHero2Span) currentHero2Span.textContent = 'Not set';
         }
     }
 
@@ -1553,6 +1588,27 @@ async function handleSaveSettings(e) {
                 .getPublicUrl(filePath);
 
             updates.push({ key: 'HERO_IMAGE', value: publicData.publicUrl });
+        }
+
+        // Handle Hero Image 2 Upload
+        const hero2Input = document.getElementById('setting-hero-image-2');
+        if (hero2Input && hero2Input.files.length > 0) {
+            const file = hero2Input.files[0];
+            const fileExt = file.name.split('.').pop();
+            const fileName = `hero2-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+            const filePath = `public/${fileName}`;
+
+            const { data, error: uploadError } = await supabase.storage
+                .from('vehicle-images')
+                .upload(filePath, file);
+
+            if (uploadError) throw uploadError;
+
+            const { data: publicData } = supabase.storage
+                .from('vehicle-images')
+                .getPublicUrl(filePath);
+
+            updates.push({ key: 'HERO_IMAGE_2', value: publicData.publicUrl });
         }
 
         const { error } = await supabase
