@@ -514,10 +514,17 @@ async function loadGlobalSettings() {
             }
         }
 
-        // Apply Hero Image
+        // Apply Hero Images
         const heroBgImage = document.getElementById('hero-bg-image');
+        const heroBgImage2 = document.getElementById('hero-bg-image-2');
+
         if (heroBgImage && settings['HERO_IMAGE']) {
              heroBgImage.src = settings['HERO_IMAGE'];
+        }
+
+        if (heroBgImage2 && settings['HERO_IMAGE_2']) {
+             heroBgImage2.src = settings['HERO_IMAGE_2'];
+             initHeroCarousel();
         }
 
     } catch (error) {
@@ -989,6 +996,29 @@ function loadFavoritesPage() {
     });
 }
 
+let heroInterval = null;
+function initHeroCarousel() {
+    const img1 = document.getElementById('hero-bg-image');
+    const img2 = document.getElementById('hero-bg-image-2');
+
+    if (!img1 || !img2 || !img2.src || img2.src.includes('undefined')) return;
+
+    if (heroInterval) clearInterval(heroInterval);
+
+    let current = 1;
+    heroInterval = setInterval(() => {
+        if (current === 1) {
+            img1.classList.remove('active');
+            img2.classList.add('active');
+            current = 2;
+        } else {
+            img2.classList.remove('active');
+            img1.classList.add('active');
+            current = 1;
+        }
+    }, 5000);
+}
+
 /**
  * Logic for Details Page: Loads specific vehicle info by ID.
  */
@@ -1072,6 +1102,19 @@ async function loadDetails() {
     document.getElementById('vehicle-title').textContent = displayName;
     document.getElementById('vehicle-title-crumb').textContent = displayName;
     document.getElementById('vehicle-price').setAttribute('data-price-egp', product.price_egp || '');
+
+    // Origin Badge
+    const originBadge = document.getElementById('vehicle-origin-badge');
+    if (originBadge) {
+        if (product.origin) {
+            originBadge.classList.remove('hidden');
+            let originKey = product.origin === 'Imported' ? 'imported' : 'egyptian_agency';
+            originBadge.setAttribute('data-i18n', originKey);
+            originBadge.textContent = translations[currentLang]?.[originKey] || product.origin;
+        } else {
+            originBadge.classList.add('hidden');
+        }
+    }
 
     const descEl = document.getElementById('vehicle-desc');
     descEl.textContent = displayDesc;
@@ -1525,6 +1568,7 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 function createProductCard(product) {
     const fav = isFavorite(product.id);
+    const isSoldOut = product.is_sold_out;
     const heartIcon = fav ? 'favorite' : 'favorite';
     const heartClass = fav ? 'text-primary' : 'text-white';
     const heartStyle = fav ? 'font-variation-settings: \'FILL\' 1;' : '';
@@ -1549,11 +1593,21 @@ function createProductCard(product) {
         ? `<span class="bg-black/90 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded mt-1" data-i18n="upon_request">Upon Request</span>`
         : '';
 
+    const originBadge = product.origin
+        ? `<span class="bg-gray-800/90 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded mt-1">
+            ${escapeHtml(translations[currentLang]?.[product.origin === 'Imported' ? 'imported' : 'egyptian_agency'] || product.origin)}
+           </span>`
+        : '';
+
+    const soldOutOverlay = isSoldOut ? `<div class="sold-out-stamp">SOLD OUT</div>` : '';
+    const grayscaleClass = isSoldOut ? 'grayscale' : '';
+
     return `
     <div class="group relative flex flex-col rounded-xl overflow-hidden bg-white dark:bg-surface-card border border-gray-200 dark:border-white/5 transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:-translate-y-1">
         <div class="relative aspect-[16/10] overflow-hidden">
             <a href="details.html?id=${product.id}">
-                <img alt="${escapeHtml(displayName)}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" src="${escapeHtml(product.image_url)}"/>
+                <img alt="${escapeHtml(displayName)}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ${grayscaleClass}" src="${escapeHtml(product.image_url)}"/>
+                ${soldOutOverlay}
             </a>
             <div class="absolute top-3 right-3 z-20">
                 <button class="w-8 h-8 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center ${heartClass} hover:text-primary transition-colors" onclick="toggleFavorite(${product.id}, this)">
@@ -1563,6 +1617,7 @@ function createProductCard(product) {
              <div class="absolute bottom-3 left-3 z-20 flex flex-col items-start gap-1">
                 ${categoryBadge}
                 ${uponRequestBadge}
+                ${originBadge}
             </div>
         </div>
         <div class="p-5 flex flex-col flex-grow">
