@@ -524,6 +524,7 @@ async function loadGlobalSettings() {
 
         if (heroBgImage2 && settings['HERO_IMAGE_2']) {
              heroBgImage2.src = settings['HERO_IMAGE_2'];
+             heroBgImage2.classList.remove('hidden');
              initHeroCarousel();
         }
 
