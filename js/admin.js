@@ -533,6 +533,21 @@ window.deleteColorGalleryImage = function(colorId, imgIndex) {
     }
 };
 
+window.addSocialLink = function(type, value = '') {
+    const container = document.querySelector(`#container-social-${type} .social-links-list`);
+    if (!container) return;
+
+    const div = document.createElement('div');
+    div.className = 'flex items-center gap-2';
+    div.innerHTML = `
+        <input type="${type === 'phone' ? 'tel' : 'url'}" value="${escapeHtml(value)}" class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" placeholder="${type === 'phone' ? '+20...' : 'https://...'}">
+        <button type="button" onclick="this.parentElement.remove()" class="text-red-500 hover:text-red-400 p-2">
+            <span class="material-symbols-outlined text-[20px]">delete</span>
+        </button>
+    `;
+    container.appendChild(div);
+};
+
 async function handleColorImageUpload(colorId, file) {
     const color = currentColors.find(c => c.id === colorId);
     if (!color || !file) return;
@@ -1475,11 +1490,6 @@ async function handleSaveBrand(e) {
 
 async function loadSettings() {
     const egpInput = document.getElementById('setting-egp-usd');
-    const tiktokInput = document.getElementById('setting-social-tiktok');
-    const fbInput = document.getElementById('setting-social-facebook');
-    const instaInput = document.getElementById('setting-social-instagram');
-    const whatsappInput = document.getElementById('setting-social-whatsapp');
-    const phoneInput = document.getElementById('setting-social-phone');
     const locPinInput = document.getElementById('setting-location-pin');
     const mapEmbedInput = document.getElementById('setting-map-embed');
     const heroImgInput = document.getElementById('setting-hero-image');
@@ -1488,7 +1498,7 @@ async function loadSettings() {
     const currentHero2Span = document.getElementById('current-hero-image-2');
 
     const btn = document.getElementById('save-settings-btn');
-    const inputs = [egpInput, tiktokInput, fbInput, instaInput, whatsappInput, phoneInput, locPinInput, mapEmbedInput, heroImgInput, heroImg2Input].filter(i => i);
+    const inputs = [egpInput, locPinInput, mapEmbedInput, heroImgInput, heroImg2Input].filter(i => i);
 
     inputs.forEach(i => i.disabled = true);
     if(btn) {
@@ -1509,13 +1519,30 @@ async function loadSettings() {
         data.forEach(item => settings[item.key] = item.value);
 
         if (egpInput && settings['EGP_TO_USD']) egpInput.value = settings['EGP_TO_USD'];
-        if (tiktokInput && settings['SOCIAL_TIKTOK']) tiktokInput.value = settings['SOCIAL_TIKTOK'];
-        if (fbInput && settings['SOCIAL_FACEBOOK']) fbInput.value = settings['SOCIAL_FACEBOOK'];
-        if (instaInput && settings['SOCIAL_INSTAGRAM']) instaInput.value = settings['SOCIAL_INSTAGRAM'];
-        if (whatsappInput && settings['SOCIAL_WHATSAPP']) whatsappInput.value = settings['SOCIAL_WHATSAPP'];
-        if (settings['SOCIAL_PHONE'] && phoneInput) phoneInput.value = settings['SOCIAL_PHONE'];
         if (locPinInput && settings['LOCATION_PIN']) locPinInput.value = settings['LOCATION_PIN'];
         if (mapEmbedInput && settings['MAP_EMBED']) mapEmbedInput.value = settings['MAP_EMBED'];
+
+        // Load Social Links
+        const socialTypes = ['tiktok', 'facebook', 'instagram', 'whatsapp', 'phone'];
+        socialTypes.forEach(type => {
+            const container = document.querySelector(`#container-social-${type} .social-links-list`);
+            if (container) {
+                container.innerHTML = '';
+                const val = settings[`SOCIAL_${type.toUpperCase()}`];
+                if (val) {
+                    try {
+                        const parsed = JSON.parse(val);
+                        if (Array.isArray(parsed)) {
+                            parsed.forEach(link => addSocialLink(type, link));
+                        } else {
+                            addSocialLink(type, val);
+                        }
+                    } catch (e) {
+                        addSocialLink(type, val);
+                    }
+                }
+            }
+        });
 
         if (settings['HERO_IMAGE']) {
              if(currentHeroSpan) currentHeroSpan.textContent = settings['HERO_IMAGE'].split('/').pop();
@@ -1560,14 +1587,18 @@ async function handleSaveSettings(e) {
     try {
         const updates = [
             { key: 'EGP_TO_USD', value: document.getElementById('setting-egp-usd').value },
-            { key: 'SOCIAL_TIKTOK', value: document.getElementById('setting-social-tiktok').value },
-            { key: 'SOCIAL_FACEBOOK', value: document.getElementById('setting-social-facebook').value },
-            { key: 'SOCIAL_INSTAGRAM', value: document.getElementById('setting-social-instagram').value },
-            { key: 'SOCIAL_WHATSAPP', value: document.getElementById('setting-social-whatsapp').value },
             { key: 'LOCATION_PIN', value: document.getElementById('setting-location-pin').value },
             { key: 'MAP_EMBED', value: document.getElementById('setting-map-embed').value },
-            { key: 'SOCIAL_PHONE', value: document.getElementById('setting-social-phone').value },
         ];
+
+        const socialTypes = ['tiktok', 'facebook', 'instagram', 'whatsapp', 'phone'];
+        socialTypes.forEach(type => {
+            const container = document.querySelector(`#container-social-${type} .social-links-list`);
+            if (container) {
+                const links = Array.from(container.querySelectorAll('input')).map(input => input.value.trim()).filter(v => v !== '');
+                updates.push({ key: `SOCIAL_${type.toUpperCase()}`, value: JSON.stringify(links) });
+            }
+        });
 
         // Handle Hero Image Upload
         const heroInput = document.getElementById('setting-hero-image');

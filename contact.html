@@ -96,7 +96,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <nav class="hidden md:flex items-center gap-8">
                 <a href="index.html" class="text-sm font-medium text-slate-600 dark:text-gray-300 hover:text-primary transition-colors" data-i18n="nav_home">Home</a>
                 <a href="inventory.html" class="text-sm font-medium text-slate-600 dark:text-gray-300 hover:text-primary transition-colors" data-i18n="nav_inventory">Inventory</a>
-                <a href="#" onclick="showDemoMessage(); return false;" class="text-sm font-medium text-slate-600 dark:text-gray-300 hover:text-primary transition-colors" data-i18n="nav_financing">Financing</a>
+                <a href="financing.html" class="text-sm font-medium text-slate-600 dark:text-gray-300 hover:text-primary transition-colors" data-i18n="nav_financing">Financing</a>
                 <a href="contact.html" class="text-sm font-bold text-primary transition-colors" data-i18n="nav_contact">Contact</a>
             </nav>
 
@@ -125,7 +125,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="px-4 pt-2 pb-4 space-y-1">
                 <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 dark:text-gray-300 hover:text-primary hover:bg-gray-50 dark:hover:bg-white/5 transition-colors" data-i18n="nav_home">Home</a>
                 <a href="inventory.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 dark:text-gray-300 hover:text-primary hover:bg-gray-50 dark:hover:bg-white/5 transition-colors" data-i18n="nav_inventory">Inventory</a>
-                <a href="#" onclick="showDemoMessage(); return false;" class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 dark:text-gray-300 hover:text-primary hover:bg-gray-50 dark:hover:bg-white/5 transition-colors" data-i18n="nav_financing">Financing</a>
+                <a href="financing.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 dark:text-gray-300 hover:text-primary hover:bg-gray-50 dark:hover:bg-white/5 transition-colors" data-i18n="nav_financing">Financing</a>
                 <a href="contact.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-900 dark:text-white hover:text-primary hover:bg-gray-50 dark:hover:bg-white/5 transition-colors" data-i18n="nav_contact">Contact</a>
             </div>
 
@@ -166,22 +166,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <label class="flex flex-col gap-2">
                                 <span class="text-sm font-medium text-slate-600 dark:text-gray-300" data-i18n="form_name">Full Name</span>
-                                <input id="c-name" class="w-full bg-gray-50 dark:bg-[#0f0811] border border-gray-200 dark:border-border-dark rounded-lg px-4 h-12 text-slate-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-all duration-300" type="text" required data-i18n-placeholder="form_name"/>
+                                <input id="c-name" class="w-full bg-gray-50 dark:bg-[#0f0811] border border-gray-200 dark:border-border-dark rounded-lg px-4 h-12 text-slate-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300" type="text" required data-i18n-placeholder="form_name"/>
                             </label>
                             <label class="flex flex-col gap-2">
                                 <span class="text-sm font-medium text-slate-600 dark:text-gray-300" data-i18n="form_email">Email Address</span>
-                                <input id="c-email" class="w-full bg-gray-50 dark:bg-[#0f0811] border border-gray-200 dark:border-border-dark rounded-lg px-4 h-12 text-slate-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-all duration-300" type="email" required data-i18n-placeholder="form_email"/>
+                                <input id="c-email" class="w-full bg-gray-50 dark:bg-[#0f0811] border border-gray-200 dark:border-border-dark rounded-lg px-4 h-12 text-slate-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300" type="email" required data-i18n-placeholder="form_email"/>
                             </label>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <label class="flex flex-col gap-2">
                                 <span class="text-sm font-medium text-slate-600 dark:text-gray-300" data-i18n="form_phone">Phone Number</span>
-                                <input id="c-phone" class="w-full bg-gray-50 dark:bg-[#0f0811] border border-gray-200 dark:border-border-dark rounded-lg px-4 h-12 text-slate-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-all duration-300" type="tel" data-i18n-placeholder="form_phone"/>
+                                <input id="c-phone" class="w-full bg-gray-50 dark:bg-[#0f0811] border border-gray-200 dark:border-border-dark rounded-lg px-4 h-12 text-slate-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300" type="tel" data-i18n-placeholder="form_phone"/>
                             </label>
                             <label class="flex flex-col gap-2">
                                 <span class="text-sm font-medium text-slate-600 dark:text-gray-300" data-i18n="form_interest">Interest</span>
                                 <div class="relative">
-                                    <select id="c-interest" class="w-full bg-gray-50 dark:bg-[#0f0811] border border-gray-200 dark:border-border-dark rounded-lg px-4 h-12 text-slate-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-all duration-300 appearance-none">
+                                    <select id="c-interest" class="w-full bg-gray-50 dark:bg-[#0f0811] border border-gray-200 dark:border-border-dark rounded-lg px-4 h-12 text-slate-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300 appearance-none">
                                         <option data-i18n="opt_sales">Sales Inquiry</option>
                                         <option data-i18n="opt_support">Contact Support</option>
                                     </select>
@@ -190,7 +190,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         </div>
                         <label class="flex flex-col gap-2">
                             <span class="text-sm font-medium text-slate-600 dark:text-gray-300" data-i18n="form_message">Message</span>
-                            <textarea id="c-message" class="w-full bg-gray-50 dark:bg-[#0f0811] border border-gray-200 dark:border-border-dark rounded-lg p-4 text-slate-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-primary resize-none transition-all duration-300" rows="4" required data-i18n-placeholder="form_message"></textarea>
+                            <textarea id="c-message" class="w-full bg-gray-50 dark:bg-[#0f0811] border border-gray-200 dark:border-border-dark rounded-lg p-4 text-slate-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary resize-none transition-all duration-300" rows="4" required data-i18n-placeholder="form_message"></textarea>
                         </label>
                         <button class="mt-2 w-full h-12 bg-primary hover:bg-primary-dark text-white font-bold rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 group" type="submit">
                             <span data-i18n="btn_submit">Submit Inquiry</span>

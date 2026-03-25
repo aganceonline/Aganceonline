@@ -217,26 +217,51 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <!-- Social Media Section -->
                         <div>
                             <h3 class="text-lg font-bold mb-4 border-b border-gray-200 dark:border-white/10 pb-2">Social Media Links</h3>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">TikTok URL</label>
-                                    <input type="url" id="setting-social-tiktok" class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" placeholder="https://tiktok.com/@...">
+                            <div class="space-y-6">
+                                <div id="container-social-tiktok">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <label class="block text-sm font-medium">TikTok URL(s)</label>
+                                        <button type="button" onclick="addSocialLink('tiktok')" class="text-xs bg-primary hover:bg-red-600 text-white px-2 py-1 rounded flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[14px]">add</span> Add
+                                        </button>
+                                    </div>
+                                    <div class="social-links-list space-y-2"></div>
                                 </div>
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Facebook URL</label>
-                                    <input type="url" id="setting-social-facebook" class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" placeholder="https://facebook.com/...">
+                                <div id="container-social-facebook">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <label class="block text-sm font-medium">Facebook URL(s)</label>
+                                        <button type="button" onclick="addSocialLink('facebook')" class="text-xs bg-primary hover:bg-red-600 text-white px-2 py-1 rounded flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[14px]">add</span> Add
+                                        </button>
+                                    </div>
+                                    <div class="social-links-list space-y-2"></div>
                                 </div>
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Instagram URL</label>
-                                    <input type="url" id="setting-social-instagram" class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" placeholder="https://instagram.com/...">
+                                <div id="container-social-instagram">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <label class="block text-sm font-medium">Instagram URL(s)</label>
+                                        <button type="button" onclick="addSocialLink('instagram')" class="text-xs bg-primary hover:bg-red-600 text-white px-2 py-1 rounded flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[14px]">add</span> Add
+                                        </button>
+                                    </div>
+                                    <div class="social-links-list space-y-2"></div>
                                 </div>
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">WhatsApp URL</label>
-                                    <input type="url" id="setting-social-whatsapp" class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" placeholder="https://wa.me/...">
+                                <div id="container-social-whatsapp">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <label class="block text-sm font-medium">WhatsApp URL(s)</label>
+                                        <button type="button" onclick="addSocialLink('whatsapp')" class="text-xs bg-primary hover:bg-red-600 text-white px-2 py-1 rounded flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[14px]">add</span> Add
+                                        </button>
+                                    </div>
+                                    <div class="social-links-list space-y-2"></div>
                                 </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone Number (Calls)</label>
-                                    <input type="tel" id="setting-social-phone" class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" placeholder="+20 10 44310044">
+                                <div id="container-social-phone">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <label class="block text-sm font-medium">Phone Number(s) (Calls)</label>
+                                        <button type="button" onclick="addSocialLink('phone')" class="text-xs bg-primary hover:bg-red-600 text-white px-2 py-1 rounded flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[14px]">add</span> Add
+                                        </button>
+                                    </div>
+                                    <div class="social-links-list space-y-2"></div>
                                 </div>
                             </div>
                         </div>

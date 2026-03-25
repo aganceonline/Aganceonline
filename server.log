@@ -1,0 +1,11 @@
+127.0.0.1 - - [25/Mar/2026 08:32:18] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [25/Mar/2026 08:32:18] "GET /css/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [25/Mar/2026 08:32:18] "GET /assets/images/logo.jpeg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Mar/2026 08:32:18] code 404, message File not found
+127.0.0.1 - - [25/Mar/2026 08:32:18] "GET /assets/images/hero-bg.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [25/Mar/2026 08:32:19] "GET /js/supabase-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/Mar/2026 08:32:19] "GET /js/script.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/Mar/2026 08:32:22] "GET /data/translations.json HTTP/1.1" 200 -
+127.0.0.1 - - [25/Mar/2026 08:32:22] "GET /contact.html HTTP/1.1" 200 -
+127.0.0.1 - - [25/Mar/2026 08:32:24] "GET /financing.html HTTP/1.1" 200 -
+127.0.0.1 - - [25/Mar/2026 08:32:27] "GET /details.html?id=1 HTTP/1.1" 200 -

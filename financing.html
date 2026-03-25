@@ -1,0 +1,449 @@
+<!--
+    AganceOnline - Financing Page
+    This page features an installment calculator for vehicle purchases.
+-->
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-TRHFFRVS');</script>
+<!-- End Google Tag Manager -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financing - AganceOnline</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet"/>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ee2122",
+                        "primary-dark": "#c41213",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#150d17",
+                        "surface-dark": "#1a121d",
+                        "surface-card": "#201724",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                    },
+                },
+            },
+        }
+    </script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white antialiased transition-colors duration-300">
+    <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRHFFRVS"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+    <!-- Header Section -->
+    <header class="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-white/10 bg-white/95 dark:bg-background-dark/95 backdrop-blur-md">
+        <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+            <!-- Logo -->
+            <div class="flex items-center gap-2">
+                <a href="index.html" class="flex items-center gap-2">
+                    <img src="assets/images/logo.jpeg" alt="Logo" class="h-10 w-10 rounded-full object-cover border-2 border-primary">
+                    <span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white" data-i18n="header_title">AganceOnline</span>
+                </a>
+            </div>
+
+            <!-- Navigation Menu -->
+            <nav class="hidden md:flex items-center gap-8">
+                <a href="index.html" class="text-sm font-medium text-slate-600 dark:text-gray-300 hover:text-primary transition-colors" data-i18n="nav_home">Home</a>
+                <a href="inventory.html" class="text-sm font-medium text-slate-600 dark:text-gray-300 hover:text-primary transition-colors" data-i18n="nav_inventory">Inventory</a>
+                <a href="financing.html" class="text-sm font-bold text-primary transition-colors" data-i18n="nav_financing">Financing</a>
+                <a href="contact.html" class="text-sm font-medium text-slate-600 dark:text-gray-300 hover:text-primary transition-colors" data-i18n="nav_contact">Contact</a>
+            </nav>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-2 sm:gap-4">
+                <button onclick="toggleCurrency()" class="currency-toggle hidden md:flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-gray-100 dark:bg-white/10 hover:bg-primary hover:text-white transition-colors">
+                    <span class="currency-text">L.E</span>
+                </button>
+                <a href="favorites.html" class="flex items-center justify-center rounded-full p-2 text-slate-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-primary transition-colors" title="Favorites">
+                    <span class="material-symbols-outlined">favorite</span>
+                </a>
+                <button onclick="toggleLanguage()" class="lang-toggle hidden md:flex items-center justify-center rounded-full p-2 text-slate-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-primary transition-colors">
+                    <span class="material-symbols-outlined">language</span>
+                </button>
+                <button onclick="toggleTheme()" class="theme-toggle hidden md:flex items-center justify-center rounded-full p-2 text-slate-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-primary transition-colors">
+                    <span class="theme-icon material-symbols-outlined">light_mode</span>
+                </button>
+                <button id="mobile-menu-btn" class="md:hidden flex items-center justify-center rounded-full p-2 text-slate-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-primary transition-colors">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Container -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 dark:border-white/10 bg-white/95 dark:bg-background-dark/95 backdrop-blur-md">
+            <div class="px-4 pt-2 pb-4 space-y-1">
+                <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 dark:text-gray-300 hover:text-primary hover:bg-gray-50 dark:hover:bg-white/5 transition-colors" data-i18n="nav_home">Home</a>
+                <a href="inventory.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 dark:text-gray-300 hover:text-primary hover:bg-gray-50 dark:hover:bg-white/5 transition-colors" data-i18n="nav_inventory">Inventory</a>
+                <a href="financing.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-900 dark:text-white hover:text-primary hover:bg-gray-50 dark:hover:bg-white/5 transition-colors" data-i18n="nav_financing">Financing</a>
+                <a href="contact.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 dark:text-gray-300 hover:text-primary hover:bg-gray-50 dark:hover:bg-white/5 transition-colors" data-i18n="nav_contact">Contact</a>
+            </div>
+
+            <div class="px-4 py-4 border-t border-gray-200 dark:border-white/10 flex flex-col gap-2">
+                <button onclick="toggleCurrency()" class="currency-toggle flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-slate-600 dark:text-gray-300 hover:text-primary hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                    <span>Currency</span>
+                    <span class="currency-text font-bold bg-gray-100 dark:bg-white/10 px-2 py-0.5 rounded text-xs">L.E</span>
+                </button>
+                <button onclick="toggleLanguage()" class="lang-toggle flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-slate-600 dark:text-gray-300 hover:text-primary hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                    <span>Language</span>
+                    <span class="material-symbols-outlined text-lg">language</span>
+                </button>
+                <button onclick="toggleTheme()" class="theme-toggle flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-slate-600 dark:text-gray-300 hover:text-primary hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                    <span>Theme</span>
+                    <span class="theme-icon material-symbols-outlined text-lg">light_mode</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Page Title -->
+        <div class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white mb-4" data-i18n="nav_financing">Financing</h1>
+            <p class="text-gray-500 dark:text-gray-400 text-lg max-w-2xl mx-auto">Calculate your monthly installments and find the best financing plan for your dream car.</p>
+        </div>
+
+        <!-- Valu Promotion Banner -->
+        <div class="bg-white dark:bg-surface-card rounded-2xl p-8 mb-12 border border-gray-200 dark:border-white/10 flex flex-col md:flex-row items-center gap-8 shadow-xl">
+            <div class="w-32 h-32 flex-shrink-0 flex items-center justify-center bg-gray-50 dark:bg-white/5 rounded-2xl p-4">
+                <img src="https://www.valu.com.eg/static/media/valu-logo.6a3d6a9a.png" alt="Valu" class="max-w-full max-h-full object-contain">
+            </div>
+            <div class="flex-grow text-center md:text-left">
+                <h2 class="text-2xl font-bold mb-4 text-primary">أوفر فاليو الجديد 🔥</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm font-medium">
+                    <div class="flex items-center gap-2 justify-center md:justify-start">
+                        <span class="material-symbols-outlined text-green-500">check_circle</span>
+                        <span>فائدة 14.5%</span>
+                    </div>
+                    <div class="flex items-center gap-2 justify-center md:justify-start">
+                        <span class="material-symbols-outlined text-green-500">check_circle</span>
+                        <span>متاح لكل المقدمات بداية من 0% مقدم</span>
+                    </div>
+                    <div class="flex items-center gap-2 justify-center md:justify-start">
+                        <span class="material-symbols-outlined text-red-500">cancel</span>
+                        <span>بدون تأمين إجباري</span>
+                    </div>
+                    <div class="flex items-center gap-2 justify-center md:justify-start">
+                        <span class="material-symbols-outlined text-red-500">cancel</span>
+                        <span>بدون مصاريف إدارية</span>
+                    </div>
+                </div>
+                <p class="mt-6 text-xs text-gray-500 dark:text-gray-400 italic">* تطبق الشروط والأحكام. عرض الـ 40% مقدم بدون حظر بيع.</p>
+            </div>
+        </div>
+
+        <!-- Calculator Section -->
+        <div class="bg-white dark:bg-surface-card rounded-3xl overflow-hidden shadow-2xl border border-gray-200 dark:border-white/10">
+            <div class="flex border-b border-gray-200 dark:border-white/10">
+                <button id="tab-calc-installment" onclick="switchCalcTab('installment')" class="flex-1 py-6 text-center font-bold text-lg bg-primary text-white transition-all">Installment amount</button>
+                <button id="tab-calc-price" onclick="switchCalcTab('price')" class="flex-1 py-6 text-center font-bold text-lg text-gray-500 hover:text-primary transition-all">Car Price</button>
+            </div>
+
+            <div class="p-8 lg:p-12">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                    <!-- Inputs -->
+                    <div class="lg:col-span-7 space-y-8">
+                        <!-- Car Selection -->
+                        <div class="space-y-3">
+                            <label class="block text-sm font-bold uppercase tracking-wider text-gray-400">Select Car</label>
+                            <div class="relative">
+                                <select id="calc-car-select" class="w-full bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 rounded-xl px-6 h-14 text-lg font-bold focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all appearance-none">
+                                    <option value="0">Custom Price</option>
+                                    <!-- Options injected by JS -->
+                                </select>
+                                <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">expand_more</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-3">
+                                <label id="label-primary-input" class="block text-sm font-bold uppercase tracking-wider text-gray-400">Car Price (EGP)</label>
+                                <input type="number" id="calc-primary-input" value="1000000" class="w-full bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 rounded-xl px-6 h-14 text-lg font-bold focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all">
+                            </div>
+                            <div class="space-y-3">
+                                <label class="block text-sm font-bold uppercase tracking-wider text-gray-400">Down Payment (EGP)</label>
+                                <input type="number" id="calc-down-payment" value="200000" class="w-full bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 rounded-xl px-6 h-14 text-lg font-bold focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all">
+                                <p id="down-payment-percentage" class="text-xs text-primary font-bold">20% of car value</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <label class="block text-sm font-bold uppercase tracking-wider text-gray-400">Number of Payments (Months)</label>
+                            <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
+                                <button onclick="setCalcMonths(12)" data-months="12" class="month-btn py-3 rounded-xl border-2 border-gray-200 dark:border-white/10 font-bold hover:border-primary transition-all">12</button>
+                                <button onclick="setCalcMonths(24)" data-months="24" class="month-btn py-3 rounded-xl border-2 border-gray-200 dark:border-white/10 font-bold hover:border-primary transition-all">24</button>
+                                <button onclick="setCalcMonths(36)" data-months="36" class="month-btn py-3 rounded-xl border-2 border-primary bg-primary/5 text-primary font-bold transition-all">36</button>
+                                <button onclick="setCalcMonths(48)" data-months="48" class="month-btn py-3 rounded-xl border-2 border-gray-200 dark:border-white/10 font-bold hover:border-primary transition-all">48</button>
+                                <button onclick="setCalcMonths(60)" data-months="60" class="month-btn py-3 rounded-xl border-2 border-gray-200 dark:border-white/10 font-bold hover:border-primary transition-all">60</button>
+                                <button onclick="setCalcMonths(84)" data-months="84" class="month-btn py-3 rounded-xl border-2 border-gray-200 dark:border-white/10 font-bold hover:border-primary transition-all">84</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Result -->
+                    <div class="lg:col-span-5">
+                        <div class="bg-gray-50 dark:bg-white/5 rounded-3xl p-8 lg:p-10 h-full flex flex-col">
+                            <h3 id="result-label" class="text-xl font-bold mb-6">Monthly Installment</h3>
+
+                            <div class="mb-auto">
+                                <div class="flex items-baseline gap-2">
+                                    <span id="result-value" class="text-5xl lg:text-6xl font-black text-primary tracking-tight">0.00</span>
+                                    <span class="text-xl font-bold text-gray-400">EGP</span>
+                                </div>
+                                <p class="text-sm text-gray-500 mt-4 leading-relaxed">
+                                    Interest rate: 14.5% per annum.<br>
+                                    <span id="sale-ban-info" class="text-orange-500 font-bold">With sale ban (حظر بيع)</span>
+                                </p>
+                            </div>
+
+                            <div class="mt-12 space-y-4">
+                                <ul class="space-y-3 text-sm font-medium">
+                                    <li class="flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-green-500 text-lg">check_circle</span>
+                                        <span>No insurance required</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-green-500 text-lg">check_circle</span>
+                                        <span>No administrative fees</span>
+                                    </li>
+                                </ul>
+                                <button onclick="proceedToContact()" class="w-full bg-primary hover:bg-primary-dark text-white font-black py-5 rounded-2xl text-xl shadow-lg shadow-red-900/20 transition-all transform active:scale-[0.98]">
+                                    Proceed NOW!
+                                </button>
+                                <a href="inventory.html" class="block text-center text-sm font-bold text-gray-500 hover:text-primary transition-colors">See available cars</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Plan List (as shown in image 1) -->
+        <div class="mt-20">
+            <h2 class="text-2xl font-bold mb-8">Installment Options Comparison</h2>
+            <div id="installment-options-list" class="space-y-4">
+                <!-- Injected by JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Main Script -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        // Specific page logic
+        let calcMode = 'installment'; // 'installment' or 'price'
+        let selectedMonths = 36;
+        let interestRate = 0.145;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Wait for products to load in script.js
+            const checkProducts = setInterval(() => {
+                if (window.products && window.products.length > 0) {
+                    clearInterval(checkProducts);
+                    initFinancingPage();
+                }
+            }, 100);
+
+            // Add event listeners to inputs
+            document.getElementById('calc-primary-input').addEventListener('input', calculate);
+            document.getElementById('calc-down-payment').addEventListener('input', calculate);
+            document.getElementById('calc-car-select').addEventListener('change', handleCarSelect);
+        });
+
+        function initFinancingPage() {
+            const select = document.getElementById('calc-car-select');
+            window.products.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.textContent = p.name;
+                select.appendChild(opt);
+            });
+
+            // Check URL for pre-selected car
+            const params = new URLSearchParams(window.location.search);
+            const carId = params.get('id');
+            if (carId) {
+                select.value = carId;
+                handleCarSelect();
+            } else {
+                calculate();
+            }
+        }
+
+        function switchCalcTab(mode) {
+            calcMode = mode;
+            const btnInst = document.getElementById('tab-calc-installment');
+            const btnPrice = document.getElementById('tab-calc-price');
+            const labelPrimary = document.getElementById('label-primary-input');
+            const resultLabel = document.getElementById('result-label');
+
+            if (mode === 'installment') {
+                btnInst.className = 'flex-1 py-6 text-center font-bold text-lg bg-primary text-white transition-all';
+                btnPrice.className = 'flex-1 py-6 text-center font-bold text-lg text-gray-500 hover:text-primary transition-all';
+                labelPrimary.textContent = 'Car Price (EGP)';
+                resultLabel.textContent = 'Monthly Installment';
+                document.getElementById('calc-primary-input').value = 1000000;
+                document.getElementById('calc-down-payment').value = 200000;
+            } else {
+                btnPrice.className = 'flex-1 py-6 text-center font-bold text-lg bg-primary text-white transition-all';
+                btnInst.className = 'flex-1 py-6 text-center font-bold text-lg text-gray-500 hover:text-primary transition-all';
+                labelPrimary.textContent = 'Monthly Installment (EGP)';
+                resultLabel.textContent = 'Estimated Car Price';
+                document.getElementById('calc-primary-input').value = 25000;
+                document.getElementById('calc-down-payment').value = 200000;
+            }
+            calculate();
+        }
+
+        function setCalcMonths(m) {
+            selectedMonths = m;
+            document.querySelectorAll('.month-btn').forEach(btn => {
+                if (parseInt(btn.dataset.months) === m) {
+                    btn.className = 'month-btn py-3 rounded-xl border-2 border-primary bg-primary/5 text-primary font-bold transition-all';
+                } else {
+                    btn.className = 'month-btn py-3 rounded-xl border-2 border-gray-200 dark:border-white/10 font-bold hover:border-primary transition-all';
+                }
+            });
+            calculate();
+        }
+
+        function handleCarSelect() {
+            const id = parseInt(document.getElementById('calc-car-select').value);
+            if (id === 0) return;
+
+            const product = window.products.find(p => p.id === id);
+            if (product && product.price_egp) {
+                document.getElementById('calc-primary-input').value = product.price_egp;
+                // Default down payment to 20%
+                document.getElementById('calc-down-payment').value = Math.round(product.price_egp * 0.2);
+                calculate();
+            }
+        }
+
+        function calculate() {
+            const primary = parseFloat(document.getElementById('calc-primary-input').value) || 0;
+            const down = parseFloat(document.getElementById('calc-down-payment').value) || 0;
+            const months = selectedMonths;
+            const years = months / 12;
+
+            const valDisplay = document.getElementById('result-value');
+            const percDisplay = document.getElementById('down-payment-percentage');
+            const banInfo = document.getElementById('sale-ban-info');
+
+            if (calcMode === 'installment') {
+                const financedAmount = primary - down;
+                if (financedAmount <= 0) {
+                    valDisplay.textContent = '0.00';
+                } else {
+                    // Simple interest formula as suggested by the Valu terms in the image/text
+                    // Total interest = Principal * Rate * Years
+                    const totalInterest = financedAmount * interestRate * years;
+                    const totalAmount = financedAmount + totalInterest;
+                    const monthly = totalAmount / months;
+                    valDisplay.textContent = Math.round(monthly).toLocaleString();
+                }
+
+                const perc = primary > 0 ? Math.round((down / primary) * 100) : 0;
+                percDisplay.textContent = `${perc}% of car value`;
+
+                if (perc >= 40) {
+                    banInfo.textContent = 'No sale ban (بدون حظر بيع)';
+                    banInfo.className = 'text-green-500 font-bold';
+                } else {
+                    banInfo.textContent = 'With sale ban (حظر بيع)';
+                    banInfo.className = 'text-orange-500 font-bold';
+                }
+
+                renderComparison(primary, down);
+            } else {
+                // Reverse calculation: Car Price = (Monthly * Months) / (1 + Rate * Years) + Down
+                const monthly = primary;
+                const totalAmount = monthly * months;
+                const financedAmount = totalAmount / (1 + interestRate * years);
+                const carPrice = financedAmount + down;
+
+                valDisplay.textContent = Math.round(carPrice).toLocaleString();
+
+                const perc = carPrice > 0 ? Math.round((down / carPrice) * 100) : 0;
+                percDisplay.textContent = `${perc}% of estimated value`;
+
+                if (perc >= 40) {
+                    banInfo.textContent = 'No sale ban (بدون حظر بيع)';
+                    banInfo.className = 'text-green-500 font-bold';
+                } else {
+                    banInfo.textContent = 'With sale ban (حظر بيع)';
+                    banInfo.className = 'text-orange-500 font-bold';
+                }
+
+                document.getElementById('installment-options-list').innerHTML = ''; // Hide comparison in reverse mode
+            }
+        }
+
+        function renderComparison(carPrice, down) {
+            const container = document.getElementById('installment-options-list');
+            const financedAmount = carPrice - down;
+            if (financedAmount <= 0) {
+                container.innerHTML = '<p class="text-gray-500">Add a valid price to see options.</p>';
+                return;
+            }
+
+            const periods = [12, 24, 36, 48, 60, 84];
+            container.innerHTML = periods.map(m => {
+                const years = m / 12;
+                const totalInterest = financedAmount * interestRate * years;
+                const totalAmount = financedAmount + totalInterest;
+                const monthly = Math.round(totalAmount / m);
+                const isActive = m === selectedMonths;
+
+                return `
+                    <div class="flex items-center justify-between p-6 rounded-2xl border-2 transition-all ${isActive ? 'border-primary bg-primary/5' : 'border-gray-200 dark:border-white/10 bg-white dark:bg-surface-card'}">
+                        <div>
+                            <p class="text-sm text-gray-500 font-bold uppercase tracking-wider">Duration</p>
+                            <p class="text-xl font-black">${m} Months</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-gray-500 font-bold uppercase tracking-wider">Monthly</p>
+                            <p class="text-2xl font-black text-primary">${monthly.toLocaleString()} EGP</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function proceedToContact() {
+            const carName = document.getElementById('calc-car-select').options[document.getElementById('calc-car-select').selectedIndex].text;
+            const price = document.getElementById('calc-primary-input').value;
+            const down = document.getElementById('calc-down-payment').value;
+            const months = selectedMonths;
+            const monthly = document.getElementById('result-value').textContent;
+
+            const message = `Financing inquiry for: ${carName}\nCar Price: ${price} EGP\nDown Payment: ${down} EGP\nDuration: ${months} Months\nMonthly Installment: ${monthly} EGP`;
+
+            window.location.href = `contact.html?message=${encodeURIComponent(message)}`;
+        }
+    </script>
+</body>
+</html>
