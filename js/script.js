@@ -421,13 +421,6 @@ async function loadGlobalSettings() {
         }
 
         // Apply Social Media Links
-        const tiktok = document.getElementById('social-tiktok');
-        const fb = document.getElementById('social-facebook');
-        const insta = document.getElementById('social-instagram');
-        const whatsapp = document.getElementById('social-whatsapp');
-        const phone = document.getElementById('social-phone');
-        const phoneDetails = document.getElementById('social-phone-details');
-
         const trackClick = (type, value) => {
             window.dataLayer = window.dataLayer || [];
             window.dataLayer.push({
@@ -437,44 +430,106 @@ async function loadGlobalSettings() {
             });
         };
 
-        if (tiktok && settings['SOCIAL_TIKTOK']) {
-            tiktok.href = settings['SOCIAL_TIKTOK'];
-            tiktok.addEventListener('click', () => trackClick('tiktok', settings['SOCIAL_TIKTOK']));
-        }
-        if (fb && settings['SOCIAL_FACEBOOK']) {
-            fb.href = settings['SOCIAL_FACEBOOK'];
-            fb.addEventListener('click', () => trackClick('facebook', settings['SOCIAL_FACEBOOK']));
-        }
-        if (insta && settings['SOCIAL_INSTAGRAM']) {
-            insta.href = settings['SOCIAL_INSTAGRAM'];
-            insta.addEventListener('click', () => trackClick('instagram', settings['SOCIAL_INSTAGRAM']));
-        }
-        if (whatsapp && settings['SOCIAL_WHATSAPP']) {
-            whatsapp.href = settings['SOCIAL_WHATSAPP'];
-            whatsapp.addEventListener('click', () => trackClick('whatsapp', settings['SOCIAL_WHATSAPP']));
-        }
-        if (phone && settings['SOCIAL_PHONE']) {
-            phone.href = `tel:${settings['SOCIAL_PHONE'].replace(/\s+/g, '')}`;
-            phone.addEventListener('click', () => trackClick('phone', settings['SOCIAL_PHONE']));
-        }
-        if (phoneDetails && settings['SOCIAL_PHONE']) {
-            phoneDetails.href = `tel:${settings['SOCIAL_PHONE'].replace(/\s+/g, '')}`;
-            phoneDetails.addEventListener('click', () => trackClick('phone_details', settings['SOCIAL_PHONE']));
-        }
+        const setupSocialLink = (id, settingsKey, type) => {
+            const el = document.getElementById(id);
+            if (!el || !settings[settingsKey]) return;
+
+            let links = [];
+            try {
+                links = JSON.parse(settings[settingsKey]);
+                if (!Array.isArray(links)) links = [settings[settingsKey]];
+            } catch (e) {
+                links = [settings[settingsKey]];
+            }
+            links = links.filter(l => l);
+
+            if (links.length === 0) return;
+
+            if (links.length === 1) {
+                el.href = type === 'phone' ? `tel:${links[0].replace(/\s+/g, '')}` : links[0];
+                el.addEventListener('click', () => trackClick(type, links[0]));
+            } else {
+                el.removeAttribute('href');
+                el.classList.add('relative', 'group/social');
+                el.style.cursor = 'pointer';
+
+                const dropdownHtml = `
+                    <div class="social-dropdown hidden group-hover/social:block absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-white dark:bg-surface-card border border-gray-200 dark:border-white/10 rounded-lg shadow-xl py-2 z-[60] min-w-[180px]">
+                        ${links.map(link => {
+                            const href = type === 'phone' ? `tel:${link.replace(/\s+/g, '')}` : link;
+                            const display = type === 'phone' ? link : (link.replace('https://', '').replace('www.', '').split('/')[0] + (link.split('/').length > 1 ? '/...' : ''));
+                            return `
+                                <a href="${href}" target="_blank" class="block px-4 py-2 text-xs text-slate-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors flex items-center gap-2" onclick="event.stopPropagation(); trackClick('${type}', '${link}')">
+                                    <span class="material-symbols-outlined text-[16px]">${type === 'phone' ? 'call' : 'link'}</span>
+                                    <span class="truncate">${escapeHtml(link)}</span>
+                                </a>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+                el.insertAdjacentHTML('beforeend', dropdownHtml);
+                el.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const dropdown = el.querySelector('.social-dropdown');
+                    dropdown.classList.toggle('hidden');
+                });
+            }
+        };
+
+        setupSocialLink('social-tiktok', 'SOCIAL_TIKTOK', 'tiktok');
+        setupSocialLink('social-facebook', 'SOCIAL_FACEBOOK', 'facebook');
+        setupSocialLink('social-instagram', 'SOCIAL_INSTAGRAM', 'instagram');
+        setupSocialLink('social-whatsapp', 'SOCIAL_WHATSAPP', 'whatsapp');
+        setupSocialLink('social-phone', 'SOCIAL_PHONE', 'phone');
+        setupSocialLink('social-phone-details', 'SOCIAL_PHONE', 'phone_details');
 
         // Apply Floating WhatsApp Button
         if (settings['SOCIAL_WHATSAPP']) {
-            let floatingBtn = document.getElementById('floating-whatsapp');
-            if (!floatingBtn) {
-                floatingBtn = document.createElement('a');
-                floatingBtn.id = 'floating-whatsapp';
-                floatingBtn.target = '_blank';
-                floatingBtn.className = 'fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-lg hover:bg-primary-dark hover:scale-110 transition-all duration-300';
-                floatingBtn.innerHTML = '<svg class="w-7 h-7 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>';
-                document.body.appendChild(floatingBtn);
-                floatingBtn.addEventListener('click', () => trackClick('whatsapp_floating', settings['SOCIAL_WHATSAPP']));
+            let links = [];
+            try {
+                links = JSON.parse(settings['SOCIAL_WHATSAPP']);
+                if (!Array.isArray(links)) links = [settings['SOCIAL_WHATSAPP']];
+            } catch (e) {
+                links = [settings['SOCIAL_WHATSAPP']];
             }
-            floatingBtn.href = settings['SOCIAL_WHATSAPP'];
+            links = links.filter(l => l);
+
+            if (links.length > 0) {
+                let floatingBtn = document.getElementById('floating-whatsapp');
+                if (!floatingBtn) {
+                    floatingBtn = document.createElement('div');
+                    floatingBtn.id = 'floating-whatsapp';
+                    floatingBtn.className = 'fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-lg hover:bg-primary-dark hover:scale-110 transition-all duration-300 cursor-pointer group/social';
+                    floatingBtn.innerHTML = `
+                        <svg class="w-7 h-7 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    `;
+                    document.body.appendChild(floatingBtn);
+                }
+
+                if (links.length === 1) {
+                    floatingBtn.onclick = () => {
+                        window.open(links[0], '_blank');
+                        trackClick('whatsapp_floating', links[0]);
+                    };
+                } else {
+                    const dropdownHtml = `
+                        <div class="social-dropdown hidden group-hover/social:block absolute bottom-full mb-4 right-0 bg-white dark:bg-surface-card border border-gray-200 dark:border-white/10 rounded-lg shadow-xl py-2 z-[60] min-w-[200px]">
+                            ${links.map(link => `
+                                <a href="${link}" target="_blank" class="block px-4 py-3 text-sm text-slate-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors flex items-center gap-3" onclick="event.stopPropagation(); trackClick('whatsapp_floating', '${link}')">
+                                    <svg class="w-5 h-5 fill-primary" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                                    <span class="truncate">${escapeHtml(link)}</span>
+                                </a>
+                            `).join('')}
+                        </div>
+                    `;
+                    floatingBtn.insertAdjacentHTML('beforeend', dropdownHtml);
+                    floatingBtn.onclick = (e) => {
+                        const dropdown = floatingBtn.querySelector('.social-dropdown');
+                        dropdown.classList.toggle('hidden');
+                    };
+                }
+            }
         }
 
         // Apply Location
@@ -1104,6 +1159,11 @@ async function loadDetails() {
     document.getElementById('vehicle-title-crumb').textContent = displayName;
     document.getElementById('vehicle-price').setAttribute('data-price-egp', product.price_egp || '');
 
+    const btnInstallment = document.getElementById('btn-installment');
+    if (btnInstallment) {
+        btnInstallment.href = `financing.html?id=${product.id}`;
+    }
+
     // Origin Badge
     const originBadge = document.getElementById('vehicle-origin-badge');
     if (originBadge) {
@@ -1378,6 +1438,14 @@ window.changeMainImage = changeMainImage;
 function loadContact() {
     // Just ensure translations are applied
     updateDOMTranslations();
+
+    // Check for pre-filled message from financing
+    const params = new URLSearchParams(window.location.search);
+    const prefilledMessage = params.get('message');
+    if (prefilledMessage) {
+        const messageEl = document.getElementById('c-message');
+        if (messageEl) messageEl.value = prefilledMessage;
+    }
 
     const form = document.getElementById('contact-form');
     if (form) {
