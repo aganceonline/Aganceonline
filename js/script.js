@@ -15,6 +15,7 @@ let currentTheme = localStorage.getItem('theme') || 'dark';
 let currentCurrency = localStorage.getItem('currency') || 'EGP';
 let translations = {};
 let products = [];
+window.products = [];
 let currentProduct = null;
 let brands = [];
 let activeBrandFilters = [];
@@ -139,6 +140,7 @@ async function init() {
     await fetchExchangeRate();
     await loadBrands();
     await loadProducts();
+    window.products = products; // Sync to global window
     await loadGlobalSettings();
 
     // Then Set Language (fetches translation data) without triggering a re-render yet
@@ -268,6 +270,21 @@ function updateDOMTranslations() {
         const key = el.getAttribute('data-i18n-placeholder');
         if (translations[currentLang][key]) {
             el.placeholder = translations[currentLang][key];
+        }
+    });
+
+    // Update language toggle text
+    const langToggles = document.querySelectorAll('.lang-toggle');
+    langToggles.forEach(btn => {
+        const langSpan = btn.querySelector('.font-bold.text-sm');
+        const icon = btn.querySelector('.material-symbols-outlined');
+        if (icon) icon.remove(); // Remove icon if present
+
+        let text = currentLang === 'en' ? 'Ar' : 'En';
+        if (langSpan) {
+            langSpan.textContent = text;
+        } else {
+            btn.innerHTML = `<span class="font-bold text-sm">${text}</span>`;
         }
     });
 }

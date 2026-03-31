@@ -80,7 +80,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <span class="material-symbols-outlined">favorite</span>
                 </a>
                 <button onclick="toggleLanguage()" class="lang-toggle hidden md:flex items-center justify-center rounded-full p-2 text-slate-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-primary transition-colors">
-                    <span class="material-symbols-outlined">language</span>
+                    <span class="font-bold text-sm">Ar</span>
                 </button>
                 <button onclick="toggleTheme()" class="theme-toggle hidden md:flex items-center justify-center rounded-full p-2 text-slate-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-primary transition-colors">
                     <span class="theme-icon material-symbols-outlined">light_mode</span>
@@ -107,7 +107,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </button>
                 <button onclick="toggleLanguage()" class="lang-toggle flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-slate-600 dark:text-gray-300 hover:text-primary hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
                     <span>Language</span>
-                    <span class="material-symbols-outlined text-lg">language</span>
+                    <span class="font-bold text-sm">Ar</span>
                 </button>
                 <button onclick="toggleTheme()" class="theme-toggle flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-slate-600 dark:text-gray-300 hover:text-primary hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
                     <span>Theme</span>
@@ -124,14 +124,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <p class="text-gray-500 dark:text-gray-400 text-lg max-w-2xl mx-auto">Calculate your monthly installments and find the best financing plan for your dream car.</p>
         </div>
 
-        <!-- Valu Promotion Banner -->
-        <div class="bg-white dark:bg-surface-card rounded-2xl p-8 mb-12 border border-gray-200 dark:border-white/10 flex flex-col md:flex-row items-center gap-8 shadow-xl">
-            <div class="w-32 h-32 flex-shrink-0 flex items-center justify-center bg-gray-50 dark:bg-white/5 rounded-2xl p-4">
+        <!-- Financing Methods Tabs -->
+        <div class="flex bg-gray-100 dark:bg-white/5 p-1 rounded-2xl max-w-2xl mx-auto mb-10">
+            <button onclick="setFinancingMethod('valu')" data-method="valu" class="method-btn flex-1 py-3 text-sm font-bold rounded-xl bg-primary text-white shadow-lg transition-all">Valu</button>
+            <button onclick="setFinancingMethod('bank')" data-method="bank" class="method-btn flex-1 py-3 text-sm font-bold rounded-xl text-gray-500 dark:text-gray-400 hover:text-primary transition-all">Bank (قسط بنك)</button>
+            <button onclick="setFinancingMethod('direct')" data-method="direct" class="method-btn flex-1 py-3 text-sm font-bold rounded-xl text-gray-500 dark:text-gray-400 hover:text-primary transition-all">Direct (قسط مباشر)</button>
+        </div>
+
+        <!-- Method Info Banner -->
+        <div id="method-info-banner" class="bg-white dark:bg-surface-card rounded-2xl p-8 mb-12 border border-gray-200 dark:border-white/10 flex flex-col md:flex-row items-center gap-8 shadow-xl">
+            <div id="method-logo-container" class="w-32 h-32 flex-shrink-0 flex items-center justify-center bg-gray-50 dark:bg-white/5 rounded-2xl p-4">
                 <img src="https://www.valu.com.eg/static/media/valu-logo.6a3d6a9a.png" alt="Valu" class="max-w-full max-h-full object-contain">
             </div>
             <div class="flex-grow text-center md:text-left">
-                <h2 class="text-2xl font-bold mb-4 text-primary">أوفر فاليو الجديد 🔥</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm font-medium">
+                <h2 id="method-title" class="text-2xl font-bold mb-4 text-primary">أوفر فاليو الجديد 🔥</h2>
+                <div id="method-features" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm font-medium">
                     <div class="flex items-center gap-2 justify-center md:justify-start">
                         <span class="material-symbols-outlined text-green-500">check_circle</span>
                         <span>فائدة 14.5%</span>
@@ -140,16 +147,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <span class="material-symbols-outlined text-green-500">check_circle</span>
                         <span>متاح لكل المقدمات بداية من 0% مقدم</span>
                     </div>
-                    <div class="flex items-center gap-2 justify-center md:justify-start">
-                        <span class="material-symbols-outlined text-red-500">cancel</span>
-                        <span>بدون تأمين إجباري</span>
-                    </div>
-                    <div class="flex items-center gap-2 justify-center md:justify-start">
-                        <span class="material-symbols-outlined text-red-500">cancel</span>
-                        <span>بدون مصاريف إدارية</span>
-                    </div>
                 </div>
-                <p class="mt-6 text-xs text-gray-500 dark:text-gray-400 italic">* تطبق الشروط والأحكام. عرض الـ 40% مقدم بدون حظر بيع.</p>
+                <p id="method-disclaimer" class="mt-6 text-xs text-gray-500 dark:text-gray-400 italic">* تطبق الشروط والأحكام. عرض الـ 40% مقدم بدون حظر بيع.</p>
             </div>
         </div>
 
@@ -196,8 +195,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                 <button onclick="setCalcMonths(36)" data-months="36" class="month-btn py-3 rounded-xl border-2 border-primary bg-primary/5 text-primary font-bold transition-all">36</button>
                                 <button onclick="setCalcMonths(48)" data-months="48" class="month-btn py-3 rounded-xl border-2 border-gray-200 dark:border-white/10 font-bold hover:border-primary transition-all">48</button>
                                 <button onclick="setCalcMonths(60)" data-months="60" class="month-btn py-3 rounded-xl border-2 border-gray-200 dark:border-white/10 font-bold hover:border-primary transition-all">60</button>
-                                <button onclick="setCalcMonths(84)" data-months="84" class="month-btn py-3 rounded-xl border-2 border-gray-200 dark:border-white/10 font-bold hover:border-primary transition-all">84</button>
                             </div>
+                        </div>
+                        <div id="validation-message" class="hidden p-4 rounded-xl bg-red-500/10 border border-red-500 text-red-500 text-sm font-bold">
+                            You must have at least 10% as down payment.
                         </div>
                     </div>
 
@@ -212,7 +213,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                     <span class="text-xl font-bold text-gray-400">EGP</span>
                                 </div>
                                 <p class="text-sm text-gray-500 mt-4 leading-relaxed">
-                                    Interest rate: 14.5% per annum.<br>
+                                    <span id="interest-rate-display">Interest rate: 14.5% per annum.</span><br>
                                     <span id="sale-ban-info" class="text-orange-500 font-bold">With sale ban (حظر بيع)</span>
                                 </p>
                             </div>
@@ -256,7 +257,42 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // Specific page logic
         let calcMode = 'installment'; // 'installment' or 'price'
         let selectedMonths = 36;
-        let interestRate = 0.145;
+        let currentMethod = 'valu'; // 'valu', 'bank', 'direct'
+
+        const methods = {
+            valu: {
+                title: 'أوفر فاليو الجديد 🔥',
+                logo: 'https://www.valu.com.eg/static/media/valu-logo.6a3d6a9a.png',
+                features: [
+                    { icon: 'check_circle', color: 'text-green-500', text: 'فائدة 14.5%' },
+                    { icon: 'check_circle', color: 'text-green-500', text: 'متاح لكل المقدمات بداية من 0% مقدم' },
+                    { icon: 'cancel', color: 'text-red-500', text: 'بدون تأمين إجباري' },
+                    { icon: 'cancel', color: 'text-red-500', text: 'بدون مصاريف إدارية' }
+                ],
+                disclaimer: '* تطبق الشروط والأحكام. عرض الـ 40% مقدم بدون حظر بيع.'
+            },
+            bank: {
+                title: 'نظام تقسيط البنك 🏦',
+                logo: 'https://img.icons8.com/color/144/bank.png',
+                features: [
+                    { icon: 'check_circle', color: 'text-green-500', text: 'مقدم ١٠٪؜ فايده ١٦٪؜' },
+                    { icon: 'check_circle', color: 'text-green-500', text: 'مقدم ٢٠٪؜ فايده ١٦٪؜' },
+                    { icon: 'check_circle', color: 'text-green-500', text: 'مقدم ٣٠٪؜ فايده ١٤٪؜' },
+                    { icon: 'check_circle', color: 'text-green-500', text: 'مقدم ٤٠٪؜ فايده ١٤٪؜' },
+                    { icon: 'check_circle', color: 'text-green-500', text: 'مقدم ٥٠٪؜ فايده ١٤٪' }
+                ],
+                disclaimer: '* قسط بنك - تطبق الشروط والأحكام.'
+            },
+            direct: {
+                title: 'نظام تقسيط مباشر 🤝',
+                logo: 'https://img.icons8.com/color/144/contract.png',
+                features: [
+                    { icon: 'check_circle', color: 'text-green-500', text: 'مقدم ٤٠٪؜ فايده ٣٥٪؜' },
+                    { icon: 'check_circle', color: 'text-green-500', text: 'مقدم ٥٠٪؜ فايده ٣٥٪' }
+                ],
+                disclaimer: '* قسط مباشر - تطبق الشروط والأحكام.'
+            }
+        };
 
         document.addEventListener('DOMContentLoaded', async () => {
             // Wait for products to load in script.js
@@ -291,6 +327,47 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             } else {
                 calculate();
             }
+        }
+
+        function setFinancingMethod(method) {
+            currentMethod = method;
+            document.querySelectorAll('.method-btn').forEach(btn => {
+                if (btn.dataset.method === method) {
+                    btn.classList.add('bg-primary', 'text-white', 'shadow-lg');
+                    btn.classList.remove('text-gray-500', 'dark:text-gray-400');
+                } else {
+                    btn.classList.remove('bg-primary', 'text-white', 'shadow-lg');
+                    btn.classList.add('text-gray-500', 'dark:text-gray-400');
+                }
+            });
+
+            // Update Banner
+            const config = methods[method];
+            document.getElementById('method-logo-container').innerHTML = `<img src="${config.logo}" alt="${method}" class="max-w-full max-h-full object-contain">`;
+            document.getElementById('method-title').textContent = config.title;
+            document.getElementById('method-features').innerHTML = config.features.map(f => `
+                <div class="flex items-center gap-2 justify-center md:justify-start">
+                    <span class="material-symbols-outlined ${f.color}">${f.icon}</span>
+                    <span>${f.text}</span>
+                </div>
+            `).join('');
+            document.getElementById('method-disclaimer').textContent = config.disclaimer;
+
+            calculate();
+        }
+
+        function getInterestRate(down, carPrice) {
+            const perc = carPrice > 0 ? (down / carPrice) * 100 : 0;
+            if (currentMethod === 'valu') return 0.145;
+            if (currentMethod === 'bank') {
+                if (perc >= 30) return 0.14;
+                if (perc >= 10) return 0.16;
+                return 0.16; // Fallback
+            }
+            if (currentMethod === 'direct') {
+                return 0.35;
+            }
+            return 0.145;
         }
 
         function switchCalcTab(mode) {
@@ -352,22 +429,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             const valDisplay = document.getElementById('result-value');
             const percDisplay = document.getElementById('down-payment-percentage');
             const banInfo = document.getElementById('sale-ban-info');
+            const validationMsg = document.getElementById('validation-message');
+            const rateDisplay = document.getElementById('interest-rate-display');
+
+            const perc = primary > 0 ? (down / primary) * 100 : 0;
+            const rate = getInterestRate(down, primary);
+
+            // Validation logic
+            let minPerc = 10;
+            if (currentMethod === 'direct') minPerc = 40;
+
+            if (perc < minPerc) {
+                validationMsg.textContent = `Minimum down payment for ${currentMethod.toUpperCase()} is ${minPerc}%.`;
+                validationMsg.classList.remove('hidden');
+            } else {
+                validationMsg.classList.add('hidden');
+            }
 
             if (calcMode === 'installment') {
                 const financedAmount = primary - down;
                 if (financedAmount <= 0) {
                     valDisplay.textContent = '0.00';
                 } else {
-                    // Simple interest formula as suggested by the Valu terms in the image/text
-                    // Total interest = Principal * Rate * Years
-                    const totalInterest = financedAmount * interestRate * years;
+                    const totalInterest = financedAmount * rate * years;
                     const totalAmount = financedAmount + totalInterest;
                     const monthly = totalAmount / months;
                     valDisplay.textContent = Math.round(monthly).toLocaleString();
                 }
 
-                const perc = primary > 0 ? Math.round((down / primary) * 100) : 0;
-                percDisplay.textContent = `${perc}% of car value`;
+                percDisplay.textContent = `${Math.round(perc)}% of car value`;
+                rateDisplay.textContent = `Interest rate: ${(rate * 100).toFixed(1)}% per annum.`;
 
                 if (perc >= 40) {
                     banInfo.textContent = 'No sale ban (بدون حظر بيع)';
@@ -382,15 +473,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 // Reverse calculation: Car Price = (Monthly * Months) / (1 + Rate * Years) + Down
                 const monthly = primary;
                 const totalAmount = monthly * months;
-                const financedAmount = totalAmount / (1 + interestRate * years);
+                const financedAmount = totalAmount / (1 + rate * years);
                 const carPrice = financedAmount + down;
 
                 valDisplay.textContent = Math.round(carPrice).toLocaleString();
 
-                const perc = carPrice > 0 ? Math.round((down / carPrice) * 100) : 0;
-                percDisplay.textContent = `${perc}% of estimated value`;
+                const reversePerc = carPrice > 0 ? Math.round((down / carPrice) * 100) : 0;
+                percDisplay.textContent = `${reversePerc}% of estimated value`;
+                rateDisplay.textContent = `Interest rate: ${(rate * 100).toFixed(1)}% per annum.`;
 
-                if (perc >= 40) {
+                if (reversePerc >= 40) {
                     banInfo.textContent = 'No sale ban (بدون حظر بيع)';
                     banInfo.className = 'text-green-500 font-bold';
                 } else {
@@ -410,10 +502,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 return;
             }
 
-            const periods = [12, 24, 36, 48, 60, 84];
+            const periods = [12, 24, 36, 48, 60];
             container.innerHTML = periods.map(m => {
                 const years = m / 12;
-                const totalInterest = financedAmount * interestRate * years;
+                const rate = getInterestRate(down, carPrice);
+                const totalInterest = financedAmount * rate * years;
                 const totalAmount = financedAmount + totalInterest;
                 const monthly = Math.round(totalAmount / m);
                 const isActive = m === selectedMonths;
@@ -434,13 +527,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
 
         function proceedToContact() {
+            const validationMsg = document.getElementById('validation-message');
+            if (!validationMsg.classList.contains('hidden')) {
+                alert(validationMsg.textContent);
+                return;
+            }
+
             const carName = document.getElementById('calc-car-select').options[document.getElementById('calc-car-select').selectedIndex].text;
             const price = document.getElementById('calc-primary-input').value;
             const down = document.getElementById('calc-down-payment').value;
             const months = selectedMonths;
             const monthly = document.getElementById('result-value').textContent;
 
-            const message = `Financing inquiry for: ${carName}\nCar Price: ${price} EGP\nDown Payment: ${down} EGP\nDuration: ${months} Months\nMonthly Installment: ${monthly} EGP`;
+            const message = `Financing inquiry for: ${carName}\nMethod: ${currentMethod}\nCar Price: ${price} EGP\nDown Payment: ${down} EGP\nDuration: ${months} Months\nMonthly Installment: ${monthly} EGP`;
 
             window.location.href = `contact.html?message=${encodeURIComponent(message)}`;
         }
