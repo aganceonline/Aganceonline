@@ -100,6 +100,27 @@ const escapeHtml = (unsafe) => {
          .replace(/'/g, "&#039;");
 };
 
+// Fallback Translation (MyMemory API - Free, No Credit Card)
+async function translateTextFallback(texts, targetLang = 'ar') {
+    console.log('Using MyMemory Fallback Translation...');
+    try {
+        const results = await Promise.all(texts.map(async (text) => {
+            if (!text || text.trim() === '') return '';
+            // MyMemory is free up to 1000 words/day
+            const resp = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${targetLang}`);
+            const data = await resp.json();
+            if (data && data.responseData && data.responseData.translatedText) {
+                return data.responseData.translatedText;
+            }
+            return '';
+        }));
+        return results;
+    } catch (err) {
+        console.error('Fallback translation failed:', err);
+        return null;
+    }
+}
+
 // DOM Elements
 const loginSection = document.getElementById('login-section');
 const dashboardSection = document.getElementById('dashboard-section');
@@ -1002,25 +1023,23 @@ async function handleSaveProduct(e) {
                 }
             });
 
-            if (error) {
-                console.error('Translation API Error:', error);
-
-                // Try to extract a more specific error message from the response
-                let errorMsg = error.message || 'Translation failed. Saving without Arabic descriptions.';
-                if (error.context && error.context.json && error.context.json.error) {
-                    errorMsg = error.context.json.error;
-                }
-
-                showToast(`Translation Warning: ${errorMsg}`, 'warning');
-            } else {
-                console.log('Translation API Response:', data);
-                if (data && data.error) {
-                    console.error('Translation returned error payload:', data.error);
-                    showToast(`Translation Warning: ${data.error}`, 'warning');
-                } else if (data && data.translatedText && Array.isArray(data.translatedText)) {
-                     [nameAr, descAr, categoryAr, mileageAr, transAr, fuelAr, versionAr] = data.translatedText;
+            if (error || (data && data.error)) {
+                console.warn('Supabase Translation API Error, using fallback...');
+                const fallbackResults = await translateTextFallback(textsToTranslate);
+                if (fallbackResults) {
+                    [nameAr, descAr, categoryAr, mileageAr, transAr, fuelAr, versionAr] = fallbackResults;
+                    showToast('Translation recovered using free fallback service.', 'info');
                 } else {
-                    console.warn('Unexpected translation response format:', data);
+                    showToast('Translation failed. Saving without Arabic descriptions.', 'warning');
+                }
+            } else if (data && data.translatedText && Array.isArray(data.translatedText)) {
+                console.log('Supabase Translation API Success');
+                [nameAr, descAr, categoryAr, mileageAr, transAr, fuelAr, versionAr] = data.translatedText;
+            } else {
+                console.warn('Unexpected translation response format, using fallback...');
+                const fallbackResults = await translateTextFallback(textsToTranslate);
+                if (fallbackResults) {
+                    [nameAr, descAr, categoryAr, mileageAr, transAr, fuelAr, versionAr] = fallbackResults;
                 }
             }
         } catch (transErr) {
