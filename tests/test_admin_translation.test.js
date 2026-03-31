@@ -73,11 +73,15 @@ describe('handleSaveProduct', () => {
             'p-price': { value: '1000' },
             'p-category': { value: 'SUV' },
             'p-featured': { checked: false },
-            'p-desc': { value: 'Description' },
+            'p-sold-out': { checked: false },
+            'p-desc': { value: 'Description EN' },
+            'p-desc-ar': { value: 'Description AR' },
+            'p-origin': { value: 'Imported' },
             'p-upon-request': { checked: false },
             'p-mileage': { value: '10km' },
             'p-trans': { value: 'Auto' },
             'p-fuel': { value: 'Petrol' },
+            'p-version': { value: 'V1' },
             'p-image': { files: [] },
             'p-diagnostics': { files: [] },
             'p-gallery-upload': { files: [] },
@@ -85,75 +89,24 @@ describe('handleSaveProduct', () => {
             'products-table-body': { innerHTML: '' },
             'product-modal': { classList: { add: jest.fn(), remove: jest.fn() } }
         };
-        document.getElementById.mockImplementation(id => mockInputs[id] || { value: '', addEventListener: jest.fn() });
+        document.getElementById.mockImplementation(id => mockInputs[id] || { value: '', addEventListener: jest.fn(), classList: { add: jest.fn(), remove: jest.fn() } });
     });
 
-    test('handles translation error gracefully', async () => {
-        // Mock translation failure
-        global.supabase.functions.invoke.mockResolvedValue({
-            data: null,
-            error: { message: 'Translation failed' }
-        });
-
+    test('saves product with manual Arabic description and no translation call', async () => {
         const event = { preventDefault: jest.fn() };
         await admin.handleSaveProduct(event);
 
-        expect(console.error).toHaveBeenCalledWith('Translation API Error:', expect.anything());
-        expect(global.showToast).toHaveBeenCalledWith(expect.stringContaining('Translation failed'), 'warning');
-
-        // Should still insert product
-        expect(global.supabase.from).toHaveBeenCalledWith('products');
-        expect(global.supabase.from().insert).toHaveBeenCalled();
-    });
-
-    test('sanitizes undefined inputs to empty string', async () => {
-         // Force undefined description
-        mockInputs['p-desc'].value = undefined;
-
-        global.supabase.functions.invoke.mockResolvedValue({
-            data: { translatedText: ['CarAr', '', 'SUVAr', '', '', ''] },
-            error: null
-        });
-
-        const event = { preventDefault: jest.fn() };
-        await admin.handleSaveProduct(event);
-
-        // Verify inputs sent to translate
-        const invokeCall = global.supabase.functions.invoke.mock.calls[0];
-        const payload = invokeCall[1].body.text;
-        expect(payload[1]).toBe(''); // Description sanitized
-    });
-
-    test('aborts translation if session is missing', async () => {
-        // Mock missing session
-        global.supabase.auth.getSession.mockResolvedValue({ data: { session: null } });
-
-        const event = { preventDefault: jest.fn() };
-        await admin.handleSaveProduct(event);
-
-        expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('No active session'));
-        expect(global.showToast).toHaveBeenCalledWith(expect.stringContaining('session has expired'), 'error');
-
-        // Function should NOT be called
+        // Verify translation was NOT called
         expect(global.supabase.functions.invoke).not.toHaveBeenCalled();
 
-        // Should still attempt to save (with empty translations)
-        // because the error is caught in the inner catch block
-        expect(global.supabase.from().insert).toHaveBeenCalled();
-    });
+        // Verify payload
+        const insertCall = global.supabase.from().insert.mock.calls[0][0];
+        expect(insertCall.description).toBe('Description EN');
+        expect(insertCall.description_ar).toBe('Description AR');
+        expect(insertCall.name_ar).toBeNull();
+        expect(insertCall.category_ar).toBeNull();
+        expect(insertCall.details_ar.mileage).toBeNull();
 
-    test('includes apikey in headers', async () => {
-        global.supabase.functions.invoke.mockResolvedValue({
-            data: { translatedText: [] },
-            error: null
-        });
-
-        const event = { preventDefault: jest.fn() };
-        await admin.handleSaveProduct(event);
-
-        const invokeCall = global.supabase.functions.invoke.mock.calls[0];
-        const headers = invokeCall[1].headers;
-        expect(headers).toHaveProperty('apikey', 'mock-anon-key');
-        expect(headers).toHaveProperty('Authorization', 'Bearer 123');
+        expect(global.showToast).toHaveBeenCalledWith('Vehicle saved successfully!', 'success');
     });
 });
