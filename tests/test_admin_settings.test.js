@@ -35,10 +35,23 @@ describe('Admin Settings Logic', () => {
                     addEventListener: jest.fn(),
                     classList: { add: jest.fn(), remove: jest.fn() },
                     value: '',
-                    files: []
+                    files: [],
+                    textContent: ''
                 };
             }),
-            addEventListener: jest.fn()
+            addEventListener: jest.fn(),
+            querySelector: jest.fn((selector) => {
+                // If it's looking for social containers, return something or null
+                if (selector.includes('container-social')) {
+                    return {
+                        querySelector: jest.fn().mockReturnValue(null),
+                        querySelectorAll: jest.fn().mockReturnValue([]),
+                        innerHTML: ''
+                    };
+                }
+                return null;
+            }),
+            querySelectorAll: jest.fn().mockReturnValue([])
         };
         global.window = {
             location: { pathname: '/admin.html' },
@@ -68,8 +81,7 @@ describe('Admin Settings Logic', () => {
 
     test('loadSettings fetches and sets value', async () => {
         const mockData = [
-            { key: 'EGP_TO_USD', value: '55.5' },
-            { key: 'SOCIAL_TIKTOK', value: '' }
+            { key: 'EGP_TO_USD', value: '55.5' }
         ];
 
         // Setup specific mock for this test

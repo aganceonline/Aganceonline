@@ -100,27 +100,6 @@ const escapeHtml = (unsafe) => {
          .replace(/'/g, "&#039;");
 };
 
-// Fallback Translation (MyMemory API - Free, No Credit Card)
-async function translateTextFallback(texts, targetLang = 'ar') {
-    console.log('Using MyMemory Fallback Translation...');
-    try {
-        const results = await Promise.all(texts.map(async (text) => {
-            if (!text || text.trim() === '') return '';
-            // MyMemory is free up to 1000 words/day
-            const resp = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${targetLang}`);
-            const data = await resp.json();
-            if (data && data.responseData && data.responseData.translatedText) {
-                return data.responseData.translatedText;
-            }
-            return '';
-        }));
-        return results;
-    } catch (err) {
-        console.error('Fallback translation failed:', err);
-        return null;
-    }
-}
-
 // DOM Elements
 const loginSection = document.getElementById('login-section');
 const dashboardSection = document.getElementById('dashboard-section');
@@ -725,6 +704,7 @@ function openModal(product = null) {
         document.getElementById('p-featured').checked = product.featured;
         document.getElementById('p-sold-out').checked = product.is_sold_out || false;
         document.getElementById('p-desc').value = product.description;
+        document.getElementById('p-desc-ar').value = product.description_ar || '';
 
         // Handle nested details
         if (product.details) {
@@ -920,6 +900,7 @@ async function handleSaveProduct(e) {
         const featured = document.getElementById('p-featured').checked;
         const isSoldOut = document.getElementById('p-sold-out').checked;
         const description = document.getElementById('p-desc').value;
+        const descriptionAr = document.getElementById('p-desc-ar').value;
         const brandId = document.getElementById('p-brand-id').value;
         const uponRequest = document.getElementById('p-upon-request').checked;
 
@@ -985,68 +966,6 @@ async function handleSaveProduct(e) {
         }
 
         // 3. Prepare DB Object
-        // Auto-translate to Arabic
-        btn.textContent = 'Translating...';
-
-        let nameAr = '', descAr = '', categoryAr = '', mileageAr = '', transAr = '', fuelAr = '', versionAr = '';
-
-        try {
-            // Batch translation for efficiency
-            // Sanitize inputs to ensure they are strings
-            const textsToTranslate = [
-                name || '',
-                description || '',
-                category || '',
-                details.mileage || '',
-                details.transmission || '',
-                details.fuel || '',
-                details.version || ''
-            ];
-
-            console.log('Sending text to translate:', textsToTranslate);
-
-            // Get current session for authorization
-            const { data: { session } } = await supabase.auth.getSession();
-
-            if (!session) {
-                console.warn('No active session found. Aborting translation.');
-                showToast('Your session has expired. Please refresh the page and log in again.', 'error');
-                throw new Error('Session expired');
-            }
-
-            const { data, error } = await supabase.functions.invoke('translate-text', {
-                body: { text: textsToTranslate, target_lang: 'ar' },
-                headers: {
-                    Authorization: `Bearer ${session.access_token}`,
-                    // Explicitly include apikey for Gateway
-                    apikey: typeof window !== 'undefined' && window.SUPABASE_ANON_KEY ? window.SUPABASE_ANON_KEY : (typeof SUPABASE_ANON_KEY !== 'undefined' ? SUPABASE_ANON_KEY : '')
-                }
-            });
-
-            if (error || (data && data.error)) {
-                console.warn('Supabase Translation API Error, using fallback...');
-                const fallbackResults = await translateTextFallback(textsToTranslate);
-                if (fallbackResults) {
-                    [nameAr, descAr, categoryAr, mileageAr, transAr, fuelAr, versionAr] = fallbackResults;
-                    showToast('Translation recovered using free fallback service.', 'info');
-                } else {
-                    showToast('Translation failed. Saving without Arabic descriptions.', 'warning');
-                }
-            } else if (data && data.translatedText && Array.isArray(data.translatedText)) {
-                console.log('Supabase Translation API Success');
-                [nameAr, descAr, categoryAr, mileageAr, transAr, fuelAr, versionAr] = data.translatedText;
-            } else {
-                console.warn('Unexpected translation response format, using fallback...');
-                const fallbackResults = await translateTextFallback(textsToTranslate);
-                if (fallbackResults) {
-                    [nameAr, descAr, categoryAr, mileageAr, transAr, fuelAr, versionAr] = fallbackResults;
-                }
-            }
-        } catch (transErr) {
-            console.error('Translation skipped due to exception:', transErr);
-            showToast(`Translation Error: ${transErr.message || transErr}`, 'error');
-        }
-
         if (diagnosticsUrl) {
             details.diagnostics_url = diagnosticsUrl;
         } else if (editingId) {
@@ -1066,14 +985,14 @@ async function handleSaveProduct(e) {
             is_sold_out: isSoldOut,
             description,
             details,
-            name_ar: nameAr,
-            description_ar: descAr,
-            category_ar: categoryAr,
+            name_ar: null, // No longer auto-translated
+            description_ar: descriptionAr,
+            category_ar: null, // No longer auto-translated
             details_ar: {
-                mileage: mileageAr,
-                transmission: transAr,
-                fuel: fuelAr,
-                version: versionAr
+                mileage: null,
+                transmission: null,
+                fuel: null,
+                version: null
             }
         };
 
