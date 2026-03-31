@@ -11,6 +11,21 @@
 /* Global Font Settings */
 body {
     font-family: 'Inter', sans-serif;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* iOS Drag & Select Fix */
+[draggable="true"] {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-user-drag: element;
+    touch-action: none; /* Disable default touch actions for draggable elements */
+}
+
+/* Ensure smooth scrolling on iOS */
+.overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
 }
 
 /* Text Effects */
