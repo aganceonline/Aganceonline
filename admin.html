@@ -1,510 +1,939 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" class="dark">
-<head>
+  <head>
     <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-TRHFFRVS');</script>
-<!-- End Google Tag Manager -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, "script", "dataLayer", "GTM-TRHFFRVS");
+    </script>
+    <!-- End Google Tag Manager -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard - AganceOnline</title>
 
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet"/>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#ee2122",
-                        "surface-dark": "#1a121d",
-                        "surface-card": "#201724",
-                    },
-                    fontFamily: {
-                        "display": ["Inter", "sans-serif"],
-                        "body": ["Inter", "sans-serif"],
-                    },
-                },
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#ee2122",
+              "surface-dark": "#1a121d",
+              "surface-card": "#201724",
             },
-        }
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+              body: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
     </script>
     <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-<body class="bg-gray-100 dark:bg-[#150d17] text-slate-900 dark:text-white antialiased min-h-screen flex flex-col">
+    <style>
+      /* Enable touch-based dragging on iOS */
+      tr[data-index] {
+        touch-action: none;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gray-100 dark:bg-[#150d17] text-slate-900 dark:text-white antialiased min-h-screen flex flex-col"
+  >
     <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRHFFRVS"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
+    <noscript
+      ><iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-TRHFFRVS"
+        height="0"
+        width="0"
+        style="display: none; visibility: hidden"
+      ></iframe
+    ></noscript>
+    <!-- End Google Tag Manager (noscript) -->
 
     <!-- Navbar -->
-    <header class="bg-white dark:bg-surface-card border-b border-gray-200 dark:border-white/10 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <img src="assets/images/logo.jpeg" alt="Logo" class="h-10 w-10 rounded-full object-cover border-2 border-primary">
-                <span class="text-xl font-bold tracking-tight">Agance Admin</span>
-            </div>
-            <div id="user-info" class="hidden flex items-center gap-4">
-                <span id="user-email" class="text-sm text-gray-500 dark:text-gray-400"></span>
-                <button id="logout-btn" class="text-sm font-medium text-red-500 hover:text-red-400">Logout</button>
-            </div>
+    <header
+      class="bg-white dark:bg-surface-card border-b border-gray-200 dark:border-white/10 sticky top-0 z-50"
+    >
+      <div
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between"
+      >
+        <div class="flex items-center gap-2">
+          <img
+            src="assets/images/logo.jpeg"
+            alt="Logo"
+            class="h-10 w-10 rounded-full object-cover border-2 border-primary"
+          />
+          <span class="text-xl font-bold tracking-tight">Agance Admin</span>
         </div>
+        <div id="user-info" class="hidden flex items-center gap-4">
+          <span
+            id="user-email"
+            class="text-sm text-gray-500 dark:text-gray-400"
+          ></span>
+          <button
+            id="logout-btn"
+            class="text-sm font-medium text-red-500 hover:text-red-400"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
     </header>
 
     <!-- Main Content -->
     <main class="flex-grow p-6 max-w-7xl mx-auto w-full">
-
-        <!-- Login Section -->
-        <div id="login-section" class="max-w-md mx-auto mt-20 hidden">
-            <div class="bg-white dark:bg-surface-card p-8 rounded-xl shadow-lg border border-gray-200 dark:border-white/10">
-                <h2 class="text-2xl font-bold mb-6 text-center">Admin Login</h2>
-                <form id="login-form" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Email</label>
-                        <input type="email" id="email" class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Password</label>
-                        <input type="password" id="password" class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" required>
-                    </div>
-                    <div id="login-error" class="text-red-500 text-sm hidden"></div>
-                    <button type="submit" class="w-full bg-primary hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">
-                        Sign In
-                    </button>
-                </form>
+      <!-- Login Section -->
+      <div id="login-section" class="max-w-md mx-auto mt-20 hidden">
+        <div
+          class="bg-white dark:bg-surface-card p-8 rounded-xl shadow-lg border border-gray-200 dark:border-white/10"
+        >
+          <h2 class="text-2xl font-bold mb-6 text-center">Admin Login</h2>
+          <form id="login-form" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">Email</label>
+              <input
+                type="email"
+                id="email"
+                class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                required
+              />
             </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Password</label>
+              <input
+                type="password"
+                id="password"
+                class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                required
+              />
+            </div>
+            <div id="login-error" class="text-red-500 text-sm hidden"></div>
+            <button
+              type="submit"
+              class="w-full bg-primary hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+            >
+              Sign In
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Dashboard Section -->
+      <div id="dashboard-section" class="hidden">
+        <!-- Tabs -->
+        <div class="flex border-b border-gray-200 dark:border-white/10 mb-6">
+          <button
+            id="tab-products"
+            class="px-6 py-3 text-sm font-medium border-b-2 border-primary text-primary transition-colors focus:outline-none"
+          >
+            Products
+          </button>
+          <button
+            id="tab-brands"
+            class="px-6 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-300 transition-colors focus:outline-none"
+          >
+            Brands
+          </button>
+          <button
+            id="tab-inquiries"
+            class="px-6 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-300 transition-colors focus:outline-none"
+          >
+            Inquiries
+          </button>
+          <button
+            id="tab-settings"
+            class="px-6 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-300 transition-colors focus:outline-none"
+          >
+            Settings
+          </button>
         </div>
 
-        <!-- Dashboard Section -->
-        <div id="dashboard-section" class="hidden">
-            <!-- Tabs -->
-            <div class="flex border-b border-gray-200 dark:border-white/10 mb-6">
-                <button id="tab-products" class="px-6 py-3 text-sm font-medium border-b-2 border-primary text-primary transition-colors focus:outline-none">
-                    Products
+        <!-- Products View -->
+        <div id="view-products" class="space-y-6">
+          <div class="flex justify-between items-center flex-wrap gap-4">
+            <h2 class="text-2xl font-bold">Vehicle Inventory</h2>
+            <div class="flex items-center gap-3">
+              <div
+                class="bg-gray-100 dark:bg-white/5 p-1 rounded-lg flex items-center"
+              >
+                <button
+                  id="order-mode-inventory"
+                  class="px-3 py-1.5 text-xs font-bold rounded-md bg-primary text-white shadow-sm transition-all"
+                >
+                  Inventory Order
                 </button>
-                <button id="tab-brands" class="px-6 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-300 transition-colors focus:outline-none">
-                    Brands
+                <button
+                  id="order-mode-home"
+                  class="px-3 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-all"
+                >
+                  Home Order
                 </button>
-                <button id="tab-inquiries" class="px-6 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-300 transition-colors focus:outline-none">
-                    Inquiries
-                </button>
-                <button id="tab-settings" class="px-6 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-300 transition-colors focus:outline-none">
-                    Settings
-                </button>
+              </div>
+              <button
+                id="save-order-btn"
+                class="hidden bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all"
+              >
+                <span class="material-symbols-outlined text-[18px]">save</span>
+                Save Order
+              </button>
+              <button
+                id="add-product-btn"
+                class="bg-primary hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2"
+              >
+                <span class="material-symbols-outlined text-[18px]">add</span>
+                Add Vehicle
+              </button>
             </div>
+          </div>
 
-            <!-- Products View -->
-            <div id="view-products" class="space-y-6">
-                <div class="flex justify-between items-center flex-wrap gap-4">
-                    <h2 class="text-2xl font-bold">Vehicle Inventory</h2>
-                    <div class="flex items-center gap-3">
-                        <div class="bg-gray-100 dark:bg-white/5 p-1 rounded-lg flex items-center">
-                            <button id="order-mode-inventory" class="px-3 py-1.5 text-xs font-bold rounded-md bg-primary text-white shadow-sm transition-all">Inventory Order</button>
-                            <button id="order-mode-home" class="px-3 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-all">Home Order</button>
-                        </div>
-                        <button id="save-order-btn" class="hidden bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all">
-                            <span class="material-symbols-outlined text-[18px]">save</span> Save Order
-                        </button>
-                        <button id="add-product-btn" class="bg-primary hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2">
-                            <span class="material-symbols-outlined text-[18px]">add</span> Add Vehicle
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Product List -->
-                <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-white/10">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-gray-50 dark:bg-white/5 text-gray-500 dark:text-gray-400 uppercase font-bold text-xs">
-                            <tr>
-                                <th class="px-6 py-3 w-10"></th>
-                                <th class="px-6 py-3">Image</th>
-                                <th class="px-6 py-3">Name</th>
-                                <th class="px-6 py-3">Sold Out</th>
-                                <th class="px-6 py-3">Price (EGP)</th>
-                                <th class="px-6 py-3">Category</th>
-                                <th class="px-6 py-3">Status</th>
-                                <th class="px-6 py-3 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="products-table-body" class="divide-y divide-gray-200 dark:divide-white/5 bg-white dark:bg-surface-card">
-                            <!-- Rows injected by JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Brands View -->
-            <div id="view-brands" class="hidden space-y-6">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-2xl font-bold">Manage Brands</h2>
-                    <button id="add-brand-btn" class="bg-primary hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2">
-                        <span class="material-symbols-outlined text-[18px]">add</span> Add Brand
-                    </button>
-                </div>
-
-                <!-- Brands List -->
-                <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-white/10">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-gray-50 dark:bg-white/5 text-gray-500 dark:text-gray-400 uppercase font-bold text-xs">
-                            <tr>
-                                <th class="px-6 py-3">Logo</th>
-                                <th class="px-6 py-3">Name</th>
-                                <th class="px-6 py-3 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="brands-table-body" class="divide-y divide-gray-200 dark:divide-white/5 bg-white dark:bg-surface-card">
-                            <!-- Rows injected by JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Inquiries View -->
-            <div id="view-inquiries" class="hidden space-y-6">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-2xl font-bold">Customer Inquiries</h2>
-                    <select id="filter-inquiries" class="rounded-lg bg-white dark:bg-surface-card border border-gray-200 dark:border-white/10 px-4 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all">
-                        <option value="all">All Inquiries</option>
-                        <option value="unresolved" selected>Unresolved</option>
-                        <option value="resolved">Resolved</option>
-                    </select>
-                </div>
-                <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-white/10">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-gray-50 dark:bg-white/5 text-gray-500 dark:text-gray-400 uppercase font-bold text-xs">
-                            <tr>
-                                <th class="px-6 py-3">Status</th>
-                                <th class="px-6 py-3">Date</th>
-                                <th class="px-6 py-3">Name</th>
-                                <th class="px-6 py-3">Contact</th>
-                                <th class="px-6 py-3">Vehicle</th>
-                                <th class="px-6 py-3">Message</th>
-                                <th class="px-6 py-3 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="inquiries-table-body" class="divide-y divide-gray-200 dark:divide-white/5 bg-white dark:bg-surface-card">
-                            <!-- Rows injected by JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Settings View -->
-            <div id="view-settings" class="hidden space-y-6">
-                <h2 class="text-2xl font-bold">Global Settings</h2>
-
-                <div class="bg-white dark:bg-surface-card rounded-xl border border-gray-200 dark:border-white/10 p-6 max-w-2xl">
-                    <form id="settings-form" class="space-y-8">
-
-                        <!-- Currency Section -->
-                        <div>
-                            <h3 class="text-lg font-bold mb-4 border-b border-gray-200 dark:border-white/10 pb-2">Currency Exchange</h3>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">USD to EGP Rate (1 USD = ? EGP)</label>
-                                <input type="number" id="setting-egp-usd" step="0.01" class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" required>
-                                <p class="text-xs text-gray-500 mt-2">This rate is used to calculate displayed prices in USD across the website (e.g., 52.79).</p>
-                            </div>
-                        </div>
-
-                        <!-- Social Media Section -->
-                        <div>
-                            <h3 class="text-lg font-bold mb-4 border-b border-gray-200 dark:border-white/10 pb-2">Social Media Links</h3>
-                            <div class="space-y-6">
-                                <div id="container-social-tiktok">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <label class="block text-sm font-medium">TikTok URL(s)</label>
-                                        <button type="button" onclick="addSocialLink('tiktok')" class="text-xs bg-primary hover:bg-red-600 text-white px-2 py-1 rounded flex items-center gap-1">
-                                            <span class="material-symbols-outlined text-[14px]">add</span> Add
-                                        </button>
-                                    </div>
-                                    <div class="social-links-list space-y-2"></div>
-                                </div>
-                                <div id="container-social-facebook">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <label class="block text-sm font-medium">Facebook URL(s)</label>
-                                        <button type="button" onclick="addSocialLink('facebook')" class="text-xs bg-primary hover:bg-red-600 text-white px-2 py-1 rounded flex items-center gap-1">
-                                            <span class="material-symbols-outlined text-[14px]">add</span> Add
-                                        </button>
-                                    </div>
-                                    <div class="social-links-list space-y-2"></div>
-                                </div>
-                                <div id="container-social-instagram">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <label class="block text-sm font-medium">Instagram URL(s)</label>
-                                        <button type="button" onclick="addSocialLink('instagram')" class="text-xs bg-primary hover:bg-red-600 text-white px-2 py-1 rounded flex items-center gap-1">
-                                            <span class="material-symbols-outlined text-[14px]">add</span> Add
-                                        </button>
-                                    </div>
-                                    <div class="social-links-list space-y-2"></div>
-                                </div>
-                                <div id="container-social-whatsapp">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <label class="block text-sm font-medium">WhatsApp URL(s)</label>
-                                        <button type="button" onclick="addSocialLink('whatsapp')" class="text-xs bg-primary hover:bg-red-600 text-white px-2 py-1 rounded flex items-center gap-1">
-                                            <span class="material-symbols-outlined text-[14px]">add</span> Add
-                                        </button>
-                                    </div>
-                                    <div class="social-links-list space-y-2"></div>
-                                </div>
-                                <div id="container-social-phone">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <label class="block text-sm font-medium">Phone Number(s) (Calls)</label>
-                                        <button type="button" onclick="addSocialLink('phone')" class="text-xs bg-primary hover:bg-red-600 text-white px-2 py-1 rounded flex items-center gap-1">
-                                            <span class="material-symbols-outlined text-[14px]">add</span> Add
-                                        </button>
-                                    </div>
-                                    <div class="social-links-list space-y-2"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Images Section -->
-                        <div>
-                            <h3 class="text-lg font-bold mb-4 border-b border-gray-200 dark:border-white/10 pb-2">Website Images</h3>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Hero Image 1</label>
-                                    <div class="flex flex-col gap-2">
-                                        <input type="file" id="setting-hero-image" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-red-600 transition-all">
-                                        <p class="text-xs text-gray-500">Upload a new image to replace the current hero background 1.</p>
-                                        <p class="text-xs text-gray-400">Current: <span id="current-hero-image" class="italic">Loading...</span></p>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Hero Image 2</label>
-                                    <div class="flex flex-col gap-2">
-                                        <input type="file" id="setting-hero-image-2" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-red-600 transition-all">
-                                        <p class="text-xs text-gray-500">Upload a second image for the hero carousel.</p>
-                                        <p class="text-xs text-gray-400">Current: <span id="current-hero-image-2" class="italic">Loading...</span></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Location Section -->
-                        <div>
-                            <h3 class="text-lg font-bold mb-4 border-b border-gray-200 dark:border-white/10 pb-2">Location & Map</h3>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Location Pin Link (Google Maps)</label>
-                                    <input type="url" id="setting-location-pin" class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" placeholder="https://maps.google.com/...">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Map Embed HTML (iframe)</label>
-                                    <textarea id="setting-map-embed" rows="3" class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" placeholder='<iframe src="https://www.google.com/maps/embed?pb=..." ...></iframe>'></textarea>
-                                    <p class="text-xs text-gray-500 mt-2">Paste the "Embed a map" iframe HTML from Google Maps.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="pt-4 border-t border-gray-200 dark:border-white/10 flex justify-end">
-                             <button type="submit" id="save-settings-btn" class="bg-primary hover:bg-red-600 text-white font-bold py-3 px-8 rounded-lg transition-colors shadow-lg shadow-red-900/20">
-                                Save All Settings
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+          <!-- Product List -->
+          <div
+            class="overflow-x-auto rounded-lg border border-gray-200 dark:border-white/10"
+          >
+            <table class="w-full text-left text-sm">
+              <thead
+                class="bg-gray-50 dark:bg-white/5 text-gray-500 dark:text-gray-400 uppercase font-bold text-xs"
+              >
+                <tr>
+                  <th class="px-6 py-3 w-10"></th>
+                  <th class="px-6 py-3">Image</th>
+                  <th class="px-6 py-3">Name</th>
+                  <th class="px-6 py-3">Sold Out</th>
+                  <th class="px-6 py-3">Price (EGP)</th>
+                  <th class="px-6 py-3">Category</th>
+                  <th class="px-6 py-3">Status</th>
+                  <th class="px-6 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody
+                id="products-table-body"
+                class="divide-y divide-gray-200 dark:divide-white/5 bg-white dark:bg-surface-card"
+              >
+                <!-- Rows injected by JS -->
+              </tbody>
+            </table>
+          </div>
         </div>
+
+        <!-- Brands View -->
+        <div id="view-brands" class="hidden space-y-6">
+          <div class="flex justify-between items-center">
+            <h2 class="text-2xl font-bold">Manage Brands</h2>
+            <button
+              id="add-brand-btn"
+              class="bg-primary hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2"
+            >
+              <span class="material-symbols-outlined text-[18px]">add</span> Add
+              Brand
+            </button>
+          </div>
+
+          <!-- Brands List -->
+          <div
+            class="overflow-x-auto rounded-lg border border-gray-200 dark:border-white/10"
+          >
+            <table class="w-full text-left text-sm">
+              <thead
+                class="bg-gray-50 dark:bg-white/5 text-gray-500 dark:text-gray-400 uppercase font-bold text-xs"
+              >
+                <tr>
+                  <th class="px-6 py-3">Logo</th>
+                  <th class="px-6 py-3">Name</th>
+                  <th class="px-6 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody
+                id="brands-table-body"
+                class="divide-y divide-gray-200 dark:divide-white/5 bg-white dark:bg-surface-card"
+              >
+                <!-- Rows injected by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Inquiries View -->
+        <div id="view-inquiries" class="hidden space-y-6">
+          <div class="flex justify-between items-center">
+            <h2 class="text-2xl font-bold">Customer Inquiries</h2>
+            <select
+              id="filter-inquiries"
+              class="rounded-lg bg-white dark:bg-surface-card border border-gray-200 dark:border-white/10 px-4 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+            >
+              <option value="all">All Inquiries</option>
+              <option value="unresolved" selected>Unresolved</option>
+              <option value="resolved">Resolved</option>
+            </select>
+          </div>
+          <div
+            class="overflow-x-auto rounded-lg border border-gray-200 dark:border-white/10"
+          >
+            <table class="w-full text-left text-sm">
+              <thead
+                class="bg-gray-50 dark:bg-white/5 text-gray-500 dark:text-gray-400 uppercase font-bold text-xs"
+              >
+                <tr>
+                  <th class="px-6 py-3">Status</th>
+                  <th class="px-6 py-3">Date</th>
+                  <th class="px-6 py-3">Name</th>
+                  <th class="px-6 py-3">Contact</th>
+                  <th class="px-6 py-3">Vehicle</th>
+                  <th class="px-6 py-3">Message</th>
+                  <th class="px-6 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody
+                id="inquiries-table-body"
+                class="divide-y divide-gray-200 dark:divide-white/5 bg-white dark:bg-surface-card"
+              >
+                <!-- Rows injected by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Settings View -->
+        <div id="view-settings" class="hidden space-y-6">
+          <h2 class="text-2xl font-bold">Global Settings</h2>
+
+          <div
+            class="bg-white dark:bg-surface-card rounded-xl border border-gray-200 dark:border-white/10 p-6 max-w-2xl"
+          >
+            <form id="settings-form" class="space-y-8">
+              <!-- Currency Section -->
+              <div>
+                <h3
+                  class="text-lg font-bold mb-4 border-b border-gray-200 dark:border-white/10 pb-2"
+                >
+                  Currency Exchange
+                </h3>
+                <div>
+                  <label class="block text-sm font-medium mb-1"
+                    >USD to EGP Rate (1 USD = ? EGP)</label
+                  >
+                  <input
+                    type="number"
+                    id="setting-egp-usd"
+                    step="0.01"
+                    class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                    required
+                  />
+                  <p class="text-xs text-gray-500 mt-2">
+                    This rate is used to calculate displayed prices in USD
+                    across the website (e.g., 52.79).
+                  </p>
+                </div>
+              </div>
+
+              <!-- Social Media Section -->
+              <div>
+                <h3
+                  class="text-lg font-bold mb-4 border-b border-gray-200 dark:border-white/10 pb-2"
+                >
+                  Social Media Links
+                </h3>
+                <div class="space-y-6">
+                  <div id="container-social-tiktok">
+                    <div class="flex items-center justify-between mb-2">
+                      <label class="block text-sm font-medium"
+                        >TikTok URL(s)</label
+                      >
+                      <button
+                        type="button"
+                        onclick="addSocialLink('tiktok')"
+                        class="text-xs bg-primary hover:bg-red-600 text-white px-2 py-1 rounded flex items-center gap-1"
+                      >
+                        <span class="material-symbols-outlined text-[14px]"
+                          >add</span
+                        >
+                        Add
+                      </button>
+                    </div>
+                    <div class="social-links-list space-y-2"></div>
+                  </div>
+                  <div id="container-social-facebook">
+                    <div class="flex items-center justify-between mb-2">
+                      <label class="block text-sm font-medium"
+                        >Facebook URL(s)</label
+                      >
+                      <button
+                        type="button"
+                        onclick="addSocialLink('facebook')"
+                        class="text-xs bg-primary hover:bg-red-600 text-white px-2 py-1 rounded flex items-center gap-1"
+                      >
+                        <span class="material-symbols-outlined text-[14px]"
+                          >add</span
+                        >
+                        Add
+                      </button>
+                    </div>
+                    <div class="social-links-list space-y-2"></div>
+                  </div>
+                  <div id="container-social-instagram">
+                    <div class="flex items-center justify-between mb-2">
+                      <label class="block text-sm font-medium"
+                        >Instagram URL(s)</label
+                      >
+                      <button
+                        type="button"
+                        onclick="addSocialLink('instagram')"
+                        class="text-xs bg-primary hover:bg-red-600 text-white px-2 py-1 rounded flex items-center gap-1"
+                      >
+                        <span class="material-symbols-outlined text-[14px]"
+                          >add</span
+                        >
+                        Add
+                      </button>
+                    </div>
+                    <div class="social-links-list space-y-2"></div>
+                  </div>
+                  <div id="container-social-whatsapp">
+                    <div class="flex items-center justify-between mb-2">
+                      <label class="block text-sm font-medium"
+                        >WhatsApp URL(s)</label
+                      >
+                      <button
+                        type="button"
+                        onclick="addSocialLink('whatsapp')"
+                        class="text-xs bg-primary hover:bg-red-600 text-white px-2 py-1 rounded flex items-center gap-1"
+                      >
+                        <span class="material-symbols-outlined text-[14px]"
+                          >add</span
+                        >
+                        Add
+                      </button>
+                    </div>
+                    <div class="social-links-list space-y-2"></div>
+                  </div>
+                  <div id="container-social-phone">
+                    <div class="flex items-center justify-between mb-2">
+                      <label class="block text-sm font-medium"
+                        >Phone Number(s) (Calls)</label
+                      >
+                      <button
+                        type="button"
+                        onclick="addSocialLink('phone')"
+                        class="text-xs bg-primary hover:bg-red-600 text-white px-2 py-1 rounded flex items-center gap-1"
+                      >
+                        <span class="material-symbols-outlined text-[14px]"
+                          >add</span
+                        >
+                        Add
+                      </button>
+                    </div>
+                    <div class="social-links-list space-y-2"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Images Section -->
+              <div>
+                <h3
+                  class="text-lg font-bold mb-4 border-b border-gray-200 dark:border-white/10 pb-2"
+                >
+                  Website Images
+                </h3>
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-medium mb-1"
+                      >Hero Image 1</label
+                    >
+                    <div class="flex flex-col gap-2">
+                      <input
+                        type="file"
+                        id="setting-hero-image"
+                        accept="image/*"
+                        class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-red-600 transition-all"
+                      />
+                      <p class="text-xs text-gray-500">
+                        Upload a new image to replace the current hero
+                        background 1.
+                      </p>
+                      <p class="text-xs text-gray-400">
+                        Current:
+                        <span id="current-hero-image" class="italic"
+                          >Loading...</span
+                        >
+                      </p>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium mb-1"
+                      >Hero Image 2</label
+                    >
+                    <div class="flex flex-col gap-2">
+                      <input
+                        type="file"
+                        id="setting-hero-image-2"
+                        accept="image/*"
+                        class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-red-600 transition-all"
+                      />
+                      <p class="text-xs text-gray-500">
+                        Upload a second image for the hero carousel.
+                      </p>
+                      <p class="text-xs text-gray-400">
+                        Current:
+                        <span id="current-hero-image-2" class="italic"
+                          >Loading...</span
+                        >
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Location Section -->
+              <div>
+                <h3
+                  class="text-lg font-bold mb-4 border-b border-gray-200 dark:border-white/10 pb-2"
+                >
+                  Location & Map
+                </h3>
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-medium mb-1"
+                      >Location Pin Link (Google Maps)</label
+                    >
+                    <input
+                      type="url"
+                      id="setting-location-pin"
+                      class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                      placeholder="https://maps.google.com/..."
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium mb-1"
+                      >Map Embed HTML (iframe)</label
+                    >
+                    <textarea
+                      id="setting-map-embed"
+                      rows="3"
+                      class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                      placeholder='<iframe src="https://www.google.com/maps/embed?pb=..." ...></iframe>'
+                    ></textarea>
+                    <p class="text-xs text-gray-500 mt-2">
+                      Paste the "Embed a map" iframe HTML from Google Maps.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="pt-4 border-t border-gray-200 dark:border-white/10 flex justify-end"
+              >
+                <button
+                  type="submit"
+                  id="save-settings-btn"
+                  class="bg-primary hover:bg-red-600 text-white font-bold py-3 px-8 rounded-lg transition-colors shadow-lg shadow-red-900/20"
+                >
+                  Save All Settings
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </main>
 
     <!-- Brand Modal -->
     <div id="brand-modal" class="fixed inset-0 z-[100] hidden">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="brand-modal-backdrop"></div>
-        <div class="absolute inset-0 flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-surface-card w-full max-w-md rounded-xl shadow-2xl border border-gray-200 dark:border-white/10 max-h-[90vh] overflow-y-auto">
-                <div class="p-6 border-b border-gray-200 dark:border-white/10 flex justify-between items-center">
-                    <h3 class="text-xl font-bold" id="brand-modal-title">Add New Brand</h3>
-                    <button id="brand-modal-close" class="text-gray-500 hover:text-white transition-colors">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
-                </div>
-                <form id="brand-form" class="p-6 space-y-6">
-                    <input type="hidden" id="brand-id">
+      <div
+        class="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        id="brand-modal-backdrop"
+      ></div>
+      <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div
+          class="bg-white dark:bg-surface-card w-full max-w-md rounded-xl shadow-2xl border border-gray-200 dark:border-white/10 max-h-[90vh] overflow-y-auto"
+        >
+          <div
+            class="p-6 border-b border-gray-200 dark:border-white/10 flex justify-between items-center"
+          >
+            <h3 class="text-xl font-bold" id="brand-modal-title">
+              Add New Brand
+            </h3>
+            <button
+              id="brand-modal-close"
+              class="text-gray-500 hover:text-white transition-colors"
+            >
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+          <form id="brand-form" class="p-6 space-y-6">
+            <input type="hidden" id="brand-id" />
 
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Brand Name</label>
-                        <input type="text" id="b-name" class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" required>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Brand Logo</label>
-                        <input type="file" id="b-logo" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-red-600 transition-all">
-                        <p class="text-xs text-gray-400 mt-1">Leave empty to keep existing logo when editing.</p>
-                        <div id="b-logo-preview" class="mt-4 hidden h-16 w-32 bg-gray-100 dark:bg-black/20 rounded flex items-center justify-center p-2">
-                             <img src="" id="b-logo-img" class="max-h-full max-w-full object-contain">
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-white/10">
-                        <button type="button" id="brand-modal-cancel" class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-white transition-colors">Cancel</button>
-                        <button type="submit" id="save-brand-btn" class="bg-primary hover:bg-red-600 text-white px-6 py-2 rounded-lg text-sm font-bold transition-colors">
-                            Save Brand
-                        </button>
-                    </div>
-                </form>
+            <div>
+              <label class="block text-sm font-medium mb-1">Brand Name</label>
+              <input
+                type="text"
+                id="b-name"
+                class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                required
+              />
             </div>
+
+            <div>
+              <label class="block text-sm font-medium mb-1">Brand Logo</label>
+              <input
+                type="file"
+                id="b-logo"
+                accept="image/*"
+                class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-red-600 transition-all"
+              />
+              <p class="text-xs text-gray-400 mt-1">
+                Leave empty to keep existing logo when editing.
+              </p>
+              <div
+                id="b-logo-preview"
+                class="mt-4 hidden h-16 w-32 bg-gray-100 dark:bg-black/20 rounded flex items-center justify-center p-2"
+              >
+                <img
+                  src=""
+                  id="b-logo-img"
+                  class="max-h-full max-w-full object-contain"
+                />
+              </div>
+            </div>
+
+            <div
+              class="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-white/10"
+            >
+              <button
+                type="button"
+                id="brand-modal-cancel"
+                class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-white transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                id="save-brand-btn"
+                class="bg-primary hover:bg-red-600 text-white px-6 py-2 rounded-lg text-sm font-bold transition-colors"
+              >
+                Save Brand
+              </button>
+            </div>
+          </form>
         </div>
+      </div>
     </div>
 
     <!-- Product Modal -->
     <div id="product-modal" class="fixed inset-0 z-[100] hidden">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="modal-backdrop"></div>
-        <div class="absolute inset-0 flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-surface-card w-full max-w-2xl rounded-xl shadow-2xl border border-gray-200 dark:border-white/10 max-h-[90vh] overflow-y-auto">
-                <div class="p-6 border-b border-gray-200 dark:border-white/10 flex justify-between items-center">
-                    <h3 class="text-xl font-bold" id="modal-title">Add New Vehicle</h3>
-                    <button id="modal-close" class="text-gray-500 hover:text-white transition-colors">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
+      <div
+        class="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        id="modal-backdrop"
+      ></div>
+      <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div
+          class="bg-white dark:bg-surface-card w-full max-w-2xl rounded-xl shadow-2xl border border-gray-200 dark:border-white/10 max-h-[90vh] overflow-y-auto"
+        >
+          <div
+            class="p-6 border-b border-gray-200 dark:border-white/10 flex justify-between items-center"
+          >
+            <h3 class="text-xl font-bold" id="modal-title">Add New Vehicle</h3>
+            <button
+              id="modal-close"
+              class="text-gray-500 hover:text-white transition-colors"
+            >
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+          <form id="product-form" class="p-6 space-y-6">
+            <input type="hidden" id="product-id" />
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-medium mb-1"
+                  >Vehicle Name</label
+                >
+                <input
+                  type="text"
+                  id="p-name"
+                  class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                  required
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1"
+                  >Price (EGP)</label
+                >
+                <input
+                  type="number"
+                  id="p-price"
+                  class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                  required
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Category</label>
+                <select
+                  id="p-category"
+                  class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                >
+                  <option value="Supercar">Supercar</option>
+                  <option value="SUV">SUV</option>
+                  <option value="4x4">4x4</option>
+                  <option value="Sports">Sports</option>
+                  <option value="Luxury">Luxury</option>
+                  <option value="Sedan">Sedan</option>
+                  <option value="Coupe">Coupe</option>
+                  <option value="Convertible">Convertible</option>
+                  <option value="New Arrival">New Arrival</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Origin</label>
+                <select
+                  id="p-origin"
+                  class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                >
+                  <option value="">Select Origin</option>
+                  <option value="Imported">Imported (استيراد)</option>
+                  <option value="Egyptian Agency">
+                    Egyptian Agency (وكيل)
+                  </option>
+                </select>
+              </div>
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="p-featured"
+                    class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary"
+                  />
+                  <label for="p-featured" class="text-sm font-medium"
+                    >Feature on Homepage</label
+                  >
                 </div>
-                <form id="product-form" class="p-6 space-y-6">
-                    <input type="hidden" id="product-id">
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Vehicle Name</label>
-                            <input type="text" id="p-name" class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Price (EGP)</label>
-                            <input type="number" id="p-price" class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Category</label>
-                            <select id="p-category" class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all">
-                                <option value="Supercar">Supercar</option>
-                                <option value="SUV">SUV</option>
-                                <option value="4x4">4x4</option>
-                                <option value="Sports">Sports</option>
-                                <option value="Luxury">Luxury</option>
-                                <option value="Sedan">Sedan</option>
-                                <option value="Coupe">Coupe</option>
-                                <option value="Convertible">Convertible</option>
-                                <option value="New Arrival">New Arrival</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Origin</label>
-                            <select id="p-origin" class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all">
-                                <option value="">Select Origin</option>
-                                <option value="Imported">Imported (استيراد)</option>
-                                <option value="Egyptian Agency">Egyptian Agency (وكيل)</option>
-                            </select>
-                        </div>
-                        <div class="flex flex-col gap-2">
-                            <div class="flex items-center gap-2">
-                                <input type="checkbox" id="p-featured" class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary">
-                                <label for="p-featured" class="text-sm font-medium">Feature on Homepage</label>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <input type="checkbox" id="p-upon-request" class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary">
-                                <label for="p-upon-request" class="text-sm font-medium">Upon Request</label>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <input type="checkbox" id="p-sold-out" class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary">
-                                <label for="p-sold-out" class="text-sm font-medium text-red-500 font-bold">Sold Out</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium mb-2">Brand <span class="text-red-500">*</span></label>
-                        <div class="overflow-x-auto pb-2">
-                            <div id="p-brand-container" class="flex gap-4 min-w-max">
-                                <!-- Brands injected by JS -->
-                            </div>
-                        </div>
-                        <input type="hidden" id="p-brand-id" required>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Description (EN)</label>
-                            <textarea id="p-desc" rows="3" class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1 text-right">Description (AR)</label>
-                            <textarea id="p-desc-ar" rows="3" dir="rtl" class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"></textarea>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Mileage</label>
-                            <input type="text" id="p-mileage" placeholder="e.g. 5,000 km" class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Transmission</label>
-                            <input type="text" id="p-trans" placeholder="e.g. Auto" class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Fuel Type</label>
-                            <input type="text" id="p-fuel" placeholder="e.g. Petrol" class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Version</label>
-                            <input type="text" id="p-version" placeholder="e.g. Sport Line" class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Main Image</label>
-                        <input type="file" id="p-image" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-red-600 transition-all">
-                        <p class="text-xs text-gray-400 mt-1">Leave empty to keep existing image when editing.</p>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Car Diagnostics PDF</label>
-                        <input type="file" id="p-diagnostics" accept=".pdf,application/pdf" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-red-600 transition-all">
-                        <p class="text-xs text-gray-400 mt-1">Leave empty to keep existing PDF when editing.</p>
-                        <p id="p-diagnostics-current" class="text-sm text-green-600 dark:text-green-400 mt-1 hidden">Current: <a href="#" target="_blank" class="underline hover:text-green-800">View PDF</a></p>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Gallery Media</label>
-                        <div id="gallery-preview" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                            <!-- Thumbnails injected by JS -->
-                        </div>
-                        <input type="file" id="p-gallery-upload" multiple accept="image/*,video/mp4,video/webm,video/ogg" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-red-600 transition-all">
-                        <p class="text-xs text-gray-400 mt-1">Select multiple images or videos to add to the gallery.</p>
-                    </div>
-
-                    <!-- Colors Management -->
-                    <div class="border-t border-gray-200 dark:border-white/10 pt-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <label class="block text-sm font-medium">Vehicle Colors</label>
-                            <button type="button" onclick="addColor()" class="text-xs bg-primary hover:bg-red-600 text-white px-3 py-1.5 rounded font-bold flex items-center gap-1">
-                                <span class="material-symbols-outlined text-[14px]">add</span> Add Color
-                            </button>
-                        </div>
-                        <div id="colors-container" class="space-y-4">
-                            <!-- Color entries injected by JS -->
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-white/10">
-                        <button type="button" id="modal-cancel" class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-white transition-colors">Cancel</button>
-                        <button type="submit" id="save-btn" class="bg-primary hover:bg-red-600 text-white px-6 py-2 rounded-lg text-sm font-bold transition-colors">
-                            Save Vehicle
-                        </button>
-                    </div>
-                </form>
+                <div class="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="p-upon-request"
+                    class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary"
+                  />
+                  <label for="p-upon-request" class="text-sm font-medium"
+                    >Upon Request</label
+                  >
+                </div>
+                <div class="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="p-sold-out"
+                    class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary"
+                  />
+                  <label
+                    for="p-sold-out"
+                    class="text-sm font-medium text-red-500 font-bold"
+                    >Sold Out</label
+                  >
+                </div>
+              </div>
             </div>
+
+            <div>
+              <label class="block text-sm font-medium mb-2"
+                >Brand <span class="text-red-500">*</span></label
+              >
+              <div class="overflow-x-auto pb-2">
+                <div id="p-brand-container" class="flex gap-4 min-w-max">
+                  <!-- Brands injected by JS -->
+                </div>
+              </div>
+              <input type="hidden" id="p-brand-id" required />
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-medium mb-1"
+                  >Description (EN)</label
+                >
+                <textarea
+                  id="p-desc"
+                  rows="3"
+                  class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                ></textarea>
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1 text-right"
+                  >Description (AR)</label
+                >
+                <textarea
+                  id="p-desc-ar"
+                  rows="3"
+                  dir="rtl"
+                  class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4">
+              <div>
+                <label class="block text-sm font-medium mb-1">Mileage</label>
+                <input
+                  type="text"
+                  id="p-mileage"
+                  placeholder="e.g. 5,000 km"
+                  class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1"
+                  >Transmission</label
+                >
+                <input
+                  type="text"
+                  id="p-trans"
+                  placeholder="e.g. Auto"
+                  class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Fuel Type</label>
+                <input
+                  type="text"
+                  id="p-fuel"
+                  placeholder="e.g. Petrol"
+                  class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Version</label>
+                <input
+                  type="text"
+                  id="p-version"
+                  placeholder="e.g. Sport Line"
+                  class="w-full rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium mb-1">Main Image</label>
+              <input
+                type="file"
+                id="p-image"
+                accept="image/*"
+                class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-red-600 transition-all"
+              />
+              <p class="text-xs text-gray-400 mt-1">
+                Leave empty to keep existing image when editing.
+              </p>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium mb-1"
+                >Car Diagnostics PDF</label
+              >
+              <input
+                type="file"
+                id="p-diagnostics"
+                accept=".pdf,application/pdf"
+                class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-red-600 transition-all"
+              />
+              <p class="text-xs text-gray-400 mt-1">
+                Leave empty to keep existing PDF when editing.
+              </p>
+              <p
+                id="p-diagnostics-current"
+                class="text-sm text-green-600 dark:text-green-400 mt-1 hidden"
+              >
+                Current:
+                <a
+                  href="#"
+                  target="_blank"
+                  class="underline hover:text-green-800"
+                  >View PDF</a
+                >
+              </p>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium mb-1"
+                >Gallery Media</label
+              >
+              <div
+                id="gallery-preview"
+                class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4"
+              >
+                <!-- Thumbnails injected by JS -->
+              </div>
+              <input
+                type="file"
+                id="p-gallery-upload"
+                multiple
+                accept="image/*,video/mp4,video/webm,video/ogg"
+                class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-red-600 transition-all"
+              />
+              <p class="text-xs text-gray-400 mt-1">
+                Select multiple images or videos to add to the gallery.
+              </p>
+            </div>
+
+            <!-- Colors Management -->
+            <div class="border-t border-gray-200 dark:border-white/10 pt-6">
+              <div class="flex justify-between items-center mb-4">
+                <label class="block text-sm font-medium">Vehicle Colors</label>
+                <button
+                  type="button"
+                  onclick="addColor()"
+                  class="text-xs bg-primary hover:bg-red-600 text-white px-3 py-1.5 rounded font-bold flex items-center gap-1"
+                >
+                  <span class="material-symbols-outlined text-[14px]">add</span>
+                  Add Color
+                </button>
+              </div>
+              <div id="colors-container" class="space-y-4">
+                <!-- Color entries injected by JS -->
+              </div>
+            </div>
+
+            <div
+              class="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-white/10"
+            >
+              <button
+                type="button"
+                id="modal-cancel"
+                class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-white transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                id="save-btn"
+                class="bg-primary hover:bg-red-600 text-white px-6 py-2 rounded-lg text-sm font-bold transition-colors"
+              >
+                Save Vehicle
+              </button>
+            </div>
+          </form>
         </div>
+      </div>
     </div>
 
     <!-- Scripts -->
     <script src="js/supabase-config.js"></script>
     <script src="js/admin.js"></script>
-
-</body>
+  </body>
 </html>
