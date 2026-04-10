@@ -180,7 +180,7 @@ async function setLanguage(lang, shouldRender = true) {
             const data = await response.json();
             translations = data;
         } catch (error) {
-            console.error('Failed to load translations', error);
+            console.error('Failed to load translations:', error);
         }
     }
 
@@ -317,7 +317,7 @@ async function fetchExchangeRate() {
             usdToEgpRate = parseFloat(data.value);
         }
     } catch (error) {
-        console.error('Failed to fetch exchange rate, using fallback:', error);
+        console.error('Failed to fetch exchange rate:', error);
     }
 }
 
@@ -538,7 +538,7 @@ async function loadGlobalSettings() {
         }
 
     } catch (error) {
-        console.error('Failed to load global settings', error);
+        console.error('Failed to load global settings:', error);
     }
 }
 
@@ -552,7 +552,7 @@ async function loadBrands() {
         if (error) throw error;
         brands = data;
     } catch (error) {
-        console.error('Failed to load brands', error);
+        console.error('Failed to load brands:', error);
         brands = [];
     }
 }
@@ -567,7 +567,8 @@ async function loadProducts() {
         if (error) throw error;
         products = data;
     } catch (error) {
-        console.error('Failed to load products', error);
+        console.error('Failed to load products:', error);
+        // Fallback or empty state
         products = [];
     }
 }

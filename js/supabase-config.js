@@ -29,5 +29,12 @@ if (typeof window.supabase !== "undefined") {
     // Overwrite the library object with the client instance
     // This allows 'supabase' global to be used for queries (supabase.from...)
     window.supabase = client;
+  } else {
+    // Already initialized (window.supabase is now the client)
+    console.log("Supabase client already initialized.");
   }
+} else {
+  console.warn(
+    "Supabase JS library not loaded. Ensure the CDN script is included in your HTML.",
+  );
 }
