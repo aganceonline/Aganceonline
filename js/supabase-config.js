@@ -33,6 +33,7 @@ if (typeof window.supabase !== "undefined") {
     // Already initialized (window.supabase is now the client)
   }
 } else {
+  console.error(
     "Supabase JS library not loaded. Ensure the CDN script is included in your HTML.",
   );
 }
