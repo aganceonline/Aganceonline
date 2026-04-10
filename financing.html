@@ -58,7 +58,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <!-- Logo -->
             <div class="flex items-center gap-2">
                 <a href="index.html" class="flex items-center gap-2">
-                    <img src="assets/images/logo.jpeg" alt="Logo" class="h-10 w-10 rounded-full object-cover border-2 border-primary">
+                    <img src="assets/images/logo.jpeg" alt="Logo" loading="lazy" width="40" height="40" class="h-10 w-10 rounded-full object-cover border-2 border-primary">
                     <span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white" data-i18n="header_title">AganceOnline</span>
                 </a>
             </div>
@@ -252,6 +252,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- Main Script -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/holidays.js"></script>
     <script src="js/script.js"></script>
     <script>
@@ -543,6 +544,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             const message = `Financing inquiry for: ${carName}\nMethod: ${currentMethod}\nCar Price: ${price} EGP\nDown Payment: ${down} EGP\nDuration: ${months} Months\nMonthly Installment: ${monthly} EGP`;
 
             window.location.href = `contact.html?message=${encodeURIComponent(message)}`;
+        }
+    </script>
+    <script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("sw.js")
+                    .catch(err => { /* console.error(err) */ });
+            });
         }
     </script>
 </body>

@@ -32,17 +32,17 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
     <!-- Open Graph / Social Media -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://el4aby7.github.io/Aganceonline/contact.html">
+    <meta property="og:url" content="https://aganceonline.github.io/Aganceonline/contact.html">
     <meta property="og:title" content="Contact Us - AganceOnline">
     <meta property="og:description" content="AganceOnline offers the best selection of premium and luxury vehicles. Browse our inventory and find your dream car today.">
-    <meta property="og:image" content="https://el4aby7.github.io/Aganceonline/assets/images/logo.jpeg">
+    <meta property="og:image" content="https://aganceonline.github.io/Aganceonline/assets/images/logo.jpeg">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://el4aby7.github.io/Aganceonline/contact.html">
+    <meta property="twitter:url" content="https://aganceonline.github.io/Aganceonline/contact.html">
     <meta property="twitter:title" content="Contact Us - AganceOnline">
     <meta property="twitter:description" content="AganceOnline offers the best selection of premium and luxury vehicles. Browse our inventory and find your dream car today.">
-    <meta property="twitter:image" content="https://el4aby7.github.io/Aganceonline/assets/images/logo.jpeg">
+    <meta property="twitter:image" content="https://aganceonline.github.io/Aganceonline/assets/images/logo.jpeg">
 
 
     <!-- Fonts -->
@@ -87,7 +87,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <!-- Logo -->
             <div class="flex items-center gap-2">
                 <a href="index.html" class="flex items-center gap-2">
-                    <img src="assets/images/logo.jpeg" alt="Logo" class="h-10 w-10 rounded-full object-cover border-2 border-primary">
+                    <img src="assets/images/logo.jpeg" alt="Logo" loading="lazy" width="40" height="40" class="h-10 w-10 rounded-full object-cover border-2 border-primary">
                     <span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white" data-i18n="header_title">AganceOnline</span>
                 </a>
             </div>
@@ -246,7 +246,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- Main Script -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/holidays.js"></script>
     <script src="js/script.js"></script>
+    <script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("sw.js")
+                    .catch(err => { /* console.error(err) */ });
+            });
+        }
+    </script>
 </body>
 </html>
