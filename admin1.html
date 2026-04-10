@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <!-- Google Tag Manager -->
+    <script>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, "script", "dataLayer", "GTM-TRHFFRVS");
+    </script>
+    <!-- End Google Tag Manager -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Holiday Controls - AganceOnline</title>
+
+    <!-- Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#ee2122",
+              "surface-dark": "#1a121d",
+              "surface-card": "#201724",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+              body: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  </head>
+  <body
+    class="bg-gray-100 dark:bg-[#150d17] text-slate-900 dark:text-white antialiased min-h-screen flex flex-col"
+  >
+    <!-- Google Tag Manager (noscript) -->
+    <noscript
+      ><iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-TRHFFRVS"
+        height="0"
+        width="0"
+        style="display: none; visibility: hidden"
+      ></iframe
+    ></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <!-- Navbar -->
+    <header
+      class="bg-white dark:bg-surface-card border-b border-gray-200 dark:border-white/10 sticky top-0 z-50"
+    >
+      <div
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between"
+      >
+        <div class="flex items-center gap-2">
+          <img
+            src="assets/images/logo.jpeg"
+            alt="Logo"
+            class="h-10 w-10 rounded-full object-cover border-2 border-primary"
+          />
+          <span class="text-xl font-bold tracking-tight">Agance Admin</span>
+        </div>
+        <div id="user-info" class="hidden flex items-center gap-4">
+          <span
+            id="user-email"
+            class="text-sm text-gray-500 dark:text-gray-400"
+          ></span>
+          <button
+            id="logout-btn"
+            class="text-sm font-medium text-red-500 hover:text-red-400"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow p-6 max-w-7xl mx-auto w-full">
+        <!-- Auth Loader -->
+        <div id="auth-loader" class="flex flex-col items-center justify-center mt-20">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            <p class="mt-4 text-gray-500">Checking authorization...</p>
+        </div>
+
+        <div id="admin-content" class="hidden space-y-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-black tracking-tight">Holiday & Occasion Controls</h1>
+                    <p class="text-gray-500 dark:text-gray-400 mt-1">Manage festive themes and banners for the website.</p>
+                </div>
+                <a href="admin.html" class="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-primary transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">dashboard</span>
+                    Back to Dashboard
+                </a>
+            </div>
+
+            <div id="holiday-settings-container" class="space-y-10">
+                <!-- Categories will be injected here -->
+                <div class="holiday-category" data-category="Religious">
+                  <h2 class="text-xl font-bold border-b border-gray-200 dark:border-white/10 pb-3 mb-6 flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary">auto_awesome</span>
+                    Religious Occasions
+                  </h2>
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="holidays-Religious"></div>
+                </div>
+
+                <div class="holiday-category" data-category="National">
+                  <h2 class="text-xl font-bold border-b border-gray-200 dark:border-white/10 pb-3 mb-6 flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary">flag</span>
+                    National Holidays
+                  </h2>
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="holidays-National"></div>
+                </div>
+
+                <div class="holiday-category" data-category="Seasonal">
+                  <h2 class="text-xl font-bold border-b border-gray-200 dark:border-white/10 pb-3 mb-6 flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary">calendar_month</span>
+                    Seasonal & Commercial
+                  </h2>
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="holidays-Seasonal"></div>
+                </div>
+            </div>
+
+            <div class="sticky bottom-6 flex justify-end">
+                <button
+                    id="save-holidays-btn"
+                    class="bg-primary hover:bg-red-600 text-white font-bold py-4 px-10 rounded-2xl transition-all shadow-2xl shadow-red-900/40 flex items-center gap-3 transform hover:scale-105 active:scale-95"
+                >
+                    <span class="material-symbols-outlined">save</span>
+                    Save All Changes
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/supabase-config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/admin1.js"></script>
+  </body>
+</html>
