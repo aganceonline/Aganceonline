@@ -24,7 +24,7 @@ window.showToast = function(message, type = 'success') {
         toast.classList.add('bg-gray-800', 'dark:bg-gray-700');
     }
 
-    toast.innerHTML = `<span class="material-symbols-outlined">\${icon}</span> <span>\${window.escapeHtml(message)}</span>`;
+    toast.innerHTML = `<span class="material-symbols-outlined">${icon}</span> <span>${window.escapeHtml(message)}</span>`;
     document.body.appendChild(toast);
 
     setTimeout(() => toast.classList.remove('translate-y-full', 'opacity-0'), 10);

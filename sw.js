@@ -10,6 +10,7 @@ const ASSETS_TO_CACHE = [
   './admin.html',
   './css/style.css',
   './js/script.js',
+  './js/admin.js',
   './js/supabase-config.js',
   './js/holidays.js',
   './js/utils.js',
@@ -50,31 +51,40 @@ self.addEventListener('activate', (event) => {
 
 // Fetch Event - Stale-While-Revalidate Strategy
 self.addEventListener('fetch', (event) => {
+  // Only handle GET requests
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
 
-  // Skip supabase and gtm for caching if they are dynamic,
-  // but we included the library CDN in ASSETS_TO_CACHE for offline use.
+  // Skip Supabase API calls (queries) from caching to ensure fresh data
+  // but allow caching of the Supabase library script if it's served from a CDN (handled below).
+  if (url.hostname.includes('supabase.co') && url.pathname.includes('/rest/v1')) {
+      return; // Bypass SW for Supabase API
+  }
+
+  // Bypass for Chrome Extensions and GTM
+  if (url.protocol === 'chrome-extension:' || url.hostname.includes('googletagmanager.com')) {
+      return;
+  }
 
   event.respondWith(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.match(event.request).then((cachedResponse) => {
         const fetchedResponse = fetch(event.request)
           .then((networkResponse) => {
-            if (networkResponse && networkResponse.status === 200) {
+            // Update cache with fresh version
+            if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+              cache.put(event.request, networkResponse.clone());
+            } else if (networkResponse && networkResponse.status === 200 && (url.hostname.includes('cdn.jsdelivr.net') || url.hostname.includes('fonts.googleapis.com') || url.hostname.includes('fonts.gstatic.com'))) {
+              // Cache external assets as well
               cache.put(event.request, networkResponse.clone());
             }
             return networkResponse;
           })
           .catch(() => {
-            // If fetch fails and we have no cached response,
-            // the promise will resolve to undefined, which we handle below.
             return cachedResponse;
           });
 
-        // Return the cached response if we have it, otherwise wait for the network
-        // If both are missing/fail, the browser will receive a network error which is expected.
         return cachedResponse || fetchedResponse;
       });
     })

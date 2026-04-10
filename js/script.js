@@ -3,7 +3,7 @@
  */
 
 // --- Constants & Global Variables ---
-let usdToEgpRate = 50.0;
+let usdToEgpRate = 50.0; // Default fallback exchange rate (1 USD = 50 EGP)
 let currentLang = localStorage.getItem('lang') || 'en';
 let currentTheme = localStorage.getItem('theme') || 'dark';
 let currentCurrency = localStorage.getItem('currency') || 'EGP';
@@ -14,18 +14,26 @@ let currentProduct = null;
 let brands = [];
 let activeBrandFilters = [];
 let activeColorFilters = [];
-let conditionFilter = 'all';
+let conditionFilter = 'all'; // 'all', 'new', 'used'
 let priceRange = { min: 0, max: 0, current: 0 };
 let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
 
 // --- UI Utilities ---
-// showToast is now in js/utils.js
+// showToast is handled in js/utils.js
+
+// Simple XSS protection - fallback if utils.js not loaded
 const escapeHtml = window.escapeHtml || ((unsafe) => {
-    if (unsafe === null || unsafe === undefined) return "";
-    if (typeof unsafe !== "string") unsafe = String(unsafe);
-    return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    if (unsafe === null || unsafe === undefined) return '';
+    if (typeof unsafe !== 'string') unsafe = String(unsafe);
+    return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
 });
 
+// --- Input Validation Helpers ---
 function validateContactField(value, type) {
     if (typeof value !== 'string') return false;
     const trimmed = value.trim();
@@ -61,9 +69,7 @@ function clearFieldError(inputElement) {
     if (!inputElement) return;
     inputElement.classList.remove('border-red-500');
     const errorEl = inputElement.parentElement.querySelector('.error-msg');
-    if (errorEl) {
-        errorEl.remove();
-    }
+    if (errorEl) errorEl.remove();
 }
 
 // --- Initialization ---
@@ -422,7 +428,6 @@ async function loadGlobalSettings() {
                     <div class="social-dropdown hidden group-hover/social:block absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-white dark:bg-surface-card border border-gray-200 dark:border-white/10 rounded-lg shadow-xl py-2 z-[60] min-w-[180px]">
                         ${links.map(link => {
                             const href = type === 'phone' ? `tel:${link.replace(/\s+/g, '')}` : link;
-                            const display = type === 'phone' ? link : (link.replace('https://', '').replace('www.', '').split('/')[0] + (link.split('/').length > 1 ? '/...' : ''));
                             return `
                                 <a href="${href}" target="_blank" class="block px-4 py-2 text-xs text-slate-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors flex items-center gap-2" onclick="event.stopPropagation(); trackClick('${type}', '${link}')">
                                     <span class="material-symbols-outlined text-[16px]">${type === 'phone' ? 'call' : 'link'}</span>
@@ -482,7 +487,6 @@ async function loadGlobalSettings() {
                         <div class="social-dropdown hidden group-hover/social:block absolute bottom-full mb-4 right-0 bg-white dark:bg-surface-card border border-gray-200 dark:border-white/10 rounded-lg shadow-xl py-2 z-[60] min-w-[200px]">
                             ${links.map(link => `
                                 <a href="${link}" target="_blank" class="block px-4 py-3 text-sm text-slate-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors flex items-center gap-3" onclick="event.stopPropagation(); trackClick('whatsapp_floating', '${link}')">
-                                    <svg class="w-5 h-5 fill-primary" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                                     <span class="truncate">${escapeHtml(link)}</span>
                                 </a>
                             `).join('')}
@@ -505,29 +509,14 @@ async function loadGlobalSettings() {
 
         if (mapContainer) {
             if (settings['MAP_EMBED']) {
-                // To safely render the iframe without allowing arbitrary scripts, we can either
-                // inject the raw string if we trust the admin, or carefully parse the src.
-                // Since this is from the admin dashboard (app_settings), we will insert the HTML
-                // but apply some classes to ensure it fits the container.
-
-                // A typical google maps iframe snippet looks like <iframe src="..." width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                // We'll replace width/height to make it responsive
                 let embedHtml = settings['MAP_EMBED'];
-
-                // Force full width/height
                 embedHtml = embedHtml.replace(/width="[^"]*"/i, 'width="100%"');
                 embedHtml = embedHtml.replace(/height="[^"]*"/i, 'height="100%"');
 
-                // Add a class for styling if it doesn't have one
                 if (!embedHtml.includes('class=')) {
                     embedHtml = embedHtml.replace('<iframe', '<iframe class="w-full h-full border-0"');
-                } else {
-                    // It's harder to reliably append to an existing class attribute with regex without DOMParser,
-                    // but usually Google Maps iframes don't have classes by default.
                 }
-
                 mapContainer.innerHTML = embedHtml;
-                // Remove the flex/justify center classes used for the loading state to allow iframe to fill
                 mapContainer.classList.remove('flex', 'items-center', 'justify-center');
             } else {
                 mapContainer.innerHTML = '<span class="text-gray-500 dark:text-gray-400">Map not available</span>';
@@ -598,7 +587,7 @@ function loadHome() {
     const featured = sortedProducts.filter(p => p.featured).slice(0, 3);
     container.innerHTML = featured.map(product => createProductCard(product)).join('');
     updatePrices();
-    updateDOMTranslations(); // Re-run for dynamic content
+    updateDOMTranslations();
 }
 
 /**
@@ -608,20 +597,12 @@ function loadInventory() {
     const container = document.getElementById('inventory-container');
     if (!container) return;
 
-    // Setup Mobile Filter Interaction
     setupMobileFilters();
-
-    // Initialize Price Slider Range
     initPriceSlider();
-
-    // Render Filters
     renderColorFilters();
     renderBrandFilters();
-
-    // Initial render
     filterInventory();
 
-    // Bind Filter Events
     const searchInput = document.getElementById('search-input');
     const categorySelect = document.getElementById('filter-category');
     const priceSlider = document.getElementById('price-slider');
@@ -649,10 +630,7 @@ function setupMobileFilters() {
         });
     }
 
-    // On desktop resize, ensure content is back in sidebar
     window.addEventListener('resize', handleFilterResponsiveSync);
-
-    // Initial check
     handleFilterResponsiveSync();
 }
 
@@ -668,7 +646,6 @@ function handleFilterResponsiveSync() {
                 sidebar.appendChild(mobileContent.childNodes[0]);
             }
         }
-        // Close overlay if open
         const overlay = document.getElementById('mobile-filter-overlay');
         if (overlay && !overlay.classList.contains('hidden')) {
             toggleMobileFilters();
@@ -727,7 +704,6 @@ function updatePriceSliderUI() {
 
     if (!slider) return;
 
-    // Calculate values based on currency
     let displayMin = priceRange.min;
     let displayMax = priceRange.max;
     let displayCurrent = priceRange.current;
@@ -742,8 +718,8 @@ function updatePriceSliderUI() {
     slider.max = displayMax;
     slider.value = displayCurrent;
 
-    minLabel.textContent = formatCompactPrice(displayMin);
-    maxLabel.textContent = formatCompactPrice(displayMax);
+    if (minLabel) minLabel.textContent = formatCompactPrice(displayMin);
+    if (maxLabel) maxLabel.textContent = formatCompactPrice(displayMax);
     updatePriceRangeDisplay();
 }
 
@@ -770,7 +746,6 @@ function formatCompactPrice(val) {
 window.setConditionFilter = function(condition) {
     conditionFilter = condition;
 
-    // Update UI
     document.querySelectorAll('.condition-btn').forEach(btn => {
         if (btn.dataset.condition === condition) {
             btn.classList.add('bg-primary', 'text-white', 'shadow-sm');
@@ -788,7 +763,6 @@ function renderColorFilters() {
     const container = document.getElementById('color-filters-container');
     if (!container) return;
 
-    // Collect unique colors from all products
     const colorMap = new Map();
     products.forEach(p => {
         if (p.colors) {
@@ -824,25 +798,23 @@ window.toggleColorFilter = function(hex, btn) {
     if (index === -1) {
         activeColorFilters.push(hex);
         btn.classList.add('border-primary', 'scale-110', 'shadow-lg');
-        btn.classList.remove('border-gray-200', 'dark:border-white/10');
+        btn.classList.remove('border-gray-300');
     } else {
         activeColorFilters.splice(index, 1);
         btn.classList.remove('border-primary', 'scale-110', 'shadow-lg');
-        btn.classList.add('border-gray-200', 'dark:border-white/10');
+        btn.classList.add('border-gray-300');
     }
     filterInventory();
 };
 
 function renderBrandFilters() {
     const container = document.getElementById('brand-filters-container');
-
     if (!container) return;
 
     if (brands.length === 0) {
         container.parentElement.classList.add('hidden');
         return;
     }
-
     container.parentElement.classList.remove('hidden');
 
     container.innerHTML = brands.map(brand => {
@@ -863,14 +835,13 @@ window.toggleBrandFilter = function(brandId, btn) {
     const index = activeBrandFilters.indexOf(brandId);
     if (index === -1) {
         activeBrandFilters.push(brandId);
-        btn.classList.remove('border-gray-200', 'dark:border-gray-300', 'opacity-70');
+        btn.classList.remove('opacity-70');
         btn.classList.add('border-primary', 'ring-2', 'ring-primary/50');
     } else {
         activeBrandFilters.splice(index, 1);
         btn.classList.remove('border-primary', 'ring-2', 'ring-primary/50');
-        btn.classList.add('border-gray-200', 'dark:border-gray-300', 'opacity-70');
+        btn.classList.add('opacity-70');
     }
-
     filterInventory();
 };
 
@@ -888,67 +859,37 @@ function filterInventory() {
     const term = searchInput ? searchInput.value.toLowerCase() : '';
     const category = categorySelect ? categorySelect.value : '';
 
-    // Sort by order_inventory
     const sortedProducts = [...products].sort((a, b) => (a.order_inventory || 0) - (b.order_inventory || 0));
 
     const filtered = sortedProducts.filter(p => {
         const nameEn = p.name ? p.name.toLowerCase() : '';
         const nameAr = p.name_ar ? p.name_ar.toLowerCase() : '';
         const matchesTerm = nameEn.includes(term) || nameAr.includes(term);
-
-        // Category check
         const matchesCategory = category === '' || (p.category && p.category === category);
-
-        // Brand check
         const matchesBrand = activeBrandFilters.length === 0 || activeBrandFilters.includes(p.brand_id);
-
-        // Condition check
         const mileage = parseInt(p.details?.mileage?.replace(/[^0-9]/g, '')) || 0;
         let matchesCondition = true;
         if (conditionFilter === 'new') matchesCondition = mileage === 0;
         else if (conditionFilter === 'used') matchesCondition = mileage > 0;
-
-        // Color check
         let matchesColor = activeColorFilters.length === 0;
         if (!matchesColor && p.colors) {
             matchesColor = p.colors.some(c => activeColorFilters.includes(c.hex));
         }
-
-        // Price check
         let matchesPrice = true;
         if (slider && p.price_egp) {
             let currentPriceValue = p.price_egp;
             let sliderValue = parseInt(slider.value);
-
             if (currentCurrency === 'USD') {
                 currentPriceValue = p.price_egp / usdToEgpRate;
             }
             matchesPrice = currentPriceValue <= sliderValue;
         }
-
         return matchesTerm && matchesCategory && matchesBrand && matchesCondition && matchesColor && matchesPrice;
     });
 
-    // GTM: Track filter_inventory
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-        'event': 'filter_inventory',
-        'filter_term': term,
-        'filter_category': category,
-        'filter_condition': conditionFilter,
-        'filter_brands': activeBrandFilters,
-        'filter_colors': activeColorFilters,
-        'results_count': filtered.length
-    });
-
     if (filtered.length === 0) {
-        let message = '';
-        if (category) {
-            message = `${category} cars aren't available at the moment.`;
-        } else {
-            message = `There are no cars matching your search at the moment.`;
-        }
-        container.innerHTML = `<div class="col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4 flex flex-col items-center justify-center py-20 text-center">
+        let message = category ? `${category} cars aren't available at the moment.` : `There are no cars matching your search at the moment.`;
+        container.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center py-20 text-center">
             <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4">search_off</span>
             <p class="text-xl text-gray-400 dark:text-gray-500 font-medium">${message}</p>
         </div>`;
@@ -958,24 +899,6 @@ function filterInventory() {
 
     updatePrices();
     updateDOMTranslations();
-
-    // GTM: Track view_item_list
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-        'event': 'view_item_list',
-        'ecommerce': {
-            'item_list_id': 'inventory',
-            'item_list_name': 'Inventory',
-            'items': filtered.slice(0, 10).map((p, idx) => ({
-                'item_id': p.id,
-                'item_name': p.name,
-                'item_brand': p.brand_id,
-                'item_category': p.category,
-                'index': idx + 1,
-                'price': p.price_egp / (currentCurrency === 'USD' ? usdToEgpRate : 1)
-            }))
-        }
-    });
 }
 
 /**
@@ -997,35 +920,14 @@ function loadFavoritesPage() {
     }
     updatePrices();
     updateDOMTranslations();
-
-    // GTM: Track view_item
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-        'event': 'view_item',
-        'ecommerce': {
-            'currency': currentCurrency,
-            'value': product.price_egp / (currentCurrency === 'USD' ? usdToEgpRate : 1),
-            'items': [{
-                'item_id': product.id,
-                'item_name': product.name,
-                'item_brand': product.brand_id,
-                'item_category': product.category,
-                'price': product.price_egp / (currentCurrency === 'USD' ? usdToEgpRate : 1),
-                'quantity': 1
-            }]
-        }
-    });
 }
 
 let heroInterval = null;
 function initHeroCarousel() {
     const img1 = document.getElementById('hero-bg-image');
     const img2 = document.getElementById('hero-bg-image-2');
-
     if (!img1 || !img2 || !img2.src || img2.src.includes('undefined')) return;
-
     if (heroInterval) clearInterval(heroInterval);
-
     let current = 1;
     heroInterval = setInterval(() => {
         if (current === 1) {
@@ -1043,7 +945,6 @@ function initHeroCarousel() {
 /**
  * Logic for Details Page: Loads specific vehicle info by ID.
  */
-    // Render Main Details
 async function loadDetails() {
     const params = new URLSearchParams(window.location.search);
     const id = parseInt(params.get('id'));
@@ -1053,8 +954,7 @@ async function loadDetails() {
         await loadProducts();
     }
 
-    const sortedProducts = [...products].sort((a, b) => (a.order_inventory || 0) - (b.order_inventory || 0));
-    const product = sortedProducts.find(p => p.id === id);
+    const product = products.find(p => p.id === id);
     currentProduct = product;
 
     if (!product) {
@@ -1066,47 +966,11 @@ async function loadDetails() {
                     <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4">error_outline</span>
                     <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Vehicle Not Found</h2>
                     <p class="text-gray-500 dark:text-gray-400 mb-6">The vehicle you are looking for does not exist or has been removed.</p>
-                    <a href="inventory.html" class="px-6 py-3 bg-primary text-white font-bold rounded-lg hover:bg-primary-dark transition-colors">
-                        View Inventory
-                    </a>
+                    <a href="inventory.html" class="px-6 py-3 bg-primary text-white font-bold rounded-lg hover:bg-primary-dark transition-colors">View Inventory</a>
                 </div>
             `;
         }
         return;
-    }
-    // Dynamic SEO Updates
-    if (product) {
-        document.title = `${product.name} - AganceOnline`;
-
-        // Update meta description
-        const metaDesc = document.querySelector('meta[name="description"]');
-        if (metaDesc) metaDesc.setAttribute('content', (product.description || product.description_ar || 'Explore this premium vehicle at AganceOnline.'));
-
-        // Update Open Graph Tags
-        const ogTitle = document.querySelector('meta[property="og:title"]');
-        if (ogTitle) ogTitle.setAttribute('content', `${product.name} - AganceOnline`);
-
-        const ogDesc = document.querySelector('meta[property="og:description"]');
-        if (ogDesc) ogDesc.setAttribute('content', (product.description || product.description_ar || 'Explore this premium vehicle at AganceOnline.'));
-
-        const ogImage = document.querySelector('meta[property="og:image"]');
-        if (ogImage && product.image_url) ogImage.setAttribute('content', product.image_url);
-
-        const ogUrl = document.querySelector('meta[property="og:url"]');
-        if (ogUrl) ogUrl.setAttribute('content', window.location.href);
-
-        // Update Twitter Tags
-        const twTitle = document.querySelector('meta[property="twitter:title"]');
-        if (twTitle) twTitle.setAttribute('content', `${product.name} - AganceOnline`);
-
-        const twDesc = document.querySelector('meta[property="twitter:description"]');
-        if (twDesc) twDesc.setAttribute('content', (product.description || product.description_ar || 'Explore this premium vehicle at AganceOnline.'));
-
-        const twImage = document.querySelector('meta[property="twitter:image"]');
-        if (twImage && product.image_url) twImage.setAttribute('content', product.image_url);
-
-        const twUrl = document.querySelector('meta[property="twitter:url"]');
-        if (twUrl) twUrl.setAttribute('content', window.location.href);
     }
 
     const mainImg = document.getElementById('main-image');
@@ -1121,102 +985,73 @@ async function loadDetails() {
     document.getElementById('vehicle-price').setAttribute('data-price-egp', product.price_egp || '');
 
     const btnInstallment = document.getElementById('btn-installment');
-    if (btnInstallment) {
-        btnInstallment.href = `financing.html?id=${product.id}`;
-    }
-
-    // Origin Badge
-    const originBadge = document.getElementById('vehicle-origin-badge');
-    if (originBadge) {
-        if (product.origin) {
-            originBadge.classList.remove('hidden');
-            let originKey = product.origin === 'Imported' ? 'imported' : 'egyptian_agency';
-            originBadge.setAttribute('data-i18n', originKey);
-            originBadge.textContent = translations[currentLang]?.[originKey] || product.origin;
-        } else {
-            originBadge.classList.add('hidden');
-        }
-    }
+    if (btnInstallment) btnInstallment.href = `financing.html?id=${product.id}`;
 
     const descEl = document.getElementById('vehicle-desc');
     descEl.textContent = displayDesc;
 
-    // Handle description truncation logic
+    const specs = product.details || {};
+    const specsAr = product.details_ar || {};
+    document.getElementById('spec-mileage').textContent = (isAr ? specsAr.mileage : specs.mileage) || specs.mileage || '-';
+    document.getElementById('spec-trans').textContent = (isAr ? specsAr.transmission : specs.transmission) || specs.transmission || '-';
+    document.getElementById('spec-fuel').textContent = (isAr ? specsAr.fuel : specs.fuel) || specs.fuel || '-';
+    document.getElementById('spec-version').textContent = (isAr ? specsAr.version : specs.version) || specs.version || '-';
+
+    // Description Truncation Logic
     const descWrapper = document.getElementById('vehicle-desc-wrapper');
     const descFade = document.getElementById('vehicle-desc-fade');
-    const readMoreBtn = descWrapper.nextElementSibling;
+    const readMoreBtn = descWrapper?.parentElement?.querySelector('button');
 
-    // Reset styles
-    descWrapper.style.maxHeight = '8rem'; // 32 * 0.25rem = 8rem
-    descFade.classList.remove('hidden');
-    readMoreBtn.classList.remove('hidden');
+    if (descWrapper && descEl) {
+        // Reset height to measure real height
+        descWrapper.style.maxHeight = 'none';
+        const realHeight = descEl.offsetHeight;
+        descWrapper.style.maxHeight = ''; // Restore CSS max-height (32)
 
-    // Wait for a tick to allow the browser to calculate height
-    setTimeout(() => {
-        if (descEl.scrollHeight <= descWrapper.offsetHeight) {
-            descFade.classList.add('hidden');
-            readMoreBtn.classList.add('hidden');
-            descWrapper.style.maxHeight = 'none';
-        }
-    }, 100);
-
-    // Badges
-    const newArrivalBadge = document.getElementById('badge-new-arrival');
-    if (newArrivalBadge) {
-        newArrivalBadge.style.display = (product.category === 'New Arrival') ? 'inline-block' : 'none';
-    }
-
-    const detailsBadges = document.getElementById('details-badges');
-    if (detailsBadges) {
-        // Remove existing upon request badge if any to prevent duplicates on re-render
-        const existingUrBadge = document.getElementById('badge-upon-request');
-        if (existingUrBadge) existingUrBadge.remove();
-
-        if (product.details && product.details.upon_request) {
-            const urBadge = document.createElement('span');
-            urBadge.id = 'badge-upon-request';
-            urBadge.className = 'bg-black text-white text-xs font-bold px-3 py-1.5 rounded uppercase tracking-wider';
-            urBadge.setAttribute('data-i18n', 'upon_request');
-            urBadge.textContent = 'Upon Request';
-            detailsBadges.appendChild(urBadge);
+        if (realHeight <= 128) { // 32 * 4 = 128px approx
+            if (descFade) descFade.classList.add('hidden');
+            if (readMoreBtn) readMoreBtn.classList.add('hidden');
+        } else {
+            if (descFade) descFade.classList.remove('hidden');
+            if (readMoreBtn) readMoreBtn.classList.remove('hidden');
         }
     }
 
-    // Specs
-    const displayMileage = (isAr && product.details_ar?.mileage) ? product.details_ar.mileage : product.details.mileage;
-    const displayTrans = (isAr && product.details_ar?.transmission) ? product.details_ar.transmission : product.details.transmission;
-    const displayFuel = (isAr && product.details_ar?.fuel) ? product.details_ar.fuel : product.details.fuel;
-    const displayVersion = (isAr && product.details_ar?.version) ? product.details_ar.version : product.details.version;
+    // SEO Meta Updates
+    document.title = `${displayName} - AganceOnline`;
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc && displayDesc) metaDesc.setAttribute('content', `${displayName}. ${displayDesc.substring(0, 150)}...`);
 
-    document.getElementById('spec-mileage').textContent = displayMileage || '-';
-    document.getElementById('spec-trans').textContent = displayTrans || '-';
-    document.getElementById('spec-fuel').textContent = displayFuel || '-';
-    document.getElementById('spec-version').textContent = displayVersion || '-';
+    // GTM: Track view_item
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+        'event': 'view_item',
+        'ecommerce': {
+            'currency': currentCurrency,
+            'value': product.price_egp / (currentCurrency === 'USD' ? usdToEgpRate : 1),
+            'items': [{
+                'item_id': product.id,
+                'item_name': product.name,
+                'item_category': product.category,
+                'price': product.price_egp / (currentCurrency === 'USD' ? usdToEgpRate : 1),
+                'quantity': 1
+            }]
+        }
+    });
 
-    // Diagnostics PDF Button
-    const btnDiagnostics = document.getElementById('btn-diagnostics');
-    const btnInquireNow = document.getElementById('btn-inquire-now');
-
-    if (product.details && product.details.diagnostics_url) {
-        if (btnDiagnostics) {
-            btnDiagnostics.href = product.details.diagnostics_url;
-            btnDiagnostics.classList.remove('hidden');
-        }
-        if (btnInquireNow) {
-            btnInquireNow.classList.remove('col-span-2');
-            btnInquireNow.classList.add('col-span-1');
-        }
-    } else {
-        if (btnDiagnostics) {
-            btnDiagnostics.classList.add('hidden');
-        }
-        if (btnInquireNow) {
-            btnInquireNow.classList.remove('col-span-1');
-            btnInquireNow.classList.add('col-span-2');
-        }
+    // Badges logic
+    const originBadge = document.getElementById('vehicle-origin-badge');
+    if (originBadge && product.origin) {
+        originBadge.textContent = product.origin;
+        originBadge.classList.remove('hidden');
     }
 
-    // Color Selection
+    const badgeNewArrival = document.getElementById('badge-new-arrival');
+    if (badgeNewArrival) {
+        const isNew = specs.mileage && (specs.mileage === '0' || specs.mileage.toLowerCase().includes('0 km'));
+        badgeNewArrival.textContent = isNew ? (translations[currentLang]?.new_arrival || 'New Arrival') : (translations[currentLang]?.used || 'Used');
+    }
+
     const colorContainer = document.getElementById('color-selection-container');
     const colorOptions = document.getElementById('color-options');
     const colorNameDisplay = document.getElementById('selected-color-name');
@@ -1224,198 +1059,103 @@ async function loadDetails() {
     if (colorContainer && colorOptions && product.colors && product.colors.length > 0) {
         colorContainer.classList.remove('hidden');
         colorOptions.innerHTML = product.colors.map((color, index) => {
-            const isDefault = color.is_default;
-            return `
-                <button
-                    onclick="selectVehicleColor(${index}, ${product.id})"
-                    class="w-6 h-6 rounded-full border-2 transition-all ${isDefault ? 'border-primary scale-110 shadow-lg' : 'border-gray-300 hover:border-gray-400'}"
-                    style="background-color: ${color.hex};"
-                    title="${escapeHtml(isAr ? color.name_ar : color.name)}"
-                ></button>
-            `;
+            return `<button onclick="selectVehicleColor(${index}, ${product.id})" class="w-6 h-6 rounded-full border-2 transition-all ${color.is_default ? 'border-primary scale-110 shadow-lg' : 'border-gray-300'}" style="background-color: ${color.hex};"></button>`;
         }).join('');
-
-        const defaultColor = product.colors.find(c => c.is_default) || product.colors[0];
-        if (defaultColor) {
-            colorNameDisplay.textContent = isAr ? defaultColor.name_ar : defaultColor.name;
-            const galleryToUse = (defaultColor.gallery && defaultColor.gallery.length > 0) ? defaultColor.gallery : product.gallery;
-            const mainImgToUse = defaultColor.image_url || product.image_url;
-            updateVehicleGallery(galleryToUse, mainImgToUse);
-        }
+        const def = product.colors.find(c => c.is_default) || product.colors[0];
+        colorNameDisplay.textContent = isAr ? def.name_ar : def.name;
+        updateVehicleGallery(def.gallery && def.gallery.length > 0 ? def.gallery : product.gallery, def.image_url || product.image_url);
     } else {
-        // Fallback to default gallery if no colors defined
         if (colorContainer) colorContainer.classList.add('hidden');
         renderDefaultGallery(product);
-    }
-
-    // Initialize main image correctly if the first item happens to be a video
-    // (Usually image_url is an image, but just in case)
-    if (product.image_url && typeof document.createElement === 'function') {
-        const dummyBtn = document.createElement('button'); // dummy button for state update
-        dummyBtn.parentElement = document.createElement('div');
-        changeMainImage(product.image_url, dummyBtn, true);
     }
 
     updatePrices();
     updateDOMTranslations();
 }
 
-/**
- * Renders the default gallery for a product.
- */
 function renderDefaultGallery(product) {
     const galleryContainer = document.getElementById('gallery-thumbnails');
     if (!galleryContainer) return;
-
     let gallery = product.gallery || [];
-    if (product.image_url && !gallery.includes(product.image_url)) {
-        gallery = [product.image_url, ...gallery];
-    }
+    if (product.image_url && !gallery.includes(product.image_url)) gallery = [product.image_url, ...gallery];
     updateVehicleGallery(gallery, product.image_url);
 }
 
-/**
- * Updates the gallery thumbnails based on the provided array of URLs.
- */
 function updateVehicleGallery(gallery, mainImageUrl) {
     const galleryContainer = document.getElementById('gallery-thumbnails');
     if (!galleryContainer) return;
-
-    if (!gallery || gallery.length === 0) {
-        galleryContainer.innerHTML = `
-            <div class="w-full py-4 text-center">
-                <p class="text-sm text-red-500 font-bold" data-i18n="color_not_available">
-                    ${translations[currentLang]?.color_not_available || "This color isn't available but can be ordered in request"}
-                </p>
-            </div>
-        `;
-        // Clear main image or set to placeholder
-        const mainImg = document.getElementById('main-image');
-        if (mainImg) mainImg.src = 'https://placehold.co/600x400?text=No+Gallery+Available';
-        return;
-    }
-
-    galleryContainer.innerHTML = gallery.map((url) => {
-        const isActive = url === mainImageUrl;
+    galleryContainer.innerHTML = (gallery || []).map(url => {
         const isVideo = url.match(/\.(mp4|webm|ogg)$/i);
-
-        const mediaTag = isVideo
-            ? `<video src="${escapeHtml(url)}" class="w-full h-full object-cover pointer-events-none" muted></video>
-               <div class="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none">
-                   <span class="material-symbols-outlined text-white text-[24px]">play_circle</span>
-               </div>`
-            : `<img src="${escapeHtml(url)}" class="w-full h-full object-cover" alt="Thumbnail">`;
-
-        return `
-            <button class="relative flex-none w-24 aspect-[4/3] rounded-lg overflow-hidden hover:opacity-100 transition-opacity ${isActive ? 'ring-2 ring-primary' : 'opacity-60'}" data-url="${escapeHtml(url)}" onclick="changeMainImage(this.dataset.url, this)">
-                ${mediaTag}
-            </button>
-        `}).join('');
-
-    // Set the first image from the gallery as main image if current main image isn't in gallery
-    if (gallery.length > 0 && !gallery.includes(mainImageUrl)) {
-        changeMainImage(gallery[0], null, true);
-    } else {
-         changeMainImage(mainImageUrl, null, true);
-    }
+        return `<button class="relative flex-none w-24 aspect-[4/3] rounded-lg overflow-hidden ${url === mainImageUrl ? 'ring-2 ring-primary' : 'opacity-60'}" data-url="${escapeHtml(url)}" onclick="changeMainImage(this.dataset.url, this)">
+            ${isVideo ? `<video src="${escapeHtml(url)}" class="w-full h-full object-cover" muted></video>` : `<img src="${escapeHtml(url)}" class="w-full h-full object-cover">`}
+        </button>`;
+    }).join('');
+    changeMainImage(mainImageUrl, null, true);
 }
 
-/**
- * Handles color selection for a vehicle.
- */
 window.selectVehicleColor = function(colorIndex, productId) {
     const product = currentProduct;
     if (!product || !product.colors) return;
-
     const color = product.colors[colorIndex];
     if (!color) return;
+    document.getElementById('selected-color-name').textContent = currentLang === 'ar' ? color.name_ar : color.name;
+    let gal = (color.gallery && color.gallery.length > 0) ? [...color.gallery] : [...product.gallery];
+    updateVehicleGallery(gal, color.image_url || product.image_url);
+};
 
-    const isAr = currentLang === 'ar';
-    document.getElementById('selected-color-name').textContent = isAr ? color.name_ar : color.name;
-
-    // Update buttons UI
-    const buttons = document.querySelectorAll('#color-options button');
-    buttons.forEach((btn, idx) => {
-        if (idx === colorIndex) {
-            btn.classList.add('border-primary', 'scale-110', 'shadow-lg');
-            btn.classList.remove('border-gray-300');
-        } else {
-            btn.classList.remove('border-primary', 'scale-110', 'shadow-lg');
-            btn.classList.add('border-gray-300');
-        }
-    });
-
-    let galleryToUse = (color.gallery && color.gallery.length > 0) ? [...color.gallery] : [...product.gallery];
-    const mainImgToUse = color.image_url || product.image_url;
-
-    // Ensure the main image is in the gallery if we're falling back or if it's explicitly set
-    if (mainImgToUse && !galleryToUse.includes(mainImgToUse)) {
-        galleryToUse = [mainImgToUse, ...galleryToUse];
-    }
-
-    updateVehicleGallery(galleryToUse, mainImgToUse);
-}
-
-/**
- * Updates the main image on the Details page when a thumbnail is clicked.
- */
 function changeMainImage(url, btn, skipStateUpdate = false) {
     const mainImg = document.getElementById('main-image');
     const mainVid = document.getElementById('main-video');
-
     if (!mainImg || !mainVid) return;
-
     const isVideo = url.match(/\.(mp4|webm|ogg)$/i);
-
     if (isVideo) {
         mainImg.classList.add('hidden');
         mainVid.classList.remove('hidden');
         mainVid.src = url;
-        // Optional: auto-play when clicked
-        if (!skipStateUpdate) {
-        }
     } else {
         mainVid.classList.add('hidden');
         mainImg.classList.remove('hidden');
-        mainVid.pause();
-        mainVid.src = ''; // Clear source to stop downloading
+        mainVid.src = '';
         mainImg.src = url;
     }
-
-    if (!skipStateUpdate && btn && btn.parentElement) {
-        // Update active state of thumbnails
-        const buttons = btn.parentElement.querySelectorAll('button');
-        buttons.forEach(b => {
-            b.classList.remove('ring-2', 'ring-primary', 'opacity-100');
+    if (!skipStateUpdate && btn) {
+        btn.parentElement.querySelectorAll('button').forEach(b => {
+            b.classList.remove('ring-2', 'ring-primary');
             b.classList.add('opacity-60');
         });
+        btn.classList.add('ring-2', 'ring-primary');
         btn.classList.remove('opacity-60');
-        btn.classList.add('ring-2', 'ring-primary', 'opacity-100');
     }
 }
 window.changeMainImage = changeMainImage;
 
+window.openDescriptionPopup = function() {
+    const modal = document.getElementById('description-modal');
+    const modalDesc = document.getElementById('modal-vehicle-desc');
+    if (modal && modalDesc && currentProduct) {
+        const isAr = currentLang === 'ar';
+        modalDesc.textContent = (isAr && currentProduct.description_ar) ? currentProduct.description_ar : currentProduct.description;
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+};
+
+window.closeDescriptionModal = function() {
+    const modal = document.getElementById('description-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+};
+
 function loadContact() {
-    // Just ensure translations are applied
     updateDOMTranslations();
-
-    // Check for pre-filled message from financing
-    const params = new URLSearchParams(window.location.search);
-    const prefilledMessage = params.get('message');
-    if (prefilledMessage) {
-        const messageEl = document.getElementById('c-message');
-        if (messageEl) messageEl.value = prefilledMessage;
-    }
-
     const form = document.getElementById('contact-form');
-    if (form) {
-        form.addEventListener('submit', handleContactSubmit);
-    }
+    if (form) form.addEventListener('submit', handleContactSubmit);
 }
 
 async function handleContactSubmit(e) {
     e.preventDefault();
-
     const nameEl = document.getElementById('c-name');
     const emailEl = document.getElementById('c-email');
     const phoneEl = document.getElementById('c-phone');
@@ -1425,7 +1165,6 @@ async function handleContactSubmit(e) {
     [nameEl, emailEl, phoneEl, interestEl, messageEl].forEach(clearFieldError);
 
     let isValid = true;
-
     if (!validateContactField(nameEl.value, 'name')) { showFieldError(nameEl); isValid = false; }
     if (!validateContactField(emailEl.value, 'email')) { showFieldError(emailEl); isValid = false; }
     if (!validateContactField(phoneEl.value, 'phone')) { showFieldError(phoneEl); isValid = false; }
@@ -1435,60 +1174,30 @@ async function handleContactSubmit(e) {
     if (!isValid) return;
 
     const btn = e.target.querySelector('button');
-    const originalText = btn.innerHTML;
-    btn.innerHTML = 'Sending...';
     btn.disabled = true;
 
     try {
-        const name = nameEl.value.trim();
-        const email = emailEl.value.trim();
-        const phone = phoneEl.value.trim();
-        const interest = interestEl.value.trim();
-        const message = messageEl.value.trim();
-
         const { error } = await supabase.from('inquiries').insert({
-            name,
-            email,
-            phone,
-            interest,
-            message,
-            vehicle_name: interest
+            name: nameEl.value.trim(),
+            email: emailEl.value.trim(),
+            phone: phoneEl.value.trim(),
+            interest: interestEl.value.trim(),
+            message: messageEl.value.trim(),
+            vehicle_name: interestEl.value.trim()
         });
-
         if (error) throw error;
-
-        showToast('Thank you! Your message has been sent. We will contact you shortly.', 'success');
-
-        // GTM: Track generate_lead (Contact Form)
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({
-            'event': 'generate_lead',
-            'lead_type': 'contact_form',
-            'interest': interest
-        });
-
+        showToast('Message sent!', 'success');
         e.target.reset();
-
     } catch (err) {
-        showToast('Failed to send message: ' + err.message, 'error');
+        showToast('Error: ' + err.message, 'error');
     } finally {
-        btn.innerHTML = originalText;
         btn.disabled = false;
     }
 }
 
-// --- Inquiry Modal Logic (Details Page) ---
-
 window.openInquiryModal = function() {
     const modal = document.getElementById('inquiry-modal');
-    if (modal) {
-        modal.classList.remove('hidden');
-        // Pre-fill vehicle name if possible
-        const vehicleTitle = document.getElementById('vehicle-title');
-        if (vehicleTitle) {
-            document.getElementById('inq-vehicle').value = vehicleTitle.textContent;
-        }
-    }
+    if (modal) modal.classList.remove('hidden');
 };
 
 window.closeInquiryModal = function() {
@@ -1496,190 +1205,61 @@ window.closeInquiryModal = function() {
     if (modal) modal.classList.add('hidden');
 };
 
-window.openDescriptionPopup = function() {
-    const modal = document.getElementById('description-modal');
-    const modalDesc = document.getElementById('modal-vehicle-desc');
-    const originalDesc = document.getElementById('vehicle-desc');
-
-    if (modal && modalDesc && originalDesc) {
-        modalDesc.textContent = originalDesc.textContent;
-        modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden'; // Prevent scroll
-    }
-};
-
-window.closeDescriptionModal = function() {
-    const modal = document.getElementById('description-modal');
-    if (modal) {
-        modal.classList.add('hidden');
-        document.body.style.overflow = ''; // Restore scroll
-    }
-};
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Bind inquiry modal form if it exists
-    const inqForm = document.getElementById('inquiry-form');
-    if (inqForm) {
-        inqForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const nameEl = document.getElementById('inq-name');
-            const emailEl = document.getElementById('inq-email');
-            const phoneEl = document.getElementById('inq-phone');
-            const messageEl = document.getElementById('inq-message');
-            const vehicleEl = document.getElementById('inq-vehicle');
-
-            [nameEl, emailEl, phoneEl, messageEl, vehicleEl].forEach(clearFieldError);
-
-            let isValid = true;
-
-            if (!validateContactField(nameEl.value, 'name')) { showFieldError(nameEl); isValid = false; }
-            if (!validateContactField(emailEl.value, 'email')) { showFieldError(emailEl); isValid = false; }
-            if (!validateContactField(phoneEl.value, 'phone')) { showFieldError(phoneEl); isValid = false; }
-            if (!validateContactField(messageEl.value, 'message')) { showFieldError(messageEl); isValid = false; }
-            if (!validateContactField(vehicleEl.value, 'vehicle')) { showFieldError(vehicleEl); isValid = false; }
-
-            if (!isValid) return;
-
-            const btn = e.target.querySelector('button[type="submit"]');
-            const originalText = btn.textContent;
-            btn.textContent = 'Sending...';
-            btn.disabled = true;
-
-            try {
-                const name = nameEl.value.trim();
-                const email = emailEl.value.trim();
-                const phone = phoneEl.value.trim();
-                const message = messageEl.value.trim();
-                const vehicle = vehicleEl.value.trim();
-
-                const { error } = await supabase.from('inquiries').insert({
-                    name,
-                    email,
-                    phone,
-                    interest: 'Vehicle Inquiry',
-                    message,
-                    vehicle_name: vehicle
-                });
-
-                if (error) throw error;
-
-                showToast('Inquiry sent successfully!', 'success');
-
-                // GTM: Track generate_lead (Inquiry Form)
-                window.dataLayer = window.dataLayer || [];
-                window.dataLayer.push({
-                    'event': 'generate_lead',
-                    'lead_type': 'inquiry_form',
-                    'vehicle_name': vehicle
-                });
-
-                e.target.reset();
-                closeInquiryModal();
-
-            } catch (err) {
-                showToast('Error sending inquiry: ' + err.message, 'error');
-            } finally {
-                btn.textContent = originalText;
-                btn.disabled = false;
-            }
-        });
-    }
-});
-
-// --- Component Rendering ---
-
-/**
- * Generates the HTML for a single product card.
- * @param {Object} product - The product data object
- * @returns {string} HTML string
- */
 function createProductCard(product) {
-    const fav = isFavorite(product.id);
-    const isSoldOut = product.is_sold_out;
-    const heartIcon = fav ? 'favorite' : 'favorite';
-    const heartClass = fav ? 'text-primary' : 'text-white';
-    const heartStyle = fav ? 'font-variation-settings: \'FILL\' 1;' : '';
-
     const isAr = currentLang === 'ar';
     const displayName = (isAr && product.name_ar) ? product.name_ar : product.name;
-    // Prefer DB translation for category if available, otherwise fallback to data-i18n
-    const displayCategory = (isAr && product.category_ar) ? product.category_ar : product.category;
+    const fav = isFavorite(product.id);
+    const specs = product.details || {};
+    const specsAr = product.details_ar || {};
 
-    // Specs
-    const displayMileage = (isAr && product.details_ar?.mileage) ? product.details_ar.mileage : product.details.mileage;
-    const displayTrans = (isAr && product.details_ar?.transmission) ? product.details_ar.transmission : product.details.transmission;
-    const displayFuel = (isAr && product.details_ar?.fuel) ? product.details_ar.fuel : product.details.fuel;
-    const displayVersion = (isAr && product.details_ar?.version) ? product.details_ar.version : product.details.version;
+    const mileage = (isAr ? specsAr.mileage : specs.mileage) || specs.mileage || '-';
+    const trans = (isAr ? specsAr.transmission : specs.transmission) || specs.transmission || '-';
 
-    // Use custom translation rendering for category if present in DB
-    const categoryBadge = (isAr && product.category_ar)
-        ? `<span class="bg-primary/90 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded">${escapeHtml(product.category_ar)}</span>`
-        : (product.category ? `<span class="bg-primary/90 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded" data-i18n="${escapeHtml(product.category.toLowerCase().replace(' ', '_'))}">${escapeHtml(product.category)}</span>` : '');
-
-    const uponRequestBadge = (product.details && product.details.upon_request)
-        ? `<span class="bg-black/90 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded mt-1" data-i18n="upon_request">Upon Request</span>`
-        : '';
-
-    const originBadge = product.origin
-        ? `<span class="bg-gray-800/90 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded mt-1">
-            ${escapeHtml(translations[currentLang]?.[product.origin === 'Imported' ? 'imported' : 'egyptian_agency'] || product.origin)}
-           </span>`
-        : '';
-
-    const soldOutOverlay = isSoldOut ? `<div class="sold-out-stamp">SOLD OUT</div>` : '';
-    const grayscaleClass = isSoldOut ? 'grayscale' : '';
+    // Condition Badge logic
+    const mileageNum = parseInt(specs.mileage?.replace(/[^0-9]/g, '')) || 0;
+    const conditionKey = mileageNum === 0 ? 'new' : 'used';
+    const conditionText = translations[currentLang]?.[conditionKey] || (conditionKey === 'new' ? 'New' : 'Used');
 
     return `
-    <div class="group relative flex flex-col rounded-xl overflow-hidden bg-white dark:bg-surface-card border border-gray-200 dark:border-white/5 transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:-translate-y-1">
+    <div class="group relative flex flex-col rounded-xl overflow-hidden bg-white dark:bg-surface-card border border-gray-200 dark:border-white/5 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
         <div class="relative aspect-[16/10] overflow-hidden">
             <a href="details.html?id=${product.id}">
-                <img alt="${escapeHtml(displayName)}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ${grayscaleClass}" src="${escapeHtml(product.image_url)}"/>
-                ${soldOutOverlay}
+                <img alt="${escapeHtml(displayName)}" class="w-full h-full object-cover transition-transform duration-700 ${product.is_sold_out ? 'grayscale' : ''}" src="${escapeHtml(product.image_url)}" loading="lazy"/>
+                ${product.is_sold_out ? '<div class="sold-out-stamp">SOLD OUT</div>' : ''}
             </a>
-            <div class="absolute top-3 right-3 z-20">
-                <button class="w-8 h-8 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center ${heartClass} hover:text-primary transition-colors" onclick="toggleFavorite(${product.id}, this)">
-                    <span class="material-symbols-outlined" style="font-size: 18px; ${heartStyle}">${heartIcon}</span>
-                </button>
+            <!-- Badges -->
+            <div class="absolute top-3 left-3 z-20 flex flex-col gap-1.5">
+                <span class="px-2 py-1 bg-primary text-white text-[10px] font-bold rounded uppercase tracking-wider shadow-lg">${escapeHtml(conditionText)}</span>
+                ${product.origin ? `<span class="px-2 py-1 bg-slate-900/80 text-white text-[10px] font-bold rounded uppercase tracking-wider backdrop-blur-sm">${escapeHtml(product.origin)}</span>` : ''}
             </div>
-             <div class="absolute bottom-3 left-3 z-20 flex flex-col items-start gap-1">
-                ${categoryBadge}
-                ${uponRequestBadge}
-                ${originBadge}
+            <div class="absolute top-3 right-3 z-20">
+                <button class="w-8 h-8 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center ${fav ? 'text-primary' : 'text-white'}" onclick="toggleFavorite(${product.id}, this)">
+                    <span class="material-symbols-outlined" style="font-size: 18px; ${fav ? "font-variation-settings: 'FILL' 1;" : ""} ">favorite</span>
+                </button>
             </div>
         </div>
         <div class="p-5 flex flex-col flex-grow">
-            <div class="flex justify-between items-start mb-2">
-                <a href="details.html?id=${product.id}" class="text-lg font-bold text-slate-900 dark:text-white leading-tight group-hover:text-primary transition-colors">${escapeHtml(displayName)}</a>
+            <a href="details.html?id=${product.id}" class="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-primary transition-colors line-clamp-1">${escapeHtml(displayName)}</a>
+
+            <!-- Quick Specs -->
+            <div class="flex items-center gap-4 mb-4 text-gray-500 dark:text-gray-400 text-xs">
+                <div class="flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px]">speed</span>
+                    <span>${escapeHtml(mileage)}</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px]">settings</span>
+                    <span>${escapeHtml(trans)}</span>
+                </div>
             </div>
-            <div class="flex flex-wrap items-center gap-3 text-xs text-gray-500 dark:text-gray-400 mb-4 font-medium">
-                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">speed</span> ${escapeHtml(displayMileage)}</span>
-                <span class="w-1 h-1 rounded-full bg-gray-300 dark:bg-white/20"></span>
-                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">settings</span> ${escapeHtml(displayTrans)}</span>
-                <span class="w-1 h-1 rounded-full bg-gray-300 dark:bg-white/20"></span>
-                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">local_gas_station</span> ${escapeHtml(displayFuel)}</span>
-                ${displayVersion ? `
-                <span class="w-1 h-1 rounded-full bg-gray-300 dark:bg-white/20"></span>
-                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">new_releases</span> ${escapeHtml(displayVersion)}</span>
-                ` : ''}
-            </div>
+
             <div class="mt-auto flex items-center justify-between pt-4 border-t border-gray-200 dark:border-white/10">
-                <p class="text-xl font-black text-primary tracking-tight" data-price-egp="${product.price_egp || ''}">${product.price_egp ? product.price_egp.toLocaleString() + ' L.E' : ''}</p>
-                <a href="details.html?id=${product.id}" class="text-xs font-bold text-primary border border-primary px-3 py-1.5 rounded hover:bg-primary hover:text-white transition-all uppercase tracking-wide" data-i18n="view_details">
-                    View Details
-                </a>
+                <p class="text-xl font-black text-primary" data-price-egp="${product.price_egp || ''}">${product.price_egp ? product.price_egp.toLocaleString() + ' L.E' : ''}</p>
+                <a href="details.html?id=${product.id}" class="text-xs font-bold text-primary border border-primary px-3 py-1.5 rounded hover:bg-primary hover:text-white transition-all uppercase" data-i18n="view_details">View Details</a>
             </div>
         </div>
     </div>
     `;
-}
-
-/**
- * Displays a demo message to the user.
- */
-function showDemoMessage() {
-    const isAr = typeof currentLang !== 'undefined' && currentLang === 'ar';
-    showToast(isAr ? "قريباً" : "Coming soon", 'info');
 }
 
 // --- Exports for Testing ---
@@ -1691,7 +1271,7 @@ if (typeof module !== 'undefined' && module.exports) {
         loadProducts,
         loadDetails,
         createProductCard,
-        escapeHtml: escapeHtml,
+        escapeHtml,
         changeMainImage,
         updateVehicleGallery,
         renderDefaultGallery

@@ -253,6 +253,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if ("serviceWorker" in navigator) {
             window.addEventListener("load", () => {
                 navigator.serviceWorker.register("sw.js")
+                    .catch(err => { /* console.error(err) */ });
             });
         }
     </script>
