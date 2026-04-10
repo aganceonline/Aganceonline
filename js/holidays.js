@@ -150,7 +150,6 @@ async function initHolidays() {
             }
         }
     } catch (err) {
-        console.error("Holiday init error:", err);
     }
 }
 

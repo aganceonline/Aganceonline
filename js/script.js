@@ -1,15 +1,9 @@
 /**
  * AganceOnline - Main Application Logic
- *
- * This script handles:
- * 1. Global State Management (Theme, Language, Currency, Favorites).
- * 2. Data Loading (Products, Translations).
- * 3. Page-Specific Logic (Home, Inventory, Details, Favorites).
- * 4. UI Updates & Rendering.
  */
 
 // --- Constants & Global Variables ---
-let usdToEgpRate = 50.0; // Default fallback exchange rate (1 USD = 50 EGP)
+let usdToEgpRate = 50.0;
 let currentLang = localStorage.getItem('lang') || 'en';
 let currentTheme = localStorage.getItem('theme') || 'dark';
 let currentCurrency = localStorage.getItem('currency') || 'EGP';
@@ -20,64 +14,18 @@ let currentProduct = null;
 let brands = [];
 let activeBrandFilters = [];
 let activeColorFilters = [];
-let conditionFilter = 'all'; // 'all', 'new', 'used'
+let conditionFilter = 'all';
 let priceRange = { min: 0, max: 0, current: 0 };
 let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
 
 // --- UI Utilities ---
-window.showToast = function(message, type = 'success') {
-    // Remove existing toast if any
-    const existing = document.getElementById('custom-toast');
-    if (existing) existing.remove();
+// showToast is now in js/utils.js
+const escapeHtml = window.escapeHtml || ((unsafe) => {
+    if (unsafe === null || unsafe === undefined) return "";
+    if (typeof unsafe !== "string") unsafe = String(unsafe);
+    return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+});
 
-    const toast = document.createElement('div');
-    toast.id = 'custom-toast';
-
-    // Base classes
-    toast.className = 'fixed bottom-4 right-4 z-[100] px-6 py-3 rounded-lg shadow-xl font-medium text-white transition-all duration-300 transform translate-y-full opacity-0 flex items-center gap-2';
-
-    let icon = 'info';
-    if (type === 'success') {
-        toast.classList.add('bg-green-600', 'dark:bg-green-700');
-        icon = 'check_circle';
-    } else if (type === 'error') {
-        toast.classList.add('bg-red-600', 'dark:bg-red-700');
-        icon = 'error';
-    } else if (type === 'warning') {
-        toast.classList.add('bg-yellow-500', 'dark:bg-yellow-600');
-        icon = 'warning';
-    } else {
-        toast.classList.add('bg-gray-800', 'dark:bg-gray-700');
-    }
-
-    toast.innerHTML = `<span class="material-symbols-outlined">${icon}</span> <span>${escapeHtml(message)}</span>`;
-    document.body.appendChild(toast);
-
-    // Trigger animation
-    setTimeout(() => {
-        toast.classList.remove('translate-y-full', 'opacity-0');
-    }, 10);
-
-    // Remove after 3 seconds
-    setTimeout(() => {
-        toast.classList.add('translate-y-full', 'opacity-0');
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-};
-
-// Simple XSS protection
-const escapeHtml = (unsafe) => {
-    if (unsafe === null || unsafe === undefined) return '';
-    if (typeof unsafe !== 'string') unsafe = String(unsafe);
-    return unsafe
-         .replace(/&/g, "&amp;")
-         .replace(/</g, "&lt;")
-         .replace(/>/g, "&gt;")
-         .replace(/"/g, "&quot;")
-         .replace(/'/g, "&#039;");
-};
-
-// --- Input Validation Helpers ---
 function validateContactField(value, type) {
     if (typeof value !== 'string') return false;
     const trimmed = value.trim();
@@ -226,7 +174,6 @@ async function setLanguage(lang, shouldRender = true) {
             const data = await response.json();
             translations = data;
         } catch (error) {
-            console.error('Failed to load translations', error);
         }
     }
 
@@ -363,7 +310,6 @@ async function fetchExchangeRate() {
             usdToEgpRate = parseFloat(data.value);
         }
     } catch (error) {
-        console.error('Failed to fetch exchange rate, using fallback:', error);
     }
 }
 
@@ -601,7 +547,6 @@ async function loadGlobalSettings() {
         }
 
     } catch (error) {
-        console.error('Failed to load global settings', error);
     }
 }
 
@@ -615,7 +560,6 @@ async function loadBrands() {
         if (error) throw error;
         brands = data;
     } catch (error) {
-        console.error('Failed to load brands', error);
         brands = [];
     }
 }
@@ -630,7 +574,6 @@ async function loadProducts() {
         if (error) throw error;
         products = data;
     } catch (error) {
-        console.error('Failed to load products', error);
         // Fallback or empty state
         products = [];
     }
@@ -1095,17 +1038,16 @@ function initHeroCarousel() {
 /**
  * Logic for Details Page: Loads specific vehicle info by ID.
  */
+    // Render Main Details
 async function loadDetails() {
     const params = new URLSearchParams(window.location.search);
     const id = parseInt(params.get('id'));
 
-    // Re-fetch products if the list is empty (e.g. initial load failed or direct navigation issue)
     if (products.length === 0) {
         console.warn('Products list empty on details page. Attempting to re-load products...');
         await loadProducts();
     }
 
-    // Sort by order_inventory as a default to find the correct product
     const sortedProducts = [...products].sort((a, b) => (a.order_inventory || 0) - (b.order_inventory || 0));
     const product = sortedProducts.find(p => p.id === id);
     currentProduct = product;
@@ -1127,9 +1069,6 @@ async function loadDetails() {
         }
         return;
     }
-
-
-    // Render Main Details
     // Dynamic SEO Updates
     if (product) {
         document.title = `${product.name} - AganceOnline`;
@@ -1429,7 +1368,6 @@ function changeMainImage(url, btn, skipStateUpdate = false) {
         mainVid.src = url;
         // Optional: auto-play when clicked
         if (!skipStateUpdate) {
-            mainVid.play().catch(e => console.log('Autoplay prevented', e));
         }
     } else {
         mainVid.classList.add('hidden');
@@ -1527,7 +1465,6 @@ async function handleContactSubmit(e) {
         e.target.reset();
 
     } catch (err) {
-        console.error(err);
         showToast('Failed to send message: ' + err.message, 'error');
     } finally {
         btn.innerHTML = originalText;
@@ -1749,7 +1686,7 @@ if (typeof module !== 'undefined' && module.exports) {
         loadProducts,
         loadDetails,
         createProductCard,
-        escapeHtml,
+        escapeHtml: escapeHtml,
         changeMainImage,
         updateVehicleGallery,
         renderDefaultGallery
