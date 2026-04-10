@@ -1548,8 +1548,6 @@ async function handleSaveBrand(e) {
 
 // --- Settings Logic ---
 
-let currentHolidays = [];
-
 async function loadSettings() {
   const egpInput = document.getElementById("setting-egp-usd");
   const locPinInput = document.getElementById("setting-location-pin");
@@ -1647,60 +1645,7 @@ async function loadSettings() {
     btn.disabled = false;
     btn.textContent = "Save All Settings";
   }
-
-  // Load Holidays
-  await loadHolidaySettings();
 }
-
-async function loadHolidaySettings() {
-  const { data, error } = await supabase
-    .from("holidays")
-    .select("*")
-    .order("id", { ascending: true });
-
-  if (error) {
-    console.error("Failed to load holidays:", error);
-    showToast("Failed to load holiday settings", "error");
-    return;
-  }
-
-  currentHolidays = data;
-  renderHolidaySettings();
-}
-
-function renderHolidaySettings() {
-  const categories = ["Religious", "National", "Seasonal"];
-
-  categories.forEach((cat) => {
-    const container = document.getElementById(`holidays-${cat}`);
-    if (!container) return;
-
-    const catHolidays = currentHolidays.filter((h) => h.category === cat);
-    container.innerHTML = catHolidays
-      .map(
-        (h) => `
-        <div class="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/5">
-            <div class="flex flex-col">
-                <span class="text-sm font-bold">${escapeHtml(h.name_en)}</span>
-                <span class="text-xs text-gray-500" dir="rtl">${escapeHtml(h.name_ar)}</span>
-            </div>
-            <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" class="sr-only peer" ${h.is_enabled ? "checked" : ""} onchange="updateHolidayState('${h.key}', this.checked)">
-                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
-            </label>
-        </div>
-    `,
-      )
-      .join("");
-  });
-}
-
-window.updateHolidayState = function (key, isEnabled) {
-  const holiday = currentHolidays.find((h) => h.key === key);
-  if (holiday) {
-    holiday.is_enabled = isEnabled;
-  }
-};
 
 // --- Exports for Testing ---
 if (typeof module !== "undefined" && module.exports) {
@@ -1805,30 +1750,6 @@ async function handleSaveSettings(e) {
     const { error } = await supabase.from("app_settings").upsert(updates);
 
     if (error) throw error;
-
-    // Save Holiday Settings
-    const holidayUpdates = currentHolidays.map((h) => ({
-      id: h.id,
-      is_enabled: h.is_enabled,
-      updated_at: new Date().toISOString(),
-    }));
-
-    // Perform batch update for holidays
-    const holidayResults = await Promise.all(
-      holidayUpdates.map((update) =>
-        supabase
-          .from("holidays")
-          .update({
-            is_enabled: update.is_enabled,
-            updated_at: update.updated_at,
-          })
-          .eq("id", update.id),
-      ),
-    );
-
-    // Check for individual errors in holiday updates
-    const holidayError = holidayResults.find((r) => r.error);
-    if (holidayError) throw holidayError.error;
 
     showToast("Settings saved successfully!", "success");
     loadSettings(); // Refresh view
