@@ -7,42 +7,17 @@ let currentProducts = [];
 let currentInquiries = [];
 let currentBrands = [];
 let currentColors = [];
-let currentOrderMode = "inventory"; // 'inventory' or 'home'
+let currentOrderMode = "inventory";
 let isOrderChanged = false;
 
 // --- UI Utilities ---
-window.showToast = function (message, type = "success") {
-  const existing = document.getElementById("custom-toast");
-  if (existing) existing.remove();
+// showToast is now in js/utils.js
 
-  const toast = document.createElement("div");
-  toast.id = "custom-toast";
-  toast.className =
-    "fixed bottom-4 right-4 z-[100] px-6 py-3 rounded-lg shadow-xl font-medium text-white transition-all duration-300 transform translate-y-full opacity-0 flex items-center gap-2";
-
-  let icon = "info";
-  if (type === "success") {
-    toast.classList.add("bg-green-600", "dark:bg-green-700");
-    icon = "check_circle";
-  } else if (type === "error") {
-    toast.classList.add("bg-red-600", "dark:bg-red-700");
-    icon = "error";
-  } else if (type === "warning") {
-    toast.classList.add("bg-yellow-500", "dark:bg-yellow-600");
-    icon = "warning";
-  } else {
-    toast.classList.add("bg-gray-800", "dark:bg-gray-700");
-  }
-
-  toast.innerHTML = `<span class="material-symbols-outlined">${icon}</span> <span>${escapeHtml(message)}</span>`;
-  document.body.appendChild(toast);
-
-  setTimeout(() => toast.classList.remove("translate-y-full", "opacity-0"), 10);
-  setTimeout(() => {
-    toast.classList.add("translate-y-full", "opacity-0");
-    setTimeout(() => toast.remove(), 300);
-  }, 3000);
-};
+const escapeHtml = window.escapeHtml || ((unsafe) => {
+    if (unsafe === null || unsafe === undefined) return "";
+    if (typeof unsafe !== "string") unsafe = String(unsafe);
+    return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+});
 
 window.showConfirm = function (message, onConfirm) {
   const existing = document.getElementById("custom-confirm-modal");
@@ -70,7 +45,6 @@ window.showConfirm = function (message, onConfirm) {
   const modal = document.getElementById("custom-confirm-modal");
   const inner = modal.querySelector("div");
 
-  // Trigger animation
   setTimeout(() => {
     modal.classList.remove("opacity-0");
     inner.classList.remove("scale-95");
@@ -82,25 +56,11 @@ window.showConfirm = function (message, onConfirm) {
     setTimeout(() => modal.remove(), 300);
   };
 
-  document
-    .getElementById("confirm-cancel-btn")
-    .addEventListener("click", closeModal);
+  document.getElementById("confirm-cancel-btn").addEventListener("click", closeModal);
   document.getElementById("confirm-ok-btn").addEventListener("click", () => {
     closeModal();
     onConfirm();
   });
-};
-
-// Simple XSS protection
-const escapeHtml = (unsafe) => {
-  if (unsafe === null || unsafe === undefined) return "";
-  if (typeof unsafe !== "string") unsafe = String(unsafe);
-  return unsafe
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
 };
 
 // DOM Elements
@@ -127,7 +87,6 @@ const brandForm = document.getElementById("brand-form");
 async function initAdmin() {
   // 1. Auth State Listener
   supabase.auth.onAuthStateChange((event, session) => {
-    console.log("Auth State:", event);
     if (session) {
       currentUser = session.user;
       showDashboard();
@@ -383,7 +342,6 @@ async function handleSaveOrder() {
     updateSaveOrderBtnVisibility();
     loadProducts(); // Reload to be sure
   } catch (err) {
-    console.error(err);
     showToast("Failed to save order: " + err.message, "error");
   } finally {
     btn.innerHTML = originalText;
@@ -487,7 +445,6 @@ async function loadProducts() {
     .order(orderCol, { ascending: true });
 
   if (error) {
-    console.error(error);
     tbody.innerHTML =
       '<tr><td colspan="7" class="px-6 py-4 text-center text-red-500">Failed to load products</td></tr>';
     return;
@@ -682,7 +639,6 @@ async function handleColorImageUpload(colorId, file) {
     color.image_url = publicData.publicUrl;
     renderColors();
   } catch (err) {
-    console.error("Color main image upload error:", err);
     showToast("Error uploading color main image", "error");
   }
 }
@@ -711,7 +667,6 @@ async function handleColorGalleryUpload(colorId, files) {
 
       color.gallery.push(publicData.publicUrl);
     } catch (err) {
-      console.error("Color gallery upload error:", err);
       showToast("Error uploading color gallery image", "error");
     }
   }
@@ -1158,7 +1113,6 @@ async function handleSaveProduct(e) {
           .upload(filePath, file);
 
         if (uploadError) {
-          console.error("Gallery upload error:", uploadError);
           continue;
         }
 
@@ -1202,7 +1156,6 @@ async function handleSaveProduct(e) {
     closeModal();
     loadProducts();
   } catch (err) {
-    console.error(err);
     showToast("Failed to save: " + err.message, "error");
   } finally {
     btn.textContent = originalText;
@@ -1223,7 +1176,6 @@ async function loadInquiries() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error(error);
     tbody.innerHTML =
       '<tr><td colspan="7" class="px-6 py-4 text-center text-red-500">Failed to load inquiries</td></tr>';
     return;
@@ -1403,7 +1355,6 @@ async function loadBrands() {
     .order("name", { ascending: true });
 
   if (error) {
-    console.error(error);
     if (tbody)
       tbody.innerHTML =
         '<tr><td colspan="3" class="px-6 py-4 text-center text-red-500">Failed to load brands</td></tr>';
@@ -1570,7 +1521,6 @@ async function handleSaveBrand(e) {
     // Reload products so the brand selector updates for future product edits
     loadProducts();
   } catch (err) {
-    console.error(err);
     showToast("Failed to save brand: " + err.message, "error");
   } finally {
     btn.textContent = originalText;
@@ -1611,7 +1561,6 @@ async function loadSettings() {
     .select("key, value");
 
   if (error) {
-    console.error(error);
     showToast("Failed to load settings", "error");
     if (egpInput) egpInput.value = "50.0"; // Default
   } else {
@@ -1691,7 +1640,6 @@ async function loadHolidaySettings() {
     .order("id", { ascending: true });
 
   if (error) {
-    console.error("Failed to load holidays:", error);
     showToast("Failed to load holiday settings", "error");
     return;
   }
@@ -1741,7 +1689,7 @@ if (typeof module !== "undefined" && module.exports) {
     handleSaveSettings,
     handleSaveProduct,
     renderProducts,
-    escapeHtml,
+    escapeHtml: escapeHtml,
   };
 }
 
@@ -1865,7 +1813,6 @@ async function handleSaveSettings(e) {
     showToast("Settings saved successfully!", "success");
     loadSettings(); // Refresh view
   } catch (err) {
-    console.error(err);
     showToast("Failed to save settings: " + err.message, "error");
   } finally {
     if (btn) {
