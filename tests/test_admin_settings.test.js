@@ -22,7 +22,8 @@ describe('Admin Settings Logic', () => {
             upsert: jest.fn().mockReturnThis(),
             upload: jest.fn().mockReturnThis(),
             getPublicUrl: jest.fn().mockReturnThis(),
-            then: function(resolve) { resolve({ data: [], error: null }); } // Makes it awaitable
+            then: function(resolve) { resolve({ data: [], error: null }); }, // Makes it awaitable
+            catch: function(reject) { /* ignore */ }
         };
 
         global.document = {
@@ -89,11 +90,24 @@ describe('Admin Settings Logic', () => {
             data: mockData,
             error: null
         });
+        const orderMock = jest.fn().mockResolvedValue({
+            data: [],
+            error: null
+        });
 
         // We need to override the default mock
-        global.supabase.from.mockReturnValue({
-            select: selectMock,
-            upsert: jest.fn().mockResolvedValue({ error: null })
+        global.supabase.from.mockImplementation((table) => {
+            if (table === 'app_settings') {
+                return {
+                    select: selectMock,
+                    upsert: jest.fn().mockResolvedValue({ error: null })
+                };
+            }
+            return {
+                select: jest.fn().mockReturnThis(),
+                order: orderMock,
+                update: jest.fn().mockResolvedValue({ error: null })
+            };
         });
 
         await admin.loadSettings();
@@ -108,7 +122,9 @@ describe('Admin Settings Logic', () => {
         const mockUpsert = jest.fn().mockResolvedValue({ error: null });
         global.supabase.from.mockReturnValue({
             upsert: mockUpsert,
-            select: jest.fn().mockResolvedValue({ data: [], error: null })
+            select: jest.fn().mockReturnThis(),
+            order: jest.fn().mockResolvedValue({ data: [], error: null }),
+            update: jest.fn().mockResolvedValue({ error: null })
         });
 
         const event = { preventDefault: jest.fn() };
