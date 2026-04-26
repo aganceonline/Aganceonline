@@ -125,10 +125,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
 
         <!-- Financing Methods Tabs -->
-        <div class="flex bg-gray-100 dark:bg-white/5 p-1 rounded-2xl max-w-2xl mx-auto mb-10">
-            <button onclick="setFinancingMethod('valu')" data-method="valu" class="method-btn flex-1 py-3 text-sm font-bold rounded-xl bg-primary text-white shadow-lg transition-all">Valu</button>
-            <button onclick="setFinancingMethod('bank')" data-method="bank" class="method-btn flex-1 py-3 text-sm font-bold rounded-xl text-gray-500 dark:text-gray-400 hover:text-primary transition-all">Bank (قسط بنك)</button>
-            <button onclick="setFinancingMethod('direct')" data-method="direct" class="method-btn flex-1 py-3 text-sm font-bold rounded-xl text-gray-500 dark:text-gray-400 hover:text-primary transition-all">Direct (قسط مباشر)</button>
+        <div class="flex bg-gray-100 dark:bg-white/5 p-1 rounded-2xl max-w-4xl mx-auto mb-10 overflow-x-auto">
+            <button onclick="setFinancingMethod('valu')" data-method="valu" class="method-btn flex-1 py-3 px-4 text-sm font-bold rounded-xl bg-primary text-white shadow-lg transition-all whitespace-nowrap">Valu</button>
+            <button onclick="setFinancingMethod('bank')" data-method="bank" class="method-btn flex-1 py-3 px-4 text-sm font-bold rounded-xl text-gray-500 dark:text-gray-400 hover:text-primary transition-all whitespace-nowrap">Bank (قسط بنك)</button>
+            <button onclick="setFinancingMethod('jameel')" data-method="jameel" class="method-btn flex-1 py-3 px-4 text-sm font-bold rounded-xl text-gray-500 dark:text-gray-400 hover:text-primary transition-all whitespace-nowrap">Jameel Finance (شركة جميل)</button>
+            <button onclick="setFinancingMethod('direct')" data-method="direct" class="method-btn flex-1 py-3 px-4 text-sm font-bold rounded-xl text-gray-500 dark:text-gray-400 hover:text-primary transition-all whitespace-nowrap">Direct (قسط مباشر)</button>
         </div>
 
         <!-- Method Info Banner -->
@@ -184,6 +185,32 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                 <label class="block text-sm font-bold uppercase tracking-wider text-gray-400">Down Payment (EGP)</label>
                                 <input type="number" id="calc-down-payment" value="200000" class="w-full bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 rounded-xl px-6 h-14 text-lg font-bold focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all">
                                 <p id="down-payment-percentage" class="text-xs text-primary font-bold">20% of car value</p>
+                            </div>
+                        </div>
+
+                        <!-- Jameel Specific Selectors -->
+                        <div id="jameel-selectors" class="hidden grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-3">
+                                <label class="block text-sm font-bold uppercase tracking-wider text-gray-400">Car Condition</label>
+                                <div class="relative">
+                                    <select id="calc-car-condition" class="w-full bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 rounded-xl px-6 h-14 text-lg font-bold focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all appearance-none">
+                                        <option value="new">New (جديد)</option>
+                                        <option value="used">Used (مستعمل)</option>
+                                    </select>
+                                    <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">expand_more</span>
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <label class="block text-sm font-bold uppercase tracking-wider text-gray-400">Program</label>
+                                <div class="relative">
+                                    <select id="calc-jameel-program" class="w-full bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 rounded-xl px-6 h-14 text-lg font-bold focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all appearance-none">
+                                        <option value="normal">Normal (نظام عادي)</option>
+                                        <option value="murabha">Murabha (مرابحة)</option>
+                                        <option value="old">Old Car (سيارات قديمة)</option>
+                                        <option value="murabha_old">Murabha Old (مرابحة قديمة)</option>
+                                    </select>
+                                    <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">expand_more</span>
+                                </div>
                             </div>
                         </div>
 
@@ -247,6 +274,65 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <!-- Injected by JS -->
             </div>
         </div>
+
+        <!-- Terms and Conditions Section -->
+        <div id="jameel-terms" class="hidden mt-20 bg-white dark:bg-surface-card rounded-3xl p-8 lg:p-12 border border-gray-200 dark:border-white/10 shadow-xl">
+            <h2 class="text-3xl font-black mb-8 text-primary">الشروط والأوراق المطلوبة (شركة جميل)</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="space-y-6">
+                    <h3 class="text-xl font-bold border-b border-primary/20 pb-2">الموظف القطاع العام والخاص</h3>
+                    <ul class="space-y-3 text-sm leading-relaxed">
+                        <li class="flex items-start gap-3">
+                            <span class="material-symbols-outlined text-primary mt-0.5">info</span>
+                            <span>أقل مدة عمل 3 شهور</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="material-symbols-outlined text-primary mt-0.5">description</span>
+                            <span>صورة بطاقة الرقم القومي سارية</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="material-symbols-outlined text-primary mt-0.5">contact_page</span>
+                            <span>إثبات دخل (مفردات مرتب أو كشف حساب بنكي لآخر 3 شهور)</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="material-symbols-outlined text-primary mt-0.5">home</span>
+                            <span>إيصال مرافق حديث</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="space-y-6">
+                    <h3 class="text-xl font-bold border-b border-primary/20 pb-2">أصحاب الشركات والأعمال الحرة</h3>
+                    <ul class="space-y-3 text-sm leading-relaxed">
+                        <li class="flex items-start gap-3">
+                            <span class="material-symbols-outlined text-primary mt-0.5">info</span>
+                            <span>أقل مدة نشاط سنة واحدة</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="material-symbols-outlined text-primary mt-0.5">description</span>
+                            <span>صورة بطاقة الرقم القومي سارية</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="material-symbols-outlined text-primary mt-0.5">history_edu</span>
+                            <span>سجل تجاري وبطاقة ضريبية</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="material-symbols-outlined text-primary mt-0.5">receipt_long</span>
+                            <span>كشف حساب بنكي لآخر 6 شهور</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-10 p-6 bg-primary/5 rounded-2xl border border-primary/10">
+                <p class="text-sm font-bold text-primary mb-2">* عروض خاصة:</p>
+                <ul class="space-y-2 text-xs">
+                    <li>• عرض الأطباء وأساتذة الجامعات: 30% مقدم بدون كشف حساب بنكي.</li>
+                    <li>• عرض ربات المنزل والعمل الحر: 30% مقدم (كشف حساب بنكي لآخر 6 شهور).</li>
+                </ul>
+            </div>
+        </div>
     </main>
 
     <!-- Main Script -->
@@ -293,6 +379,64 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     { icon: 'check_circle', color: 'text-green-500', text: 'مقدم ٥٠٪؜ فايده ٣٥٪' }
                 ],
                 disclaimer: '* قسط مباشر - تطبق الشروط والأحكام.'
+            },
+            jameel: {
+                title: 'أنظمة تقسيط شركة جميل للتمويل 💎',
+                logo: 'https://jameelfinance.com.eg/wp-content/uploads/2024/11/logo.png',
+                features: [
+                    { icon: 'check_circle', color: 'text-green-500', text: 'أقل فايده تبدأ من ١٣.٧٪؜' },
+                    { icon: 'check_circle', color: 'text-green-500', text: 'مقدم يبدأ من ٠٪؜' },
+                    { icon: 'check_circle', color: 'text-green-500', text: 'سنة هدية وثيقة تأمين' },
+                    { icon: 'cancel', color: 'text-red-500', text: 'بدون مصاريف إدارية' }
+                ],
+                disclaimer: '* تطبق الشروط والأحكام. تمويل حتى 5 مليون جنيه.'
+            }
+        };
+
+        const jameelRates = {
+            normal: {
+                "0": {
+                    new: [0.152, 0.152, 0.156, 0.161, 0.166], // 12, 24, 36, 48, 60
+                    used: [0.171, 0.172, 0.178, 0.184, 0.19]
+                },
+                "30": {
+                    new: [0.142, 0.142, 0.145, 0.15, 0.154],
+                    used: [0.166, 0.167, 0.172, 0.178, 0.184]
+                },
+                "50": {
+                    new: [0.138, 0.137, 0.141, 0.145, 0.149],
+                    used: [0.166, 0.167, 0.172, 0.178, 0.184]
+                }
+            },
+            murabha: {
+                "0": {
+                    new: [0.163, 0.164, 0.169, 0.174, 0.18],
+                    used: [0.176, 0.177, 0.183, 0.189, 0.196]
+                },
+                "30": {
+                    new: [0.157, 0.158, 0.162, 0.168, 0.173],
+                    used: [0.166, 0.167, 0.172, 0.178, 0.184]
+                },
+                "50": {
+                    new: [0.143, 0.143, 0.147, 0.151, 0.156],
+                    used: [0.166, 0.167, 0.172, 0.178, 0.184]
+                }
+            },
+            old: {
+                "0": {
+                    used: [0.188, 0.19, 0.196, 0.203, 0.211]
+                },
+                "30": {
+                    used: [0.18, 0.182, 0.188, 0.195, 0.202]
+                }
+            },
+            murabha_old: {
+                "0": {
+                    used: [0.194, 0.196, 0.203, 0.21, 0.218]
+                },
+                "30": {
+                    used: [0.185, 0.187, 0.193, 0.20, 0.208]
+                }
             }
         };
 
@@ -309,6 +453,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             document.getElementById('calc-primary-input').addEventListener('input', calculate);
             document.getElementById('calc-down-payment').addEventListener('input', calculate);
             document.getElementById('calc-car-select').addEventListener('change', handleCarSelect);
+            document.getElementById('calc-car-condition').addEventListener('change', calculate);
+            document.getElementById('calc-jameel-program').addEventListener('change', calculate);
         });
 
         function initFinancingPage() {
@@ -355,11 +501,49 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             `).join('');
             document.getElementById('method-disclaimer').textContent = config.disclaimer;
 
+            // Update UI visibility
+            const jameelSelectors = document.getElementById('jameel-selectors');
+            const jameelTerms = document.getElementById('jameel-terms');
+            if (method === 'jameel') {
+                jameelSelectors.classList.remove('hidden');
+                jameelTerms.classList.remove('hidden');
+            } else {
+                jameelSelectors.classList.add('hidden');
+                jameelTerms.classList.add('hidden');
+            }
+
             calculate();
         }
 
-        function getInterestRate(down, carPrice) {
+        function getInterestRate(down, carPrice, months = 36) {
             const perc = carPrice > 0 ? (down / carPrice) * 100 : 0;
+            
+            if (currentMethod === 'jameel') {
+                const program = document.getElementById('calc-jameel-program').value;
+                const condition = document.getElementById('calc-car-condition').value;
+                
+                let bracket = "0";
+                if (perc >= 50) bracket = "50";
+                else if (perc >= 30) bracket = "30";
+
+                // Map bracket for "old" programs which only have 0 or 30-50
+                if ((program === 'old' || program === 'murabha_old') && perc >= 30) {
+                    bracket = "30";
+                }
+
+                const rates = jameelRates[program][bracket];
+                if (!rates) return 0.16; // Fallback
+
+                const monthIdx = [12, 24, 36, 48, 60].indexOf(months);
+                if (monthIdx === -1) return 0.16;
+
+                if (program === 'old' || program === 'murabha_old') {
+                    return rates.used[monthIdx];
+                }
+
+                return rates[condition] ? rates[condition][monthIdx] : rates.used[monthIdx];
+            }
+
             if (currentMethod === 'valu') return 0.145;
             if (currentMethod === 'bank') {
                 if (perc >= 30) return 0.14;
@@ -412,12 +596,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         function handleCarSelect() {
             const id = parseInt(document.getElementById('calc-car-select').value);
             if (id === 0) return;
-
+            
             const product = window.products.find(p => p.id === id);
             if (product && product.price_egp) {
                 document.getElementById('calc-primary-input').value = product.price_egp;
                 // Default down payment to 20%
                 document.getElementById('calc-down-payment').value = Math.round(product.price_egp * 0.2);
+                
+                // Auto-set condition for Jameel
+                if (product.condition) {
+                    const condSelect = document.getElementById('calc-car-condition');
+                    condSelect.value = product.condition.toLowerCase() === 'new' ? 'new' : 'used';
+                }
+                
                 calculate();
             }
         }
@@ -435,7 +626,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             const rateDisplay = document.getElementById('interest-rate-display');
 
             const perc = primary > 0 ? (down / primary) * 100 : 0;
-            const rate = getInterestRate(down, primary);
+            const rate = getInterestRate(down, primary, selectedMonths);
 
             // Validation logic
             let minPerc = 10;
@@ -507,7 +698,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             const periods = [12, 24, 36, 48, 60];
             container.innerHTML = periods.map(m => {
                 const years = m / 12;
-                const rate = getInterestRate(down, carPrice);
+                const rate = getInterestRate(down, carPrice, m);
                 const totalInterest = financedAmount * rate * years;
                 const totalAmount = financedAmount + totalInterest;
                 const monthly = Math.round(totalAmount / m);
@@ -541,7 +732,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             const months = selectedMonths;
             const monthly = document.getElementById('result-value').textContent;
 
-            const message = `Financing inquiry for: ${carName}\nMethod: ${currentMethod}\nCar Price: ${price} EGP\nDown Payment: ${down} EGP\nDuration: ${months} Months\nMonthly Installment: ${monthly} EGP`;
+            let message = `Financing inquiry for: ${carName}\nMethod: ${currentMethod}\nCar Price: ${price} EGP\nDown Payment: ${down} EGP\nDuration: ${months} Months\nMonthly Installment: ${monthly} EGP`;
+
+            if (currentMethod === 'jameel') {
+                const program = document.getElementById('calc-jameel-program').options[document.getElementById('calc-jameel-program').selectedIndex].text;
+                const condition = document.getElementById('calc-car-condition').options[document.getElementById('calc-car-condition').selectedIndex].text;
+                message += `\nProgram: ${program}\nCondition: ${condition}`;
+            }
 
             window.location.href = `contact.html?message=${encodeURIComponent(message)}`;
         }
